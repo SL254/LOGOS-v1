@@ -6187,6 +6187,9 @@
               const theoremLi = Array.from(
                 document.querySelectorAll("#premise-list li")
               ).find((li) => {
+                if (!li.dataset.propObject) {
+                  return false;
+                }
                 const data = JSON.parse(li.dataset.propObject);
                 return (
                   data.type === "theorem" &&
@@ -6459,6 +6462,9 @@
               const conclusionLi = Array.from(
                 document.querySelectorAll("#premise-list li")
               ).find((li) => {
+                if (!li.dataset.propObject) {
+                  return false;
+                }
                 const data = JSON.parse(li.dataset.propObject);
                 return (
                   data.dependsOnAssumption &&
@@ -6547,6 +6553,9 @@
                 .map((prop) =>
                   Array.from(premiseList_mp.querySelectorAll("li")).find(
                     (li) => {
+                      if (!li.dataset.propObject) {
+                        return false;
+                      }
                       const data = JSON.parse(li.dataset.propObject);
                       return arePropositionsEqual(data.proposition, prop);
                     }
@@ -6615,6 +6624,9 @@
               const premiseLis = premiseProps
                 .map((prop) =>
                   Array.from(premiseList.querySelectorAll("li")).find((li) => {
+                    if (!li.dataset.propObject) {
+                      return false;
+                    }
                     const data = JSON.parse(li.dataset.propObject);
                     return arePropositionsEqual(data.proposition, prop);
                   })
@@ -6672,6 +6684,9 @@
               const raaResultLi = Array.from(
                 premiseListForDNE.querySelectorAll("li")
               ).find((li) => {
+                if (!li.dataset.propObject) {
+                  return false;
+                }
                 const data = JSON.parse(li.dataset.propObject);
                 // Check if it's a theorem derived from RAA and matches the expected proposition
                 return (
@@ -6881,15 +6896,19 @@
           ),
         ];
         // 공리들을 그룹별로 분류하고 순서대로 추가 (튜토리얼 버전)
-        const axioms = allSelectablePropositions.filter(p => p.type === "axiom");
-        const nonAxioms = allSelectablePropositions.filter(p => p.type !== "axiom");
-        
+        const axioms = allSelectablePropositions.filter(
+          (p) => p.type === "axiom"
+        );
+        const nonAxioms = allSelectablePropositions.filter(
+          (p) => p.type !== "axiom"
+        );
+
         // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
         if (currentAxioms.groups && axioms.length > 0) {
           const groups = currentAxioms.groups;
           const templates = currentLang.axiom_templates;
           let axiomIndex = 0;
-          
+
           // 정체성 공리 그룹
           if (groups.identity && groups.identity.length > 0) {
             for (let i = 0; i < groups.identity.length; i++) {
@@ -6899,21 +6918,21 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 정체성 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 개체별 속성 대립 그룹 - 서브그룹별로 나누기
           if (groups.subjectOpposition && groups.subjectOpposition.length > 0) {
             // 첫 번째 철학자 선악 공리
@@ -6924,20 +6943,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 첫 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -6946,20 +6965,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 선악 공리
             for (let i = 0; i < templates.subject_good_evil.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -6968,20 +6987,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -6990,23 +7009,26 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 개체별 속성 대립 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 집단별 속성 대립 그룹 - 서브그룹별로 나누기
-          if (groups.quantifierOpposition && groups.quantifierOpposition.length > 0) {
+          if (
+            groups.quantifierOpposition &&
+            groups.quantifierOpposition.length > 0
+          ) {
             // 새 집단 순방향
             for (let i = 0; i < templates.bird_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7015,20 +7037,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 새 집단 역방향
             for (let i = 0; i < templates.bird_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7037,20 +7059,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 순방향
             for (let i = 0; i < templates.fish_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7059,20 +7081,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 역방향
             for (let i = 0; i < templates.fish_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7081,20 +7103,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 순방향
             for (let i = 0; i < templates.dog_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7103,20 +7125,20 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 역방향
             for (let i = 0; i < templates.dog_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
@@ -7125,46 +7147,46 @@
                   type: axioms[axiomIndex].type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 마르크스 공리가 있으면 추가
             const remainingAxioms = axioms.slice(axiomIndex);
-            const marxAxioms = remainingAxioms.filter(a => {
+            const marxAxioms = remainingAxioms.filter((a) => {
               const text = propositionToNaturalText(a.proposition);
               return text.includes("브루주아") || text.includes("Bourgeois");
             });
-            
+
             if (marxAxioms.length > 0) {
               // 서브그룹 구분선
               addPremiseToWorkbench({
                 type: "separator",
                 label: "",
                 proposition: null,
-                isSeparator: true
+                isSeparator: true,
               });
-              
+
               marxAxioms.forEach((axiomData) => {
                 addPremiseToWorkbench({
                   proposition: axiomData.proposition,
                   type: axiomData.type,
                   dependsOnAssumption: false,
                   isAssumption: false,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               });
             }
-            
+
             // 집단별 속성 대립 그룹 마지막 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         } else {
@@ -7175,21 +7197,21 @@
               type: propData.type,
               dependsOnAssumption: false,
               isAssumption: false,
-              label: currentLang.labels.axiom
+              label: currentLang.labels.axiom,
             });
           });
-          
+
           // 공리 마지막 구분선 추가
           if (axioms.length > 0) {
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         }
-        
+
         // 공리가 아닌 명제들 추가
         nonAxioms.forEach((propData) => {
           let label;
@@ -10726,38 +10748,42 @@
             !propData.propId ||
             !socratesDisabledProps.some((dp) => dp.propId === propData.propId)
         );
-        
+
         // 공리들을 그룹별로 분류하고 순서대로 추가
-        const axioms = allSelectablePropositions.filter(p => p.type === "axiom");
-        const nonAxioms = allSelectablePropositions.filter(p => p.type !== "axiom");
-        
+        const axioms = allSelectablePropositions.filter(
+          (p) => p.type === "axiom"
+        );
+        const nonAxioms = allSelectablePropositions.filter(
+          (p) => p.type !== "axiom"
+        );
+
         // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
         if (currentAxioms.groups && axioms.length > 0) {
           const groups = currentAxioms.groups;
           const templates = currentLang.axiom_templates;
           let axiomIndex = 0;
-          
+
           // 정체성 공리 그룹
           if (groups.identity && groups.identity.length > 0) {
             for (let i = 0; i < groups.identity.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 정체성 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 개체별 속성 대립 그룹 - 서브그룹별로 나누기
           if (groups.subjectOpposition && groups.subjectOpposition.length > 0) {
             // 첫 번째 철학자 선악 공리
@@ -10765,217 +10791,220 @@
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 첫 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 선악 공리
             for (let i = 0; i < templates.subject_good_evil.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 개체별 속성 대립 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 집단별 속성 대립 그룹 - 서브그룹별로 나누기
-          if (groups.quantifierOpposition && groups.quantifierOpposition.length > 0) {
+          if (
+            groups.quantifierOpposition &&
+            groups.quantifierOpposition.length > 0
+          ) {
             // 새 집단 순방향
             for (let i = 0; i < templates.bird_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 새 집단 역방향
             for (let i = 0; i < templates.bird_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 순방향
             for (let i = 0; i < templates.fish_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 역방향
             for (let i = 0; i < templates.fish_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 순방향
             for (let i = 0; i < templates.dog_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 역방향
             for (let i = 0; i < templates.dog_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 마르크스 공리가 있으면 추가
             const remainingAxioms = axioms.slice(axiomIndex);
-            const marxAxioms = remainingAxioms.filter(a => {
+            const marxAxioms = remainingAxioms.filter((a) => {
               const text = propositionToNaturalText(a.proposition);
               return text.includes("브루주아") || text.includes("Bourgeois");
             });
-            
+
             if (marxAxioms.length > 0) {
               // 서브그룹 구분선
               addPremiseToWorkbench({
                 type: "separator",
                 label: "",
                 proposition: null,
-                isSeparator: true
+                isSeparator: true,
               });
-              
+
               marxAxioms.forEach((axiomData) => {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               });
             }
-            
+
             // 집단별 속성 대립 그룹 마지막 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         } else {
@@ -10983,21 +11012,21 @@
           axioms.forEach((propData) => {
             addPremiseToWorkbench({
               ...propData,
-              label: currentLang.labels.axiom
+              label: currentLang.labels.axiom,
             });
           });
-          
+
           // 공리 마지막 구분선 추가
           if (axioms.length > 0) {
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         }
-        
+
         // 공리가 아닌 명제들 추가
         nonAxioms.forEach((propData) => {
           let label;
@@ -12733,11 +12762,12 @@
             li.style.margin = "4px 0";
             li.style.pointerEvents = "none"; // 클릭 불가능
             li.style.listStyle = "none";
-            li.innerHTML = "<hr style='border: none; border-top: 1px solid rgba(221, 221, 221, 0.3); margin: 0;'>";
+            li.innerHTML =
+              "<hr style='border: none; border-top: 1px solid rgba(221, 221, 221, 0.3); margin: 0;'>";
             premiseList.appendChild(li);
             return;
           }
-          
+
           const li = document.createElement("li");
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
@@ -13694,36 +13724,40 @@
         );
 
         // 공리들을 그룹별로 분류하고 순서대로 추가 (openEurekaModal과 동일)
-        const axioms = allSelectablePropositions.filter(p => p.type === "axiom");
-        const nonAxioms = allSelectablePropositions.filter(p => p.type !== "axiom");
-        
+        const axioms = allSelectablePropositions.filter(
+          (p) => p.type === "axiom"
+        );
+        const nonAxioms = allSelectablePropositions.filter(
+          (p) => p.type !== "axiom"
+        );
+
         // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
         if (currentAxioms.groups && axioms.length > 0) {
           const groups = currentAxioms.groups;
           const templates = currentLang.axiom_templates;
           let axiomIndex = 0;
-          
+
           // 정체성 공리 그룹
           if (groups.identity && groups.identity.length > 0) {
             for (let i = 0; i < groups.identity.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 정체성 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 개체별 속성 대립 그룹 - 서브그룹별로 나누기
           if (groups.subjectOpposition && groups.subjectOpposition.length > 0) {
             // 첫 번째 철학자 선악 공리
@@ -13731,217 +13765,220 @@
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 첫 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 선악 공리
             for (let i = 0; i < templates.subject_good_evil.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 두 번째 철학자 지혜 공리
             for (let i = 0; i < templates.subject_wise_foolish.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 개체별 속성 대립 그룹 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
-          
+
           // 집단별 속성 대립 그룹 - 서브그룹별로 나누기
-          if (groups.quantifierOpposition && groups.quantifierOpposition.length > 0) {
+          if (
+            groups.quantifierOpposition &&
+            groups.quantifierOpposition.length > 0
+          ) {
             // 새 집단 순방향
             for (let i = 0; i < templates.bird_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 새 집단 역방향
             for (let i = 0; i < templates.bird_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 순방향
             for (let i = 0; i < templates.fish_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 물고기 집단 역방향
             for (let i = 0; i < templates.fish_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 순방향
             for (let i = 0; i < templates.dog_good_evil_forward.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 서브그룹 구분선
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
-            
+
             // 개 집단 역방향
             for (let i = 0; i < templates.dog_good_evil_reverse.length; i++) {
               if (axiomIndex < axioms.length) {
                 addPremiseToWorkbench({
                   ...axioms[axiomIndex],
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
             }
-            
+
             // 마르크스 공리가 있으면 추가
             const remainingAxioms = axioms.slice(axiomIndex);
-            const marxAxioms = remainingAxioms.filter(a => {
+            const marxAxioms = remainingAxioms.filter((a) => {
               const text = propositionToNaturalText(a.proposition);
               return text.includes("브루주아") || text.includes("Bourgeois");
             });
-            
+
             if (marxAxioms.length > 0) {
               // 서브그룹 구분선
               addPremiseToWorkbench({
                 type: "separator",
                 label: "",
                 proposition: null,
-                isSeparator: true
+                isSeparator: true,
               });
-              
+
               marxAxioms.forEach((axiomData) => {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: currentLang.labels.axiom
+                  label: currentLang.labels.axiom,
                 });
                 axiomIndex++;
               });
             }
-            
+
             // 집단별 속성 대립 그룹 마지막 구분선 추가
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         } else {
@@ -13949,21 +13986,21 @@
           axioms.forEach((propData) => {
             addPremiseToWorkbench({
               ...propData,
-              label: currentLang.labels.axiom
+              label: currentLang.labels.axiom,
             });
           });
-          
+
           // 공리 마지막 구분선 추가
           if (axioms.length > 0) {
             addPremiseToWorkbench({
               type: "separator",
               label: "",
               proposition: null,
-              isSeparator: true
+              isSeparator: true,
             });
           }
         }
-        
+
         // 공리가 아닌 명제들 추가
         nonAxioms.forEach((propData) => {
           let label;
