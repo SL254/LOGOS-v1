@@ -1033,6 +1033,17 @@
         font-weight: bold;
         margin-right: 4px;
       }
+
+      .premise-selection li.selected {
+        border-image-source: url("assets/images/pre_li_selected.png");
+      }
+
+      /* 가정 의존 항목이 선택됐을 때의 스타일 */
+      .premise-selection li.assumption-dependent.selected,
+      .premise-selection li.assumption-itself.selected {
+        border-image-source: url("assets/images/pre_li_assu_selected.png");
+      }
+
       .tag-victory {
         color: #c9a518;
       }
@@ -1638,12 +1649,13 @@
           url("assets/images/papiru_1.png") url("assets/images/sel.png")
           url("assets/images/por.png") url("assets/images/por_small.png")
           url("assets/images/pre_li.png") url("assets/images/pre_li_assu.png")
-          url("assets/images/indi.png") url("assets/images/close.png")
-          /* 버튼 기본 이미지 */ url("assets/images/new.png")
-          url("assets/images/full.png") url("assets/images/tuto.png")
-          url("assets/images/complete.png") url("assets/images/undo.png")
-          url("assets/images/end.png") url("assets/images/eureka.png")
-          url("assets/images/disabled.png")
+          url("assets/images/pre_li_assu_selected.png")
+          url("assets/images/pre_li_selected.png") url("assets/images/indi.png")
+          url("assets/images/close.png") /* 버튼 기본 이미지 */
+          url("assets/images/new.png") url("assets/images/full.png")
+          url("assets/images/tuto.png") url("assets/images/complete.png")
+          url("assets/images/undo.png") url("assets/images/end.png")
+          url("assets/images/eureka.png") url("assets/images/disabled.png")
           url("assets/images/eureka_disabled.png") /* 버튼 호버(Hover) 이미지 */
           url("assets/images/new_hover.png") url("assets/images/full_hover.png")
           url("assets/images/tuto_hover.png")
@@ -2530,6 +2542,19 @@
         margin-bottom: 40px; /* 버튼과의 아래쪽 간격 */
         image-rendering: pixelated; /* 픽셀 아트 스타일 유지 */
       }
+
+      /* 체크박스 비활성화 시 색상 유지 */
+      input[type="checkbox"]:disabled {
+        opacity: 1 !important;
+        filter: none !important;
+        -webkit-filter: none !important;
+
+        /* --- 추가된 부분 --- */
+        /* 배경색을 강제로 밝은 색으로 지정 */
+        background-color: #f0f0f0 !important;
+        /* 테두리 색을 연한 회색으로 지정 */
+        border-color: #cccccc !important;
+      }
     </style>
   </head>
   <body>
@@ -3210,7 +3235,7 @@
             ],
             // Stage 9 (Index 8) - 새로 추가되는 부분
             [
-              "마지막으로 지금까지 배운 추론 규칙을 활용해 당신(소크라테스)의 승리나 상대(플라톤)의 패배를 증명해 보세요.",
+              "마지막으로 지금까지 배운 추론 규칙을 활용해 당신의 승리 [소크라테스는 승리한다]나 상대의 패배 [플라톤은 승리한다 는 거짓이다]를 증명해 보세요.",
             ],
           ],
           inferenceRules: {
@@ -3232,6 +3257,7 @@
             advanced: "고급 규칙",
             proofByCases: "경우 논증 (P 또는 Q, P 라면 R, Q 라면 R ∴ R)",
           },
+
           alerts: {
             invalidCard: "규칙에 맞지 않는 카드입니다!",
             incompleteProposition:
@@ -3317,41 +3343,53 @@
           axiom_templates: {
             identity: [
               "어떤 새는 새이다",
-              "어떤 물고기는 물고기이다",
-              "어떤 개는 개이다",
               "모든 새는 새이다",
+              "어떤 물고기는 물고기이다",
               "모든 물고기는 물고기이다",
+              "어떤 개는 개이다",
               "모든 개는 개이다",
             ],
-            opposition_subjects: [
+            subject_good_evil: [
               "{S} 선하다 또는 {S} 악하다",
               "{S} 선하다 라면 {S} 악하다 는 거짓이다",
+            ],
+            subject_wise_foolish: [
               "{S} 지혜롭다 또는 {S} 어리석다",
               "{S} 지혜롭다 라면 {S} 어리석다 는 거짓이다",
             ],
-            opposition_quantifiers: [
+            bird_good_evil_forward: [
               "모든 새는 선하다 라면 어떤 새는 악하다 는 거짓이다",
               "모든 새는 악하다 라면 어떤 새는 선하다 는 거짓이다",
-              "모든 물고기는 선하다 라면 어떤 물고기는 악하다 는 거짓이다",
-              "모든 물고기는 악하다 라면 어떤 물고기는 선하다 는 거짓이다",
-              "모든 개는 선하다 라면 어떤 개는 악하다 는 거짓이다",
-              "모든 개는 악하다 라면 어떤 개는 선하다 는 거짓이다",
               "모든 새는 지혜롭다 라면 어떤 새는 어리석다 는 거짓이다",
               "모든 새는 어리석다 라면 어떤 새는 지혜롭다 는 거짓이다",
-              "모든 물고기는 지혜롭다 라면 어떤 물고기는 어리석다 는 거짓이다",
-              "모든 물고기는 어리석다 라면 어떤 물고기는 지혜롭다 는 거짓이다",
-              "모든 개는 지혜롭다 라면 어떤 개는 어리석다 는 거짓이다",
-              "모든 개는 어리석다 라면 어떤 개는 지혜롭다 는 거짓이다",
+            ],
+            bird_good_evil_reverse: [
               "어떤 새는 선하다 는 거짓이다 라면 모든 새는 악하다",
               "어떤 새는 악하다 는 거짓이다 라면 모든 새는 선하다",
-              "어떤 물고기는 선하다 는 거짓이다 라면 모든 물고기는 악하다",
-              "어떤 물고기는 악하다 는 거짓이다 라면 모든 물고기는 선하다",
-              "어떤 개는 선하다 는 거짓이다 라면 모든 개는 악하다",
-              "어떤 개는 악하다 는 거짓이다 라면 모든 개는 선하다",
               "어떤 새는 지혜롭다 는 거짓이다 라면 모든 새는 어리석다",
               "어떤 새는 어리석다 는 거짓이다 라면 모든 새는 지혜롭다",
+            ],
+            fish_good_evil_forward: [
+              "모든 물고기는 선하다 라면 어떤 물고기는 악하다 는 거짓이다",
+              "모든 물고기는 악하다 라면 어떤 물고기는 선하다 는 거짓이다",
+              "모든 물고기는 지혜롭다 라면 어떤 물고기는 어리석다 는 거짓이다",
+              "모든 물고기는 어리석다 라면 어떤 물고기는 지혜롭다 는 거짓이다",
+            ],
+            fish_good_evil_reverse: [
+              "어떤 물고기는 선하다 는 거짓이다 라면 모든 물고기는 악하다",
+              "어떤 물고기는 악하다 는 거짓이다 라면 모든 물고기는 선하다",
               "어떤 물고기는 지혜롭다 는 거짓이다 라면 모든 물고기는 어리석다",
               "어떤 물고기는 어리석다 는 거짓이다 라면 모든 물고기는 지혜롭다",
+            ],
+            dog_good_evil_forward: [
+              "모든 개는 선하다 라면 어떤 개는 악하다 는 거짓이다",
+              "모든 개는 악하다 라면 어떤 개는 선하다 는 거짓이다",
+              "모든 개는 지혜롭다 라면 어떤 개는 어리석다 는 거짓이다",
+              "모든 개는 어리석다 라면 어떤 개는 지혜롭다 는 거짓이다",
+            ],
+            dog_good_evil_reverse: [
+              "어떤 개는 선하다 는 거짓이다 라면 모든 개는 악하다",
+              "어떤 개는 악하다 는 거짓이다 라면 모든 개는 선하다",
               "어떤 개는 지혜롭다 는 거짓이다 라면 모든 개는 어리석다",
               "어떤 개는 어리석다 는 거짓이다 라면 모든 개는 지혜롭다",
             ],
@@ -3607,7 +3645,7 @@
               "Excellent. You have now learned all the inference rules of LOGOS ORGANON.<br><br>At any time outside of Thinking Time, you can open the proof workbench with the Eureka! button. Use the rules you've learned to prove your own victory or your opponent's inability to win, and you will immediately win the game.",
             ],
             [
-              "Finally, using the inference rules you've learned so far, try to prove your (Socrates') victory or your opponent's (Plato's) defeat.",
+              "Finally, using the inference rules you've learned so far, try to prove your victory [Socrates wins] or your opponent's defeat [Plato wins is false].",
             ],
           ],
           inferenceRules: {
@@ -3723,41 +3761,53 @@
           axiom_templates: {
             identity: [
               "Some bird is a bird",
-              "Some fish is a fish",
-              "Some dog is a dog",
               "Every bird is a bird",
+              "Some fish is a fish",
               "Every fish is a fish",
+              "Some dog is a dog",
               "Every dog is a dog",
             ],
-            opposition_subjects: [
+            subject_good_evil: [
               "{S} is good or {S} is evil",
               "{S} is good then {S} is evil is false",
+            ],
+            subject_wise_foolish: [
               "{S} is wise or {S} is foolish",
               "{S} is wise then {S} is foolish is false",
             ],
-            opposition_quantifiers: [
+            bird_good_evil_forward: [
               "Every bird is good then Some bird is evil is false",
               "Every bird is evil then Some bird is good is false",
-              "Every fish is good then Some fish is evil is false",
-              "Every fish is evil then Some fish is good is false",
-              "Every dog is good then Some dog is evil is false",
-              "Every dog is evil then Some dog is good is false",
               "Every bird is wise then Some bird is foolish is false",
               "Every bird is foolish then Some bird is wise is false",
-              "Every fish is wise then Some fish is foolish is false",
-              "Every fish is foolish then Some fish is wise is false",
-              "Every dog is wise then Some dog is foolish is false",
-              "Every dog is foolish then Some dog is wise is false",
+            ],
+            bird_good_evil_reverse: [
               "Some bird is good is false then Every bird is evil",
               "Some bird is evil is false then Every bird is good",
-              "Some fish is good is false then Every fish is evil",
-              "Some fish is evil is false then Every fish is good",
-              "Some dog is good is false then Every dog is evil",
-              "Some dog is evil is false then Every dog is good",
               "Some bird is wise is false then Every bird is foolish",
               "Some bird is foolish is false then Every bird is wise",
+            ],
+            fish_good_evil_forward: [
+              "Every fish is good then Some fish is evil is false",
+              "Every fish is evil then Some fish is good is false",
+              "Every fish is wise then Some fish is foolish is false",
+              "Every fish is foolish then Some fish is wise is false",
+            ],
+            fish_good_evil_reverse: [
+              "Some fish is good is false then Every fish is evil",
+              "Some fish is evil is false then Every fish is good",
               "Some fish is wise is false then Every fish is foolish",
               "Some fish is foolish is false then Every fish is wise",
+            ],
+            dog_good_evil_forward: [
+              "Every dog is good then Some dog is evil is false",
+              "Every dog is evil then Some dog is good is false",
+              "Every dog is wise then Some dog is foolish is false",
+              "Every dog is foolish then Some dog is wise is false",
+            ],
+            dog_good_evil_reverse: [
+              "Some dog is good is false then Every dog is evil",
+              "Some dog is evil is false then Every dog is good",
               "Some dog is wise is false then Every dog is foolish",
               "Some dog is foolish is false then Every dog is wise",
             ],
@@ -4230,6 +4280,7 @@
             hover: "assets/sounds/hover.ogg",
             playCard: "assets/sounds/play_card.flac",
             complete: "assets/sounds/complete.ogg",
+            pop: "assets/sounds/pop.ogg",
             undo: "assets/sounds/undo.flac",
             end: "assets/sounds/end.wav",
             eureka: "assets/sounds/eureka.wav",
@@ -5006,28 +5057,64 @@
         isMarxInGame = false
       ) {
         const templates = langData.axiom_templates;
-        const generated = [];
+        const axiomGroups = {
+          identity: [...templates.identity],
+          subjectOpposition: [],
+          quantifierOpposition: [],
+        };
 
-        generated.push(...templates.identity);
+        // 마르크스 정체성 공리 추가
         if (isMarxInGame) {
           if (langData.langCode === "ko") {
-            generated.push("어떤 브루주아는 브루주아이다");
-            generated.push("모든 브루주아는 브루주아이다");
+            axiomGroups.identity.push("어떤 브루주아는 브루주아이다");
+            axiomGroups.identity.push("모든 브루주아는 브루주아이다");
           } else {
-            generated.push("Some Bourgeois is a Bourgeois");
-            generated.push("Every Bourgeois is a Bourgeois");
+            axiomGroups.identity.push("Some Bourgeois is a Bourgeois");
+            axiomGroups.identity.push("Every Bourgeois is a Bourgeois");
           }
         }
 
-        templates.opposition_subjects.forEach((template) => {
-          generated.push(template.replaceAll("{S}", subjectA));
+        // 개체별 속성 대립 공리들
+        templates.subject_good_evil.forEach((template) => {
+          axiomGroups.subjectOpposition.push(
+            template.replaceAll("{S}", subjectA)
+          );
+        });
+        templates.subject_wise_foolish.forEach((template) => {
+          axiomGroups.subjectOpposition.push(
+            template.replaceAll("{S}", subjectA)
+          );
+        });
+        templates.subject_good_evil.forEach((template) => {
+          axiomGroups.subjectOpposition.push(
+            template.replaceAll("{S}", subjectB)
+          );
+        });
+        templates.subject_wise_foolish.forEach((template) => {
+          axiomGroups.subjectOpposition.push(
+            template.replaceAll("{S}", subjectB)
+          );
         });
 
-        templates.opposition_subjects.forEach((template) => {
-          generated.push(template.replaceAll("{S}", subjectB));
-        });
-
-        generated.push(...templates.opposition_quantifiers);
+        // 양화사별 속성 대립 공리들
+        axiomGroups.quantifierOpposition.push(
+          ...templates.bird_good_evil_forward
+        );
+        axiomGroups.quantifierOpposition.push(
+          ...templates.bird_good_evil_reverse
+        );
+        axiomGroups.quantifierOpposition.push(
+          ...templates.fish_good_evil_forward
+        );
+        axiomGroups.quantifierOpposition.push(
+          ...templates.fish_good_evil_reverse
+        );
+        axiomGroups.quantifierOpposition.push(
+          ...templates.dog_good_evil_forward
+        );
+        axiomGroups.quantifierOpposition.push(
+          ...templates.dog_good_evil_reverse
+        );
 
         if (isMarxInGame) {
           let marxBourgeoisAxioms = [];
@@ -5059,10 +5146,20 @@
               "Some Bourgeois is foolish is false then Every Bourgeois is wise",
             ];
           }
-          generated.push(...marxBourgeoisAxioms);
+          axiomGroups.quantifierOpposition.push(...marxBourgeoisAxioms);
         }
 
-        return generated;
+        // 하위 호환성을 위해 평면적인 배열로 반환
+        const flatAxioms = [
+          ...axiomGroups.identity,
+          ...axiomGroups.subjectOpposition,
+          ...axiomGroups.quantifierOpposition,
+        ];
+
+        // 그룹 정보를 속성으로 추가
+        flatAxioms.groups = axiomGroups;
+
+        return flatAxioms;
       }
       function getTopicParticle(name) {
         const lastChar = name.charCodeAt(name.length - 1);
@@ -6683,11 +6780,32 @@
           .getElementById("apply-rule-btn")
           .classList.add("tutorial-highlight");
 
+        // 체크박스들을 비활성화
+        const checkboxes = document.querySelectorAll(
+          "#premise-list input[type='checkbox']"
+        );
+        checkboxes.forEach((checkbox) => {
+          checkbox.disabled = true;
+        });
+
         const applyBtn = document.getElementById("apply-rule-btn");
         const select = document.getElementById("inference-rule-select");
 
         const applyRuleHandler = () => {
           if (select.value === ruleValue) {
+            // 전제가 선택되었는지 확인
+            const selectedPremises = document.querySelectorAll(
+              "#premise-list input:checked"
+            );
+            if (selectedPremises.length === 0) {
+              showAlert(
+                currentLang.langCode === "ko"
+                  ? "전제를 선택해주세요."
+                  : "Please select premises."
+              );
+              return;
+            }
+
             applyRuleTutorial();
             advanceTutorial();
           } else {
@@ -6854,6 +6972,8 @@
               isAssumption: false,
               label: currentLang.labels.ci_theorem,
             });
+            // 튜토리얼 조건부 도입 성공 시 사운드 재생
+            audioManager.playSfx("pop");
           }
         } else if (rule === "reductioAdAbsurdum") {
           const result = reductioAdAbsurdum(
@@ -6873,6 +6993,8 @@
               isAssumption: false,
               label: currentLang.labels.raa_theorem,
             });
+            // 튜토리얼 귀류법 성공 시 사운드 재생
+            audioManager.playSfx("pop");
           }
         } else if (threePremiseRules.includes(rule)) {
           const result = window[rule](premises[0], premises[1], premises[2]);
@@ -6899,6 +7021,8 @@
               label: currentLang.labels.theorem,
             });
           });
+          // 튜토리얼 추론 규칙 적용 성공 시 사운드 재생
+          audioManager.playSfx("pop");
         }
         renderModal();
         updateConclusionPreview();
@@ -10444,6 +10568,8 @@
             label: currentLang.labels.ci_theorem,
             sourcePremises: sourcePremisesForCI, // source 정보 추가
           });
+          // 조건부 도입 성공 시 사운드 재생
+          audioManager.playSfx("pop");
         } else if (rule === "reductioAdAbsurdum") {
           if (premises.length !== 2) {
             showAlert(currentLang.alerts.contradictionNeededForRAA);
@@ -10478,6 +10604,8 @@
               label: currentLang.labels.raa_theorem,
               sourcePremises: sourcePremisesForRAA, // source 정보 추가
             });
+            // 귀류법 성공 시 사운드 재생
+            audioManager.playSfx("pop");
           } else {
             showAlert(currentLang.alerts.notAContradiction);
           }
@@ -10525,6 +10653,8 @@
               sourcePremises: premisesData, // source 정보 추가
             });
           });
+          // 추론 규칙 적용 성공 시 사운드 재생
+          audioManager.playSfx("pop");
         } else if (
           rule !== "reductioAdAbsurdum" &&
           rule !== "conditionalIntroduction" &&
@@ -11057,11 +11187,201 @@
         const axiomContainer = document.createElement("div");
         axiomContainer.className = "axiom-list";
 
-        currentAxioms.forEach((axiomText) => {
-          const p = document.createElement("p");
-          p.textContent = `• ${axiomText}`;
-          axiomContainer.appendChild(p);
-        });
+        // 공리들을 그룹별로 표시
+        if (currentAxioms.groups) {
+          const groups = currentAxioms.groups;
+
+          // 정체성 공리
+          if (groups.identity.length > 0) {
+            groups.identity.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const separator = document.createElement("hr");
+            separator.style.margin = "8px 0";
+            separator.style.border = "none";
+            separator.style.borderTop = "1px solid #ddd";
+            axiomContainer.appendChild(separator);
+          }
+
+          // 개체별 속성 대립 - 세부 그룹으로 나누기
+          if (groups.subjectOpposition.length > 0) {
+            const templates = currentLang.axiom_templates;
+            const subjectA = playerA_Data
+              ? playerA_Data.cardText[currentLang.langCode]
+              : "";
+            const subjectB = playerB_Data
+              ? playerB_Data.cardText[currentLang.langCode]
+              : "";
+
+            // 첫 번째 철학자 선악 공리
+            templates.subject_good_evil.forEach((template) => {
+              const axiomText = template.replaceAll("{S}", subjectA);
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep1 = document.createElement("hr");
+            sep1.style.margin = "4px 0";
+            sep1.style.border = "none";
+            sep1.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep1);
+
+            // 첫 번째 철학자 지혜 공리
+            templates.subject_wise_foolish.forEach((template) => {
+              const axiomText = template.replaceAll("{S}", subjectA);
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep2 = document.createElement("hr");
+            sep2.style.margin = "4px 0";
+            sep2.style.border = "none";
+            sep2.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep2);
+
+            // 두 번째 철학자 선악 공리
+            templates.subject_good_evil.forEach((template) => {
+              const axiomText = template.replaceAll("{S}", subjectB);
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep3 = document.createElement("hr");
+            sep3.style.margin = "4px 0";
+            sep3.style.border = "none";
+            sep3.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep3);
+
+            // 두 번째 철학자 지혜 공리
+            templates.subject_wise_foolish.forEach((template) => {
+              const axiomText = template.replaceAll("{S}", subjectB);
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const separator = document.createElement("hr");
+            separator.style.margin = "8px 0";
+            separator.style.border = "none";
+            separator.style.borderTop = "1px solid #ddd";
+            axiomContainer.appendChild(separator);
+          }
+
+          // 집단별 속성 대립 - 세부 그룹으로 나누기
+          if (groups.quantifierOpposition.length > 0) {
+            const templates = currentLang.axiom_templates;
+
+            // 새 집단 순방향
+            templates.bird_good_evil_forward.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep4 = document.createElement("hr");
+            sep4.style.margin = "4px 0";
+            sep4.style.border = "none";
+            sep4.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep4);
+
+            // 새 집단 역방향
+            templates.bird_good_evil_reverse.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep5 = document.createElement("hr");
+            sep5.style.margin = "4px 0";
+            sep5.style.border = "none";
+            sep5.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep5);
+
+            // 물고기 집단 순방향
+            templates.fish_good_evil_forward.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep6 = document.createElement("hr");
+            sep6.style.margin = "4px 0";
+            sep6.style.border = "none";
+            sep6.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep6);
+
+            // 물고기 집단 역방향
+            templates.fish_good_evil_reverse.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep7 = document.createElement("hr");
+            sep7.style.margin = "4px 0";
+            sep7.style.border = "none";
+            sep7.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep7);
+
+            // 개 집단 순방향
+            templates.dog_good_evil_forward.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            const sep8 = document.createElement("hr");
+            sep8.style.margin = "4px 0";
+            sep8.style.border = "none";
+            sep8.style.borderTop = "1px solid #ccc";
+            axiomContainer.appendChild(sep8);
+
+            // 개 집단 역방향
+            templates.dog_good_evil_reverse.forEach((axiomText) => {
+              const p = document.createElement("p");
+              p.textContent = `• ${axiomText}`;
+              axiomContainer.appendChild(p);
+            });
+
+            // 마르크스 공리가 있으면 추가
+            if (
+              currentAxioms.some(
+                (axiom) =>
+                  axiom.includes("브루주아") || axiom.includes("Bourgeois")
+              )
+            ) {
+              const sep9 = document.createElement("hr");
+              sep9.style.margin = "4px 0";
+              sep9.style.border = "none";
+              sep9.style.borderTop = "1px solid #ccc";
+              axiomContainer.appendChild(sep9);
+
+              currentAxioms
+                .filter(
+                  (axiom) =>
+                    axiom.includes("브루주아") || axiom.includes("Bourgeois")
+                )
+                .forEach((axiomText) => {
+                  const p = document.createElement("p");
+                  p.textContent = `• ${axiomText}`;
+                  axiomContainer.appendChild(p);
+                });
+            }
+          }
+        } else {
+          // 기존 방식 (하위 호환성)
+          currentAxioms.forEach((axiomText) => {
+            const p = document.createElement("p");
+            p.textContent = `• ${axiomText}`;
+            axiomContainer.appendChild(p);
+          });
+        }
 
         details.appendChild(axiomContainer);
         liAxiom.appendChild(details);
@@ -11832,6 +12152,8 @@
           else if (propData.dependsOnAssumption)
             li.classList.add("assumption-dependent");
 
+          // 체크박스 비활성화는 handleTutorialRuleApplication에서 처리
+
           li.appendChild(checkbox);
           let tagClass = "";
           // propData.type에 따라 적절한 CSS 클래스를 할당합니다.
@@ -11970,11 +12292,19 @@
 
             // 체크박스가 존재한다면,
             if (checkbox) {
+              // 체크박스가 비활성화되어 있으면 클릭 무시
+              if (checkbox.disabled) {
+                return;
+              }
+
               // 중요: 실제 클릭된 요소(event.target)가 체크박스 자체가 아닐 때만 코드로 상태를 변경합니다.
               // 이렇게 해야 체크박스를 직접 클릭했을 때 상태가 두 번 바뀌는 현상을 막을 수 있습니다.
               if (event.target !== checkbox) {
                 checkbox.checked = !checkbox.checked;
               }
+
+              targetLi.classList.toggle("selected", checkbox.checked);
+
               updateConclusionPreview();
             }
           }
@@ -15008,7 +15338,6 @@
 
       function loadSettings() {
         const savedSettings = localStorage.getItem("logos_settings");
-
         if (savedSettings) {
           const settings = JSON.parse(savedSettings);
           bgmVolume =
