@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>LOGOS</title>
+    <style>
+      body {
+        background-color: #000;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      #game-frame {
+        transform: translateZ(0);
+      }
+
+      #game-container {
+        width: 1920px;
+        height: 1080px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        border: none;
+      }
+
+      #game-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <iframe src="game.html"></iframe>
+    </div>
+
+    <script>
+      const gameContainer = document.getElementById("game-container");
+      const DESIGN_WIDTH = 1920;
+      const DESIGN_HEIGHT = 1080;
+
+      function resizeGame() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // 현재 화면 너비와 높이가 기준 해상도에 비해 각각 몇 배인지 계산
+        const scaleX = viewportWidth / DESIGN_WIDTH;
+        const scaleY = viewportHeight / DESIGN_HEIGHT;
+
+        // 가로, 세로 비율 중 더 작은 쪽을 기준으로 전체 스케일을 정해야 화면에 다 들어옴
+        const scale = Math.min(scaleX, scaleY);
+
+        // 계산된 스케일을 적용하고, 중앙 정렬을 위해 위치를 조정
+        gameContainer.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      }
+
+      // 페이지 로드 시, 그리고 창 크기가 변경될 때마다 크기 재계산
+      window.addEventListener("DOMContentLoaded", resizeGame);
+      window.addEventListener("resize", resizeGame);
+
+      // game.html과의 전체화면 통신 코드
+      window.addEventListener("message", (event) => {
+        if (event.data === "toggle-fullscreen") {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+          } else {
+            document.exitFullscreen();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
