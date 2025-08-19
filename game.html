@@ -7251,21 +7251,21 @@
         renderModal();
         document.getElementById("inference-rule-select").onchange =
           updateConclusionPreview;
-        
+
         // 추론 규칙을 전건 긍정으로 초기화
         document.getElementById("inference-rule-select").value = "modusPonens";
-        
+
         updateConclusionPreview();
-        
+
         modal.classList.add("visible");
-        
+
         // DOM 렌더링 후 스크롤 위치를 맨 아래로 설정 (애니메이션 없이)
         setTimeout(() => {
           if (premiseList) {
             // 마지막 자식 요소를 찾아서 스크롤
             const lastChild = premiseList.lastElementChild;
             if (lastChild) {
-              lastChild.scrollIntoView({ block: 'end' });
+              lastChild.scrollIntoView({ block: "end" });
             } else {
               // 자식 요소가 없으면 직접 스크롤
               premiseList.scrollTop = premiseList.scrollHeight;
@@ -7377,7 +7377,7 @@
         }
         renderModal();
         updateConclusionPreview();
-        
+
         // 추론 규칙 적용 성공 시 스크롤을 맨 아래로 부드럽게 이동
         if (conclusions.length > 0) {
           setTimeout(() => {
@@ -7385,9 +7385,12 @@
             if (premiseList) {
               const lastChild = premiseList.lastElementChild;
               if (lastChild) {
-                lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                lastChild.scrollIntoView({ behavior: "smooth", block: "end" });
               } else {
-                premiseList.scrollTo({ top: premiseList.scrollHeight, behavior: 'smooth' });
+                premiseList.scrollTo({
+                  top: premiseList.scrollHeight,
+                  behavior: "smooth",
+                });
               }
             }
           }, 100);
@@ -10194,7 +10197,10 @@
           render();
           const truePropositionsEl =
             document.getElementById("true-propositions");
-          truePropositionsEl.scrollTop = truePropositionsEl.scrollHeight;
+          truePropositionsEl.scrollTo({
+            top: truePropositionsEl.scrollHeight,
+            behavior: "smooth",
+          });
           checkNextTurn();
           return true;
         } else {
@@ -11096,21 +11102,21 @@
         renderModal();
         document.getElementById("inference-rule-select").onchange =
           updateConclusionPreview;
-        
+
         // 추론 규칙을 전건 긍정으로 초기화
         document.getElementById("inference-rule-select").value = "modusPonens";
-        
+
         updateConclusionPreview(); // Initialize preview
-        
+
         modal.classList.add("visible");
-        
+
         // DOM 렌더링 후 스크롤 위치를 맨 아래로 설정 (애니메이션 없이)
         setTimeout(() => {
           if (premiseList) {
             // 마지막 자식 요소를 찾아서 스크롤
             const lastChild = premiseList.lastElementChild;
             if (lastChild) {
-              lastChild.scrollIntoView({ block: 'end' });
+              lastChild.scrollIntoView({ block: "end" });
             } else {
               // 자식 요소가 없으면 직접 스크롤
               premiseList.scrollTop = premiseList.scrollHeight;
@@ -11142,16 +11148,22 @@
                 audioManager.playSfx("pop");
                 renderModal();
                 updateConclusionPreview();
-                
+
                 // 가정 추가 성공 시 스크롤을 맨 아래로 부드럽게 이동
                 setTimeout(() => {
                   const premiseList = document.getElementById("premise-list");
                   if (premiseList) {
                     const lastChild = premiseList.lastElementChild;
                     if (lastChild) {
-                      lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                      lastChild.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end",
+                      });
                     } else {
-                      premiseList.scrollTo({ top: premiseList.scrollHeight, behavior: 'smooth' });
+                      premiseList.scrollTo({
+                        top: premiseList.scrollHeight,
+                        behavior: "smooth",
+                      });
                     }
                   }
                 }, 100);
@@ -11342,7 +11354,7 @@
 
         renderModal();
         updateConclusionPreview();
-        
+
         // 추론 규칙 적용 성공 시 스크롤을 맨 아래로 부드럽게 이동
         if (conclusions.length > 0) {
           setTimeout(() => {
@@ -11350,9 +11362,12 @@
             if (premiseList) {
               const lastChild = premiseList.lastElementChild;
               if (lastChild) {
-                lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                lastChild.scrollIntoView({ behavior: "smooth", block: "end" });
               } else {
-                premiseList.scrollTo({ top: premiseList.scrollHeight, behavior: 'smooth' });
+                premiseList.scrollTo({
+                  top: premiseList.scrollHeight,
+                  behavior: "smooth",
+                });
               }
             }
           }, 100);
@@ -14120,21 +14135,21 @@
         renderModal();
         document.getElementById("inference-rule-select").onchange =
           updateConclusionPreview;
-        
+
         // 추론 규칙을 전건 긍정으로 초기화
         document.getElementById("inference-rule-select").value = "modusPonens";
-        
+
         updateConclusionPreview();
 
         modal.classList.add("visible");
-        
+
         // DOM 렌더링 후 스크롤 위치를 맨 아래로 설정 (애니메이션 없이)
         setTimeout(() => {
           if (premiseList) {
             // 마지막 자식 요소를 찾아서 스크롤
             const lastChild = premiseList.lastElementChild;
             if (lastChild) {
-              lastChild.scrollIntoView({ block: 'end' });
+              lastChild.scrollIntoView({ block: "end" });
             } else {
               // 자식 요소가 없으면 직접 스크롤
               premiseList.scrollTop = premiseList.scrollHeight;
