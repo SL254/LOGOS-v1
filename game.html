@@ -10769,6 +10769,15 @@
 
         currentPlayer = currentRound % 2 === 1 ? "A" : "B"; // 기존 코드
         render(); // 기존 코드
+
+        // 새로운 라운드 시작 시 참 명제 목록을 맨 아래로 스크롤
+        const truePropositionsElement =
+          document.getElementById("true-propositions");
+        if (truePropositionsElement) {
+          truePropositionsElement.scrollTop =
+            truePropositionsElement.scrollHeight;
+        }
+
         checkNextTurn(); // 기존 코드
       }
       function openEurekaModal() {
