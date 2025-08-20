@@ -2255,3 +2255,20 @@ function setupTutorialScenario(step) {
 
   render();
 }
+
+// 튜토리얼 '다음' 버튼 Enter 키 지원
+window.addEventListener("keydown", (event) => {
+  // 튜토리얼 모드가 아니거나, 게임오버 상태이면 아무것도 하지 않음
+  if (!inTutorialMode || gameIsOver) return;
+
+  const nextBtn = document.getElementById("tutorial-next-btn");
+
+  // Enter 키를 눌렀고, '다음' 버튼이 화면에 보일 때 (hidden 클래스가 없을 때) 동작
+  if (event.key === "Enter" && !nextBtn.classList.contains("hidden")) {
+    // Enter 키의 기본 동작(예: 폼 제출)을 막아 다른 기능과의 충돌을 방지
+    event.preventDefault();
+
+    // '다음' 버튼에 클릭 이벤트를 발생시킴
+    nextBtn.click();
+  }
+});
