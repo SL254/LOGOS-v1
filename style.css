@@ -54,6 +54,10 @@ body.thinking-time-night .player-title-box.active-turn {
   background-image: url("assets/images/player_active_night.png");
 }
 
+body.thinking-time-night .player-area {
+  background-color: #9f4933;
+}
+
 /* 플레이어 A 영역 밤 테마 */
 body.thinking-time-night #player-a-area {
   background-image: url("assets/images/paper_1_night.png");
@@ -83,12 +87,6 @@ body.thinking-time-night #thinking-time-controls {
 body.thinking-time-night .turn-indicator {
   border-image-source: url("assets/images/indi_night.png");
 }
-
-/* 캐릭터 선택 인디케이터 밤 테마 */
-body.thinking-time-night #character-select-indicator {
-  border-image-source: url("assets/images/indi_night.png");
-}
-
 /* 주요 버튼들 밤 테마 */
 body.thinking-time-night #new-game-btn {
   border-image-source: url("assets/images/new_night.png");
@@ -118,11 +116,6 @@ body.thinking-time-night .ability-btn {
 body.thinking-time-night .eureka-btn:hover:not(:disabled),
 body.thinking-time-night .ability-btn:hover:not(:disabled) {
   border-image-source: url("assets/images/eureka_1_night.png");
-}
-
-body.thinking-time-night .eureka-btn:disabled,
-body.thinking-time-night .ability-btn:disabled {
-  border-image-source: url("assets/images/eureka_disabled_night.png");
 }
 .container {
   display: grid;
@@ -210,7 +203,6 @@ header h1 {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #new-game-btn:hover {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -241,7 +233,6 @@ header h1 {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #fullscreen-btn:hover {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -267,7 +258,6 @@ header h1 {
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #main-menu-btn:hover {
   border-image-source: url("assets/images/full_hover.png");
@@ -407,7 +397,7 @@ header h1 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  transition: opacity 0.3s, box-shadow 0.3s;
+  transition: background-color 0.8s ease-in-out;
   border: 4px solid transparent;
 }
 .player-area.disabled {
@@ -862,7 +852,6 @@ summary {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 .eureka-btn:hover:not(:disabled) {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -905,12 +894,12 @@ summary {
   border-width: 5px;
   border-style: solid;
   border-color: transparent;
+
   /* 고유 능력 버튼용 이미지를 준비하세요 (예: ability.png) */
   border-image-source: url("assets/images/eureka.png"); /* 임시로 유레카 이미지 사용 */
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 
 .ability-btn:hover:not(:disabled) {
@@ -1308,6 +1297,7 @@ summary {
   inset: 0; /* 👈 부모 요소를 꽉 채우는 가장 간단한 방법 (top:0; left:0; right:0; bottom:0;) */
   /* width, height, margin 속성은 제거해도 됩니다. */
   z-index: 2; /* 다른 요소들 위에 표시 */
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 
   /* 내용을 중앙에 배치하기 위한 Flexbox 설정 (이 부분은 그대로 둡니다.) */
   display: flex;
@@ -1325,7 +1315,6 @@ summary {
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   text-align: center;
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 /* JavaScript에서 사용할 .hidden 클래스 규칙 추가 */
 #thinking-time-controls.hidden {
@@ -1799,7 +1788,20 @@ body::after {
     url("assets/images/wi_icon.png") url("assets/images/ku_p1.png")
     url("assets/images/ku_p2.png") url("assets/images/ku_icon.png")
     url("assets/images/der_p1.png") url("assets/images/der_p2.png")
-    url("assets/images/der_icon.png");
+    url("assets/images/der_icon.png") /* 밤 모드 이미지들 */
+    url("assets/images/sky_night.png") url("assets/images/roof_night.png")
+    url("assets/images/roo_night.png") url("assets/images/roo_2_night.png")
+    url("assets/images/cloud_night.png") url("assets/images/bottom_night.png")
+    url("assets/images/paper_night.png") url("assets/images/paper_1_night.png")
+    url("assets/images/player_night.png")
+    url("assets/images/player_active_night.png")
+    url("assets/images/papiru_night.png")
+    url("assets/images/papiru_1_night.png") url("assets/images/indi_night.png")
+    url("assets/images/new_night.png") url("assets/images/new_hover_night.png")
+    url("assets/images/full_night.png")
+    url("assets/images/full_hover_night.png")
+    url("assets/images/eureka_night.png")
+    url("assets/images/eureka_1_night.png");
 }
 
 /* ...existing code... */
@@ -2358,13 +2360,13 @@ button,
   border-width: 5px;
   border-style: solid;
   border-color: transparent;
+
   /* 임시로 전체화면 버튼 이미지를 재사용합니다.
              나중에 settings.png, settings_hover.png 같은 전용 이미지로 교체할 수 있습니다. */
   border-image-source: url("assets/images/full.png");
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
-  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #settings-btn:hover {
   border-image-source: url("assets/images/full_hover.png");
