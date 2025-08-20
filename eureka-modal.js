@@ -596,6 +596,16 @@ function addTheoremsToList() {
     JSON.parse(chk.parentElement.dataset.propObject)
   );
 
+  // 가정 의존 명제나 가정 자체가 선택되었는지 확인
+  const hasAssumptionRelated = selectedPropsData.some(
+    (p) => p.dependsOnAssumption || p.isAssumption
+  );
+  
+  if (hasAssumptionRelated) {
+    showAlert(currentLang.alerts.assumptionDependentNotAllowed);
+    return;
+  }
+
   let potentialTheorems = selectedPropsData.filter(
     (p) => p.type === "theorem" && !p.dependsOnAssumption
   );

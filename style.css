@@ -2274,7 +2274,7 @@ select:focus {
   border-style: solid;
   border-color: transparent;
   /* 임시로 전체화면 버튼 이미지를 재사용합니다.
-             나중에 settings.png, settings_hover.png 같은 전용 이미지로 교체할 수 있습니다. */
+  나중에 settings.png, settings_hover.png 같은 전용 이미지로 교체할 수 있습니다. */
   border-image-source: url("assets/images/full.png");
   border-image-slice: 6 fill;
   border-image-repeat: stretch;

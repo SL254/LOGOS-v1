@@ -131,6 +131,7 @@ const TEXTS = {
       invalidCard: "규칙에 맞지 않는 카드입니다!",
       incompleteProposition: "완성되지 않은 명제이거나 파싱에 실패했습니다.",
       duplicateProposition: "같은 명제가 이미 존재합니다.",
+      assumptionDependentNotAllowed: "가정 의존 명제는 추가할 수 없습니다.",
       contradictionFound:
         "모순이 발견되었습니다!<br>이 명제는 기존의 참 명제들과 양립할 수 없습니다.",
       undoLastCard: "마지막으로 놓은 카드를 되돌렸습니다.",
@@ -418,6 +419,7 @@ const TEXTS = {
       incompleteProposition:
         "The proposition is incomplete or could not be parsed.",
       duplicateProposition: "The same proposition already exists.",
+      assumptionDependentNotAllowed: "Assumption-dependent propositions cannot be added.",
       contradictionFound:
         "Contradiction found!<br>This proposition is not compatible with the set of true propositions.",
       undoLastCard: "Reverted the last played card.",
