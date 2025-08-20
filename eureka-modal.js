@@ -600,7 +600,7 @@ function addTheoremsToList() {
   const hasAssumptionRelated = selectedPropsData.some(
     (p) => p.dependsOnAssumption || p.isAssumption
   );
-  
+
   if (hasAssumptionRelated) {
     showAlert(currentLang.alerts.assumptionDependentNotAllowed);
     return;

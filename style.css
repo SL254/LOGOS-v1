@@ -17,6 +17,112 @@ body {
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
+}
+
+/* 사유 시간용 밤 테마 */
+body.thinking-time-night {
+  background-image: url("assets/images/sky_night.png");
+}
+
+/* 헤더 지붕 밤 테마 */
+body.thinking-time-night header {
+  background-image: url("assets/images/roof_night.png");
+}
+
+/* 인포 박스 밤 테마 */
+body.thinking-time-night #info-box {
+  background-image: url("assets/images/roo_night.png");
+}
+
+/* 구름 배경 밤 테마 */
+body.thinking-time-night #background-box {
+  background-image: url("assets/images/cloud_night.png");
+}
+
+/* 하단 바닥 밤 테마 */
+body.thinking-time-night .status-bar {
+  background-image: url("assets/images/bottom_night.png");
+}
+
+/* 플레이어 타이틀 박스 밤 테마 */
+body.thinking-time-night .player-title-box {
+  background-image: url("assets/images/player_night.png");
+}
+
+body.thinking-time-night .player-title-box.active-turn {
+  background-image: url("assets/images/player_active_night.png");
+}
+
+/* 플레이어 A 영역 밤 테마 */
+body.thinking-time-night #player-a-area {
+  background-image: url("assets/images/paper_1_night.png");
+}
+
+/* 플레이어 B 영역 밤 테마 */
+body.thinking-time-night #player-b-area {
+  background-image: url("assets/images/paper_night.png");
+}
+
+/* 현재 명제 영역 밤 테마 */
+body.thinking-time-night #current-proposition {
+  border-image-source: url("assets/images/papiru_night.png");
+}
+
+/* 참 명제 목록 밤 테마 */
+body.thinking-time-night #true-propositions {
+  border-image-source: url("assets/images/papiru_1_night.png");
+}
+
+/* 사유 시간 컨트롤 밤 테마 */
+body.thinking-time-night #thinking-time-controls {
+  border-image-source: url("assets/images/papiru_1_night.png");
+}
+
+/* 턴 인디케이터 밤 테마 */
+body.thinking-time-night .turn-indicator {
+  border-image-source: url("assets/images/indi_night.png");
+}
+
+/* 캐릭터 선택 인디케이터 밤 테마 */
+body.thinking-time-night #character-select-indicator {
+  border-image-source: url("assets/images/indi_night.png");
+}
+
+/* 주요 버튼들 밤 테마 */
+body.thinking-time-night #new-game-btn {
+  border-image-source: url("assets/images/new_night.png");
+}
+
+body.thinking-time-night #new-game-btn:hover {
+  border-image-source: url("assets/images/new_hover_night.png");
+}
+
+body.thinking-time-night #fullscreen-btn,
+body.thinking-time-night #main-menu-btn,
+body.thinking-time-night #settings-btn {
+  border-image-source: url("assets/images/full_night.png");
+}
+
+body.thinking-time-night #fullscreen-btn:hover,
+body.thinking-time-night #main-menu-btn:hover,
+body.thinking-time-night #settings-btn:hover {
+  border-image-source: url("assets/images/full_hover_night.png");
+}
+
+body.thinking-time-night .eureka-btn,
+body.thinking-time-night .ability-btn {
+  border-image-source: url("assets/images/eureka_night.png");
+}
+
+body.thinking-time-night .eureka-btn:hover:not(:disabled),
+body.thinking-time-night .ability-btn:hover:not(:disabled) {
+  border-image-source: url("assets/images/eureka_1_night.png");
+}
+
+body.thinking-time-night .eureka-btn:disabled,
+body.thinking-time-night .ability-btn:disabled {
+  border-image-source: url("assets/images/eureka_disabled_night.png");
 }
 .container {
   display: grid;
@@ -48,6 +154,7 @@ header {
   background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
   image-rendering: pixelated;
 }
 header h1 {
@@ -73,6 +180,7 @@ header h1 {
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 .header-buttons-left,
 .header-buttons-right {
@@ -102,6 +210,7 @@ header h1 {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #new-game-btn:hover {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -132,6 +241,7 @@ header h1 {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #fullscreen-btn:hover {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -157,6 +267,7 @@ header h1 {
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #main-menu-btn:hover {
   border-image-source: url("assets/images/full_hover.png");
@@ -432,6 +543,7 @@ header h1 {
 
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #current-proposition {
   min-height: 120px;
@@ -450,6 +562,7 @@ header h1 {
   background-image: url("assets/images/cloud.png"); /* 👈 여기에 파일 경로를 입력하세요 */
   background-size: 340px 340px; /* 👈 64px에서 128px로 2배 확대 */
   image-rendering: pixelated; /* 👈 이미지를 선명하게 유지하는 핵심 속성 */
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 
   background-repeat: repeat; /* 배경 이미지를 바둑판식으로 반복 */
 }
@@ -585,6 +698,7 @@ header h1 {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   image-rendering: pixelated;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 
   /* --- 수정된 부분 --- */
   flex-grow: 1; /* 남는 공간을 차지하려는 성질 */
@@ -713,6 +827,7 @@ summary {
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 /* 이 코드를 style 태그 안에 추가하세요 */
 .player-title-box {
@@ -723,6 +838,7 @@ summary {
   background-size: contain; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 .player-title-box.active-turn {
   background-image: url("assets/images/player_active.png"); /* 턴이 활성화됐을 때의 이미지 */
@@ -746,6 +862,7 @@ summary {
   /* 너비나 높이가 변해도 깨지지 않도록 설정 */
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 .eureka-btn:hover:not(:disabled) {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -793,6 +910,7 @@ summary {
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 
 .ability-btn:hover:not(:disabled) {
@@ -1207,6 +1325,7 @@ summary {
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   text-align: center;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 /* JavaScript에서 사용할 .hidden 클래스 규칙 추가 */
 #thinking-time-controls.hidden {
@@ -1501,6 +1620,7 @@ summary {
 
   /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
   border-image-source: url("assets/images/indi.png");
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 
   /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
   border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
@@ -1612,6 +1732,7 @@ select {
   background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
   image-rendering: pixelated;
 }
 
@@ -1621,6 +1742,7 @@ select {
   background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
   image-rendering: pixelated;
 }
 /* style 태그 안, 가장 아래쪽에 추가 */
@@ -2008,6 +2130,12 @@ body::after {
   image-rendering: pixelated;
   background-color: transparent;
   z-index: 5;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
+}
+
+/* 사유 시간용 밤 테마 - 하단 배경 */
+body.thinking-time-night #bottom-overlay-box {
+  background-image: url("assets/images/roo_2_night.png");
 }
 
 .true-propositions-wrapper {
@@ -2236,6 +2364,7 @@ button,
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   background-color: transparent;
+  transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 #settings-btn:hover {
   border-image-source: url("assets/images/full_hover.png");

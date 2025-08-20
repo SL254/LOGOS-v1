@@ -419,6 +419,9 @@ function showMainMenu() {
   audioManager.stopAll();
   audioManager.play("main-menu"); // 볼륨 60%로 메인 메뉴 음악 재생
 
+  // 메인 메뉴로 돌아갈 때 밤 테마 제거
+  document.body.classList.remove("thinking-time-night");
+
   document.getElementById("thinking-time-controls").classList.add("hidden");
   document.getElementById("character-select-indicator").classList.add("hidden");
   document.getElementById("container").classList.add("ready");
@@ -841,6 +844,9 @@ function resetGame(selectedCharacters, testConfig = null) {
   }
 
   clearAllAITimeouts();
+
+  // 게임 초기화 시 밤 테마 제거
+  document.body.classList.remove("thinking-time-night");
 
   socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
 
@@ -1632,6 +1638,9 @@ function startThinkingTime() {
   isThinkingTime = true;
   cardsPlayedThisTurn = { A: 0, B: 0 };
 
+  // 사유 시간 시작 시 밤 테마로 배경 변경
+  document.body.classList.add("thinking-time-night");
+
   const thinkingTimeEl = document.getElementById("thinking-time-controls");
   thinkingTimeEl.classList.remove("hidden");
   thinkingTimeEl.style.display = "";
@@ -1657,6 +1666,9 @@ function endThinkingTime() {
 
   isThinkingTime = false; // 기존 코드
   thinkingTimeTurn = null; // 기존 코드
+
+  // 사유 시간 종료 시 낮 테마로 배경 복원
+  document.body.classList.remove("thinking-time-night");
 
   document.getElementById("thinking-time-controls").classList.add("hidden"); // 기존 코드
 
