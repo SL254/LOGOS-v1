@@ -1,0 +1,2544 @@
+@font-face {
+  font-family: "font"; /* CSS에서 사용할 폰트 이름을 지정 */
+  src: url("assets/font.ttf") format("truetype"); /* 폰트 파일의 경로와 형식 */
+}
+body {
+  font-family: "font", "Malgun Gothic", "Segoe UI", sans-serif;
+  background-color: #f4f7f9;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-size: 15px;
+  /* 1. 이미지 파일 불러오기 */
+  background-image: url("assets/images/sky.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  row-gap: 0;
+  column-gap: 0px;
+  width: 100%;
+  max-width: 1400px;
+  height: 90vh;
+  visibility: hidden; /* Initially hidden until language is selected */
+  position: relative;
+  z-index: 1;
+}
+.container.ready {
+  visibility: visible;
+}
+#player-a-area,
+.game-board {
+  margin-right: -1px;
+}
+header {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 25px 15px;
+  color: black;
+  margin: 0 -40px;
+  background-image: url("assets/images/roof.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+header h1 {
+  color: transparent;
+  margin: 0;
+  font-size: 42px;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+#info-box {
+  padding: 15px 55px;
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 0 -40px;
+  background-image: url("assets/images/roo.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+.header-buttons-left,
+.header-buttons-right {
+  display: flex;
+  gap: 10px;
+}
+.header-buttons-left button,
+.header-buttons-right button {
+  padding: 4px 8px;
+  border: none;
+
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1em;
+}
+#new-game-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/new.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#new-game-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/new_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#fullscreen-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/full.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#fullscreen-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/full_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+#main-menu-btn {
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/full.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+#main-menu-btn:hover {
+  border-image-source: url("assets/images/full_hover.png");
+}
+#tutorial-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#tutorial-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#puzzle-mode-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#puzzle-mode-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.mode-selector button {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.mode-selector button:not(.active):hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+#exit-game-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#exit-game-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.round-display {
+  /* position, left, transform 속성 제거 */
+  font-size: 1.7em;
+  font-weight: bold;
+  color: #9a4b37;
+}
+.player-area {
+  background-color: #b15139;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s, box-shadow 0.3s;
+  border: 4px solid transparent;
+}
+.player-area.disabled {
+  background-color: #b15139;
+}
+
+.player-area h3 {
+  font-weight: normal;
+  margin: 0;
+}
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  height: 400px; /* 원하는 고정 높이값 (조정 가능) */
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 생성 */
+
+  padding: 10px 4px;
+  box-sizing: border-box; /* padding이 높이 계산에 포함되도록 설정 */
+  background-color: rgba(238, 218, 165, 0.65); /* 반투명 흰색 배경 */
+}
+.card {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.card.ai-hand {
+  cursor: default;
+}
+.card-white {
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 7px;
+
+  background-color: #edebe6;
+  border-radius: 14px;
+
+  /* border-image를 위한 설정 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/card_white.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+}
+.card-white:hover:not(.ai-hand) {
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 7px;
+
+  /* border-image를 위한 설정 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/card_white_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+}
+.card-black {
+  color: white;
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 7px;
+
+  background-color: #453f32;
+  border-radius: 14px;
+
+  /* border-image를 위한 설정 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/card_black.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+}
+.card-black:hover:not(.ai-hand) {
+  color: white;
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 7px;
+
+  /* border-image를 위한 설정 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/card_black_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+}
+.game-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  min-height: 0;
+  position: relative;
+}
+#current-proposition {
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 7px;
+
+  /* border-image를 위한 설정 */
+  border-width: 20px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/papiru.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+}
+#current-proposition {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+#background-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px; /* 👈 높이를 고정값으로 직접 지정 */
+  z-index: -1;
+  /* 1. 이미지 파일 불러오기 */
+  background-image: url("assets/images/cloud.png"); /* 👈 여기에 파일 경로를 입력하세요 */
+  background-size: 340px 340px; /* 👈 64px에서 128px로 2배 확대 */
+  image-rendering: pixelated; /* 👈 이미지를 선명하게 유지하는 핵심 속성 */
+
+  background-repeat: repeat; /* 배경 이미지를 바둑판식으로 반복 */
+}
+#proposition-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 50px;
+  flex-grow: 1;
+  align-items: center;
+}
+#proposition-controls {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+#complete-btn {
+  color: white;
+  padding: 0;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/complete.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#complete-btn:hover:not(:disabled) {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/complete_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#undo-btn {
+  color: white;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/undo.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#undo-btn:hover:not(:disabled) {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/undo_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#end-turn-btn {
+  color: white;
+  margin-left: auto;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/end.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#end-turn-btn:hover:not(:disabled) {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/end_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+#true-propositions {
+  /* 카드 내용물을 위한 안쪽 여백 */
+  padding: 15px;
+
+  /* border-image를 위한 설정 */
+  border-width: 20px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/papiru_1.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+
+  /* --- 수정된 부분 --- */
+  flex-grow: 1; /* 남는 공간을 차지하려는 성질 */
+  flex-shrink: 1; /* 공간이 부족할 때 줄어들려는 성질 */
+  flex-basis: 0; /* 핵심: 내용물 크기를 무시하고 0에서부터 공간을 계산하도록 설정 */
+  /* ------------------ */
+
+  overflow-y: auto;
+  min-height: 0;
+}
+
+#true-propositions h3 {
+  margin-top: 0;
+}
+#true-propositions ul {
+  padding-left: 0;
+  list-style-type: none;
+  margin: 0;
+}
+#true-propositions li {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #fff;
+
+  border-left: 4px solid #3498db;
+}
+#true-propositions li.victory-condition {
+  border-left-color: #f1c40f;
+  font-weight: normal;
+  background-color: #fef9e7;
+}
+#true-propositions li.axiom-wrapper {
+  padding: 0;
+  border-left: none;
+}
+#true-propositions li.theorem {
+  border-left-color: #8e44ad;
+  font-style: italic;
+  background-color: #f5eef8;
+}
+#true-propositions li.plato-theorem {
+  border-left: 4px solid #8e44ad;
+  font-style: italic;
+  background-color: #fff;
+}
+#true-propositions li.nietzsche-theorem {
+  border-left: 4px solid #8e44ad; /* 플라톤과 동일한 색상 */
+  font-style: italic; /* 이탤릭체 */
+  background-color: #fff;
+}
+#true-propositions li.socrates-disabled {
+  background-color: #e0e0e0; /* 회색 배경 */
+  color: #888;
+  border-left-color: #95a5a6;
+  font-style: italic;
+}
+#true-propositions li.wittgenstein-theorem {
+  border-left: 4px solid #8e44ad; /* 플라톤과 동일한 색상 */
+  font-style: italic; /* 이탤릭체 */
+  background-color: #fff;
+}
+#true-propositions li.derrida-theorem {
+  border-left: 4px solid #8e44ad; /* 플라톤과 동일한 색상 */
+  font-style: italic; /* 이탤릭체 */
+  background-color: #fff;
+}
+#true-propositions li.hume-theorem {
+  border-left: 4px solid #8e44ad; /* 플라톤과 동일한 색상 */
+  font-style: italic; /* 이탤릭체 */
+  background-color: #fff;
+}
+#true-propositions li.kuhn-theorem {
+  border-left: 4px solid #8e44ad; /* 플라톤과 동일한 색상 */
+  font-style: italic; /* 이탤릭체 */
+  background-color: #fff;
+}
+#true-propositions li.kant-theorem {
+  border-left: 4px solid #8e44ad;
+  font-style: italic;
+  background-color: #fff;
+}
+#true-propositions li.victory-condition.marx-victory-condition {
+  background-color: #fdf2f2; /* 옅은 붉은색 배경 */
+  border-left-color: #c0392b; /* 더 진한 붉은색 테두리 */
+}
+.word-a {
+  color: #7f8c8d;
+}
+.word-b {
+  color: #2c3e50;
+}
+details {
+  background-color: #fff;
+
+  margin-bottom: 8px;
+}
+summary {
+  padding: 5px;
+  cursor: pointer;
+  font-weight: normal;
+}
+.axiom-list {
+  padding: 5px 15px 15px 35px;
+  background-color: #fafafa;
+  border-top: 1px solid #eee;
+}
+.axiom-list p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+.status-bar {
+  height: 46px; /* 고정 높이 부여 (값은 적절히 조절) */
+  display: flex; /* 내부 요소를 flexbox로 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 15px;
+  font-weight: normal;
+  font-size: 1.2em;
+  background-color: transparent;
+  margin: 0 -40px;
+  min-height: 40px; /* Give it some default height */
+  background-image: url("assets/images/bottom.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+/* 이 코드를 style 태그 안에 추가하세요 */
+.player-title-box {
+  padding: 10px; /* 내부 여백 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  background-image: url("assets/images/player.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: contain; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+.player-title-box.active-turn {
+  background-image: url("assets/images/player_active.png"); /* 턴이 활성화됐을 때의 이미지 */
+}
+.eureka-btn {
+  margin-top: auto;
+  padding: 10px 15px;
+  border: none;
+  font-size: 1.7em;
+  cursor: pointer;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/eureka.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.eureka-btn:hover:not(:disabled) {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/eureka_1.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.eureka-btn:disabled {
+  cursor: not-allowed;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/eureka_disabled.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.ability-btn {
+  margin-top: 10px; /* 유레카 버튼과의 간격 */
+  padding: 10px 15px;
+  border: none;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  /* 고유 능력 버튼용 이미지를 준비하세요 (예: ability.png) */
+  border-image-source: url("assets/images/eureka.png"); /* 임시로 유레카 이미지 사용 */
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+
+.ability-btn:hover:not(:disabled) {
+  border-image-source: url("assets/images/eureka_1.png"); /* 임시로 유레카 호버 이미지 사용 */
+}
+
+.ability-btn:disabled {
+  cursor: not-allowed;
+  border-image-source: url("assets/images/eureka_disabled.png"); /* 임시로 유레카 비활성 이미지 사용 */
+}
+#proposition-controls button:disabled {
+  color: #464646;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/disabled.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  cursor: not-allowed;
+}
+.modal {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal.visible {
+  display: flex;
+}
+.modal-content {
+  padding: 25px;
+  box-sizing: border-box;
+  border-width: 30px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/por.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  position: relative;
+
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+}
+.modal-content-small {
+  box-sizing: border-box;
+  border-width: 15px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/por_small.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  position: relative;
+
+  padding: 30px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+.close-button {
+  position: absolute;
+  padding: 15px;
+  top: 17px;
+  right: 50px;
+  cursor: pointer;
+  background-image: url("assets/images/close.png"); /* 👈 아이콘은 background-image로 설정해야 합니다. */
+  background-repeat: no-repeat; /* 👈 아이콘이 반복되지 않도록 설정 */
+  background-size: contain; /* 👈 버튼 크기에 맞춰 아이콘 크기 조절 */
+  background-position: center; /* 👈 아이콘을 중앙에 배치 */
+  image-rendering: pixelated;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  border: none; /* 테두리 제거 */
+  z-index: 10;
+}
+.close-button:hover {
+  background-image: url("assets/images/close_hover.png"); /* 👈 아이콘은 background-image로 설정해야 합니다. */
+  background-repeat: no-repeat; /* 👈 아이콘이 반복되지 않도록 설정 */
+  background-size: contain; /* 👈 버튼 크기에 맞춰 아이콘 크기 조절 */
+  background-position: center; /* 👈 아이콘을 중앙에 배치 */
+  image-rendering: pixelated;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  border: none; /* 테두리 제거 */
+  color: black;
+}
+.proof-container {
+  background-color: #f5db97;
+  display: flex;
+  gap: 20px;
+  padding-top: 44px;
+}
+.premise-selection {
+  flex: 1;
+  background-color: #f5db97;
+  padding: 0px 15px;
+
+  height: 52vh;
+  overflow-y: auto;
+}
+.premise-selection ul {
+  list-style-type: none;
+  padding: 0;
+}
+.premise-selection li {
+  margin-bottom: 5.5px;
+  padding: 8px;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+
+  cursor: pointer;
+}
+
+.premise-selection li.assumption-dependent {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  font-style: italic;
+}
+.premise-selection li.assumption-itself {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  font-style: italic;
+}
+.premise-selection li:hover {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.premise-selection li.assumption-dependent:hover {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  font-style: italic;
+}
+.premise-selection li.assumption-itself:hover {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  font-style: italic;
+}
+.premise-selection li span[class^="tag-"] {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.premise-selection li.selected {
+  border-image-source: url("assets/images/pre_li_selected.png");
+}
+
+/* 가정 의존 항목이 선택됐을 때의 스타일 */
+.premise-selection li.assumption-dependent.selected,
+.premise-selection li.assumption-itself.selected {
+  border-image-source: url("assets/images/pre_li_assu_selected.png");
+}
+
+.tag-victory {
+  color: #c9a518;
+}
+.tag-theorem,
+.tag-assumption {
+  color: #8e44ad;
+}
+.tag-assumption {
+  color: #8f2c21; /* 진한 빨간색으로 변경 */
+}
+.tag-proposition {
+  color: #3498db;
+}
+.tag-axiom {
+  color: #7f8c8d;
+}
+#modal-confirm-btn {
+  color: white;
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 1.2em;
+  border-width: 7px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/modal_confirm.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  cursor: pointer;
+}
+#modal-confirm-btn:hover {
+  border-width: 7px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/modal_confirm_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#workbench-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+#apply-rule-btn {
+  color: black;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/full.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  cursor: pointer;
+}
+#apply-rule-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/full_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  cursor: pointer;
+}
+#add-assumption-btn {
+  color: black;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  cursor: pointer;
+}
+#add-assumption-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#add-assumption-btn:disabled {
+  display: none;
+  cursor: not-allowed;
+}
+#cancel-assumption-btn {
+  color: black;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/undo.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#cancel-assumption-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/undo_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#thinking-time-controls {
+  /* 레이아웃 및 위치 설정 */
+  position: absolute; /* 겹치도록 설정 */
+  inset: 0; /* 👈 부모 요소를 꽉 채우는 가장 간단한 방법 (top:0; left:0; right:0; bottom:0;) */
+  /* width, height, margin 속성은 제거해도 됩니다. */
+  z-index: 2; /* 다른 요소들 위에 표시 */
+
+  /* 내용을 중앙에 배치하기 위한 Flexbox 설정 (이 부분은 그대로 둡니다.) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+
+  /* 기존 배경 이미지 스타일 유지 */
+  padding: 15px;
+  border-width: 20px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/papiru_1.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  text-align: center;
+}
+/* JavaScript에서 사용할 .hidden 클래스 규칙 추가 */
+#thinking-time-controls.hidden {
+  display: none;
+}
+
+#prompt-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-buttons button {
+  padding: 8px 16px;
+
+  border: none;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+#alert-ok-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#alert-ok-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#prompt-confirm-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#prompt-confirm-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#prompt-cancel-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#prompt-cancel-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+#close-eureka-modal-btn {
+  right: 20px;
+}
+#tutorial-modal .modal-content {
+  max-width: 800px;
+  height: 70vh;
+  overflow-y: auto;
+}
+#tutorial-modal h3 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-top: 20px;
+}
+#tutorial-modal ul {
+  list-style-position: inside;
+  padding-left: 10px;
+}
+#tutorial-modal li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+#tutorial-modal code {
+  background-color: #e9ecef;
+  padding: 2px 6px;
+}
+/* Modal Styles */
+#language-modal .modal-content-small,
+#character-select-modal .modal-content-small {
+  border-width: 20px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/por_small.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.selection-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+.selection-buttons button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: normal;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  cursor: pointer;
+}
+.selection-buttons button:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+/* Tutorial Styles */
+.tutorial-highlight {
+  box-shadow: 0 0 0 4px #639bff, 0 0 20px #6da2ff; /* 👈 파란색으로 변경 */
+
+  transition: box-shadow 0.3s ease-in-out;
+  position: relative;
+  z-index: 101; /* Ensure it's above other elements */
+}
+#tutorial-guide,
+#puzzle-goal-box {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(44, 62, 80, 0.9);
+  color: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 800px;
+  text-align: left; /* 텍스트는 좌측 정렬 유지 */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 기본 정렬은 좌측으로 유지 */
+  gap: 15px;
+  transition: top 0.3s ease-in-out, bottom 0.3s ease-in-out;
+}
+
+#tutorial-guide button {
+  align-self: center; /* 버튼 자기 자신만 중앙으로 정렬 */
+}
+#tutorial-guide.top,
+#puzzle-goal-box {
+  top: 20px;
+  bottom: auto;
+}
+#tutorial-guide p,
+#puzzle-goal-box p {
+  margin: 0;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+#puzzle-goal-box p {
+  z-index: 9999;
+}
+#tutorial-guide button {
+  padding: 10px 25px;
+  font-size: 1em;
+  font-weight: normal;
+  border: none;
+
+  cursor: pointer;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  transform: translateY(-3px);
+  color: #2c3e50;
+
+  display: flex;
+  align-items: center;
+}
+#tutorial-guide button:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+.hidden {
+  display: none !important;
+}
+
+#tutorial-guide button::after {
+  content: "";
+  display: inline-block;
+  width: 32px; /* 아이콘 너비 */
+  height: 20px; /* 아이콘 높이 */
+  margin-left: 3px; /* 텍스트와의 간격 */
+  background-image: url("assets/images/next_icon.png"); /* 👈 사용할 아이콘 이미지 경로 */
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.turn-indicator {
+  display: inline-block;
+  padding: 8px 20px; /* 내부 여백 *
+              transition: all 0.3s ease; /* 부드러운 전환 효과 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/indi.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+
+button,
+select {
+  font-family: inherit;
+}
+#info-box > div {
+  position: relative; /* 위치를 상대적으로 조정하도록 설정 */
+  top: 6px; /* 👈 원래 위치에서 5px 아래로 이동 */
+}
+.header-buttons-left,
+.header-buttons-right {
+  flex: 1; /* 양쪽 컨테이너가 동일한 너비를 갖도록 설정 */
+}
+
+/* 오른쪽 버튼들을 오른쪽 끝으로 정렬 */
+.header-buttons-right {
+  justify-content: flex-end;
+}
+/* 승리 조건 텍스트의 strong 태그 볼드체 제거 */
+#true-propositions li.victory-condition strong {
+  font-weight: normal;
+}
+/* 기존 코드 */
+#proposition-controls button {
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: normal;
+  transition: background-color 0.2s;
+  /* 👇 아래 속성 추가 */
+  min-width: 100px; /* 원하는 최소 너비로 조절 (예: 100px) */
+  box-sizing: border-box; /* padding을 너비에 포함시켜 계산 */
+}
+/* 튜토리얼 대화창을 강제로 최상단에 표시하기 위한 규칙 */
+#tutorial-guide {
+  z-index: 9999 !important;
+}
+/* 새로 추가: 턴이 아닐 때 카드에 직접 흐림 및 반투명 효과 적용 */
+/* 턴이 아닐 때 카드의 밝기와 대비를 조절 */
+.player-area.disabled .card {
+  filter: brightness(0.8) contrast(0.8);
+}
+.card.unplayable {
+  filter: brightness(0.8) contrast(0.8);
+  cursor: not-allowed;
+}
+#workbench-controls select,
+#workbench-controls button {
+  font-size: 14px; /* 글자 크기를 14px에서 16px로 키웁니다 */
+  padding: 10px 20px; /* 버튼의 상하, 좌우 여백을 늘립니다 */
+}
+
+/* 덧씌울 이미지들을 담는 컨테이너 */
+#overlay-container {
+  position: absolute; /* 부모 위에 겹치도록 설정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 덧씌울 개별 이미지 */
+.overlay-image {
+  position: absolute; /* 컨테이너 위에 겹치도록 설정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 이미지를 숨기는 핵심 클래스 */
+.hidden {
+  display: none !important; /* ★★★★★ 가장 중요! */
+}
+#socrates-wise-overlay,
+#socrates-foolish-overlay,
+#socrates-good-overlay,
+#socrates-evil-overlay,
+#plato-wise-overlay,
+#plato-foolish-overlay,
+#plato-good-overlay,
+#plato-evil-overlay,
+#socrates-bird-overlay,
+#socrates-fish-overlay,
+#plato-bird-overlay,
+#plato-fish-overlay,
+#socrates-win-overlay,
+#plato-win-overlay {
+  z-index: 1;
+}
+#socrates-dog-overlay,
+#plato-dog-overlay {
+  z-index: 2;
+}
+
+#player-a-area {
+  /* 1. 이미지 파일 불러오기 */
+  background-image: url("assets/images/paper_1.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+
+#player-b-area {
+  /* 1. 이미지 파일 불러오기 */
+  background-image: url("assets/images/paper.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+/* style 태그 안, 가장 아래쪽에 추가 */
+body::after {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1; /* 화면에 보이지 않게 처리 */
+  content:
+      /* 기본 UI 및 배경 이미지 */ url("assets/images/sky.png")
+    url("assets/images/title.png") url("assets/images/roof.png")
+    url("assets/images/roo.png") url("assets/images/roo_2.png")
+    url("assets/images/bottom.png") url("assets/images/paper.png")
+    url("assets/images/paper_1.png") url("assets/images/player.png")
+    url("assets/images/player_active.png") url("assets/images/papiru.png")
+    url("assets/images/rendom_hover.png") url("assets/images/papiru_1.png")
+    url("assets/images/sel.png") url("assets/images/por.png")
+    url("assets/images/por_small.png") url("assets/images/pre_li.png")
+    url("assets/images/pre_li_assu.png")
+    url("assets/images/pre_li_assu_selected.png")
+    url("assets/images/pre_li_selected.png") url("assets/images/indi.png")
+    url("assets/images/close.png") /* 버튼 기본 이미지 */
+    url("assets/images/new.png") url("assets/images/full.png")
+    url("assets/images/tuto.png") url("assets/images/complete.png")
+    url("assets/images/undo.png") url("assets/images/end.png")
+    url("assets/images/eureka.png") url("assets/images/disabled.png")
+    url("assets/images/eureka_disabled.png") /* 버튼 호버(Hover) 이미지 */
+    url("assets/images/new_hover.png") url("assets/images/full_hover.png")
+    url("assets/images/tuto_hover.png") url("assets/images/level_hover.png")
+    url("assets/images/level.png") url("assets/images/level_cleared_hover.png")
+    url("assets/images/level_cleared.png")
+    url("assets/images/complete_hover.png") url("assets/images/undo_hover.png")
+    url("assets/images/end_hover.png") url("assets/images/eureka_1.png")
+    url("assets/images/close_hover.png") url("assets/images/pre_li_hover.png")
+    url("assets/images/pre_li_assu_hover.png") /* 카드 이미지 */
+    url("assets/images/card_white.png") url("assets/images/card_black.png")
+    url("assets/images/card_white_hover.png")
+    url("assets/images/card_black_hover.png")
+    /* 철학자 초상화 및 아이콘 (JavaScript에 정의된 경로 포함) */
+    url("assets/images/ari_p1.png") url("assets/images/ari_p2.png")
+    url("assets/images/ari_icon.png") url("assets/images/socrat_p1.png")
+    url("assets/images/socrat_p2.png") url("assets/images/socra_icon.png")
+    url("assets/images/pl_p1.png") url("assets/images/pl_p2.png")
+    url("assets/images/pl_icon.png") url("assets/images/de_p1.png")
+    url("assets/images/de_p2.png") url("assets/images/de_icon.png")
+    url("assets/images/hu_p1.png") url("assets/images/hu_p2.png")
+    url("assets/images/hu_icon.png") url("assets/images/ka_p1.png")
+    url("assets/images/ka_p2.png") url("assets/images/ka_icon.png")
+    url("assets/images/ni_p1.png") url("assets/images/ni_p2.png")
+    url("assets/images/ni_icon.png") url("assets/images/ma_p1.png")
+    url("assets/images/ma_p2.png") url("assets/images/ma_icon.png")
+    url("assets/images/wi_p1.png") url("assets/images/wi_p2.png")
+    url("assets/images/wi_icon.png") url("assets/images/ku_p1.png")
+    url("assets/images/ku_p2.png") url("assets/images/ku_icon.png")
+    url("assets/images/der_p1.png") url("assets/images/der_p2.png")
+    url("assets/images/der_icon.png");
+}
+
+/* ...existing code... */
+.main-center-bg {
+  position: absolute;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  width: 95%;
+  height: 95%;
+  background: transparent;
+  z-index: 1; /* 배경 역할 */
+  pointer-events: auto;
+  border-width: 17px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/papiru_1.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.main-center-buttons {
+  display: flex;
+  flex-direction: column; /* 세로로 배치 */
+  gap: 24px;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+}
+
+.main-center-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+}
+
+.mode-selector {
+  display: flex;
+  flex-direction: column; /* 버튼을 세로로 배치 */
+  gap: 30px; /* 버튼 사이 넉넉하게 */
+  width: 100%;
+}
+
+.mode-selector button,
+#exit-game-btn,
+#tutorial-btn,
+#puzzle-mode-btn {
+  min-width: 0;
+  width: 100%;
+  max-width: 1000px;
+  padding: 8px 50px; /* 위아래 좁게, 좌우 넓게 */
+  font-size: 1.5em;
+  box-sizing: border-box;
+}
+
+.main-center-bg.hidden {
+  display: none !important;
+}
+
+/* Add these CSS rules inside the <style> tag */
+
+#character-selection-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+#character-selection-screen.hidden {
+  display: none !important;
+}
+
+.player-display-area {
+  width: 28%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px;
+  box-sizing: border-box;
+  border-width: 25px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/por.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  position: relative;
+}
+
+.portrait-area {
+  width: 100%;
+  height: 50%;
+  background-color: #b19c6f;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border: 6px solid #9a4b37;
+}
+
+.philosopher-name {
+  font-size: 2.5em;
+  color: #9a4b37;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.skill-area {
+  width: 100%;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.skill-title {
+  font-size: 1.5em;
+  color: #333;
+  border-bottom: 2px solid #b95941;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+#p1-skill-desc,
+#p2-skill-desc {
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.ready-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  color: transparent;
+  font-size: 8em;
+  display: none; /* Initially hidden */
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.ready-overlay.visible {
+  display: flex;
+}
+
+.shared-selection-area {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 22px;
+  box-sizing: border-box;
+  border-width: 27px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/sel.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 4열 그리드, 필요시 조정 */
+  gap: 15px;
+  width: 100%;
+  padding: 20px;
+  background-color: transparent;
+}
+
+.char-icon {
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+  border: 4px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  image-rendering: pixelated;
+}
+
+.char-icon:hover {
+  border-color: #f1cf0f;
+  transform: scale(1.05);
+}
+
+.char-icon.selected {
+  border-color: #e74c3c;
+  box-shadow: 0 0 15px #e74c3c;
+}
+
+#confirm-selection-btn {
+  padding: 15px 50px;
+  font-size: 1.8em;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/complete.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+}
+
+#confirm-selection-btn:hover:not(:disabled) {
+  background-color: transparent;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/complete_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+}
+
+#confirm-selection-btn:disabled {
+  color: #7f8c8d; /* 비활성화된 버튼의 글자색 */
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/disabled.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+  image-rendering: pixelated;
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+#turn-order-modal .modal-content-small h2 {
+  font-size: 1.8em;
+  margin-bottom: 25px;
+}
+#character-select-indicator {
+  font-size: 20px;
+  position: fixed; /* 화면에 고정 */
+  bottom: 30px; /* 하단에서의 거리 (기존 status-bar와 비슷하게) */
+  left: 50%; /* 좌우 중앙 정렬을 위한 설정 */
+  transform: translateX(-50%); /* 좌우 중앙 정렬을 위한 설정 */
+  z-index: 501; /* 캐릭터 선택 화면(z-index: 500)보다 위에 표시 */
+}
+.philosopher-portrait {
+  width: 180px;
+  height: 180px;
+  margin: 8px auto;
+  border: 4px solid #e2965c;
+  background-color: #eedaa5;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+#back-to-main-from-char-select-btn {
+  top: 25px;
+  right: 25px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  z-index: 502; /* 다른 요소들보다 위에 표시되도록 z-index 설정 */
+}
+#bottom-overlay-box {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background-image: url("assets/images/roo_2.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  image-rendering: pixelated;
+  background-color: transparent;
+  z-index: 5;
+}
+
+.true-propositions-wrapper {
+  position: relative; /* ★ 오버레이의 새로운 기준점 */
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  min-height: 0;
+  display: flex; /* 내부 요소들을 채우기 위함 */
+}
+#game-container,
+.card,
+button,
+.modal-content,
+.player-display-area,
+.shared-selection-area,
+#current-proposition,
+#true-propositions,
+.main-center-bg {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* GPU 렌더링 레이어 생성 유도 */
+}
+.button-wrapper {
+  display: flex; /* 핵심: 내부 아이템을 가로로 나란히 배치 */
+  width: 100%;
+  gap: 8px; /* 버튼 사이의 간격 */
+  margin-top: auto; /* 플레이어 영역의 맨 아래에 버튼들을 위치시킴 */
+}
+
+/* 2. 기존 버튼 스타일에 flex 속성 추가 */
+.eureka-btn,
+.ability-btn {
+  flex: 1; /* 핵심: 컨테이너 안에서 가능한 공간을 균등하게 차지 */
+
+  /* 글자가 잘리지 않도록 패딩이나 폰트 크기 미세 조정 */
+  padding: 8px;
+  font-size: 1em;
+  min-width: 0; /* 버튼이 작아질 수 있도록 최소 너비 제한 해제 */
+}
+#ability-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#ability-list li {
+  margin-bottom: 5px;
+  padding: 8px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/pre_li.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#ability-list li:hover {
+  border-image-source: url("assets/images/pre_li_hover.png");
+}
+
+#ability-list input[type="radio"] {
+  margin-right: 10px;
+}
+
+/* 범용 능력 모달 확인 버튼 스타일 (누락되었던 부분) */
+#ability-confirm-btn {
+  color: white;
+  margin-top: 20px;
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border-width: 7px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/modal_confirm.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+#ability-confirm-btn:hover {
+  border-image-source: url("assets/images/modal_confirm_hover.png");
+}
+
+/* 모달 제목의 색상이 지정되지 않았을 경우를 대비한 코드 */
+#plato-ability-title {
+  color: #333; /* 기본 텍스트 색상 */
+  margin-bottom: 20px;
+}
+
+#kant-ability-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+/* 1. 테두리와 배경 제거, flex-grow를 통해 상하 공간 분할 */
+#kant-proposition-area,
+#kant-hand-area {
+  padding: 10px;
+  margin-bottom: 15px;
+  display: flex; /* 내부 요소(제목, 카드 컨테이너)를 정렬하기 위해 flex로 설정 */
+  flex-direction: column;
+  flex: 1; /* 핵심: 두 섹션이 1:1 비율로 공간을 차지 */
+  min-height: 0; /* flex 자식 요소가 부모를 넘치지 않도록 설정 */
+}
+
+#kant-proposition-area h3,
+#kant-hand-area h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #9a4b37;
+  border-bottom: 1px solid #d3b88b;
+  padding-bottom: 5px;
+  flex-shrink: 0; /* 제목의 크기가 줄어들지 않도록 고정 */
+}
+
+#kant-proposition-display {
+  min-height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+#kant-hand-display {
+  flex-grow: 1; /* 남은 공간을 모두 차지 */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  overflow-y: auto;
+}
+
+/* 2. 호버 효과 삭제됨 (해당 선택자 제거) */
+
+#kant-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-shrink: 0; /* 컨트롤 버튼 영역 크기 고정 */
+}
+
+#kant-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* 기존 버튼 스타일 재활용 */
+#kant-undo-btn,
+#kant-confirm-btn {
+  padding: 8px 25px;
+  font-size: 1.1em;
+  min-width: 120px;
+}
+#kant-undo-btn {
+  color: white;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/undo.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+#kant-undo-btn:hover {
+  border-image-source: url("assets/images/undo_hover.png");
+}
+#kant-confirm-btn {
+  color: white;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/complete.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+#kant-confirm-btn:hover {
+  border-image-source: url("assets/images/complete_hover.png");
+}
+
+#ai-summary-ok-btn {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#ai-summary-ok-btn:hover {
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/tuto_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+#settings-btn {
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  /* 임시로 전체화면 버튼 이미지를 재사용합니다.
+             나중에 settings.png, settings_hover.png 같은 전용 이미지로 교체할 수 있습니다. */
+  border-image-source: url("assets/images/full.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+#settings-btn:hover {
+  border-image-source: url("assets/images/full_hover.png");
+}
+
+/* 설정 모달 내부 스타일 */
+.settings-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.settings-group label {
+  font-size: 1.2em;
+  margin-right: 15px;
+}
+.settings-group input[type="range"] {
+  flex-grow: 1; /* 남는 공간을 모두 차지 */
+}
+.settings-group span {
+  font-size: 1.2em;
+  margin-left: 15px;
+  width: 50px; /* 너비를 고정하여 정렬을 맞춤 */
+  text-align: right;
+}
+button:focus,
+select:focus {
+  outline: none;
+}
+#credits-btn {
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  /* 임시로 전체화면 버튼 이미지를 재사용합니다.
+             나중에 settings.png, settings_hover.png 같은 전용 이미지로 교체할 수 있습니다. */
+  border-image-source: url("assets/images/full.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+#credits-btn:hover {
+  border-image-source: url("assets/images/full_hover.png");
+}
+#vs-ai-test-btn,
+#vs-ai-battle-btn,
+#tutorial-puzzle-btn,
+#exit-game-btn {
+  display: none;
+}
+
+#random-char-btn {
+  background-image: url("assets/images/random_hover.png"); /* 이미지 경로 지정 */
+  background-size: contain; /* 이미지가 잘리지 않고 비율에 맞게 채워짐 */
+  background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
+  transition: background-image 0.4s; /* 부드러운 전환 효과 (선택 사항) */
+
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+#random-char-btn:hover {
+  background-image: url("assets/images/random_hover.png");
+  transform: none !important; /* 확대 효과를 제거합니다 */
+  transition: none !important;
+  border-color: transparent; /* 호버 시 테두리가 나타나지 않도록 설정합니다 */
+}
+.hand,
+#true-propositions,
+.premise-selection,
+#kant-hand-display,
+#credits-content {
+  /* 핸들 색상, 트랙 색상 */
+  scrollbar-color: #b15139 transparent;
+  scrollbar-width: thin;
+}
+
+/* 2. Chrome, Safari, Edge 등 Webkit 브라우저를 위한 상세 스타일 */
+::-webkit-scrollbar {
+  width: 14px; /* 스크롤바 너비 */
+  height: 14px; /* 가로 스크롤바 높이 (필요시) */
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent; /* hand 영역 배경과 유사한 반투명 색상 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b15139; /* 플레이어 영역 배경색 */
+  border: 2px solid #9a4b37; /* 테두리를 주어 입체감 부여 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9a4b37; /* 마우스 올리면 더 진한 색으로 */
+}
+
+/* 스크롤바의 양 끝 화살표 버튼 (사용하지 않으므로 숨김) */
+::-webkit-scrollbar-button {
+  display: none;
+}
+#emergency-exit-tutorial-btn {
+  /* 위치 및 z-index는 그대로 유지합니다 */
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+
+  /* 텍스트와 테두리 스타일을 추가합니다 */
+  padding: 4px 12px;
+  font-size: 15px; /* body 기본 폰트 크기와 맞춤 */
+  color: #333; /* 기본 텍스트 색상 */
+  cursor: pointer;
+
+  /* 인포박스 버튼 스타일 (border-image)을 적용합니다 */
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/tuto.png"); /* 튜토리얼 버튼 이미지 재활용 */
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+}
+
+/* 호버 효과도 수정합니다 */
+#emergency-exit-tutorial-btn:hover {
+  border-image-source: url("assets/images/tuto_hover.png");
+}
+.op-not {
+  color: #e74c3c; /* 빨간색 */
+  font-weight: bold;
+}
+.op-if {
+  color: #27ae60; /* 초록색 */
+  font-weight: bold;
+}
+.op-or {
+  color: #2876aa; /* 파란색 */
+  font-weight: bold;
+}
+.op-and {
+  color: #f39c12; /* 노란색/주황색 계열 */
+  font-weight: bold;
+}
+#info-box button[style*="visibility: hidden"] {
+  display: none;
+}
+#mode-description {
+  position: absolute; /* 버튼 컨테이너를 기준으로 위치 지정 */
+  left: 100%; /* 버튼 컨테이너의 오른쪽 끝에 붙임 */
+  top: 0; /* 초기 top 위치 (JS가 버튼에 맞춰 변경) */
+  transform: translate(
+    25px,
+    -50%
+  ); /* 오른쪽으로 25px 이동하고, 수직 중앙 정렬 */
+
+  width: 280px; /* 설명 박스 너비 */
+  padding: 15px;
+  font-size: 17px; /* 작은 글씨 크기 */
+  color: #333;
+  text-align: left;
+  line-height: 1.6;
+
+  /* 9조각 이미지로 배경 설정 (기존 UI와 통일감) */
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent;
+  border-image-source: url("assets/images/por_long.png");
+  border-image-slice: 6 fill;
+  border-image-repeat: stretch;
+  background-color: transparent;
+
+  /* 평소에는 보이지 않도록 설정 */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* 마우스 이벤트에 반응하지 않도록 설정 */
+}
+
+#puzzle-level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 한 줄에 5개의 레벨 */
+  gap: 20px; /* 레벨 간 간격 */
+  width: 100%;
+  padding: 20px;
+  margin-top: 20px;
+  box-sizing: border-box;
+  max-height: 50vh; /* 모달 높이가 너무 커지지 않도록 제한 */
+  overflow-y: auto; /* 레벨이 많아지면 스크롤 */
+}
+
+/* 캐릭터 아이콘 스타일을 재활용하여 레벨 버튼 스타일 지정 */
+.puzzle-level-btn {
+  aspect-ratio: 1 / 1;
+  background-image: url("assets/images/level.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+  image-rendering: pixelated;
+
+  /* 레벨 번호를 표시하기 위한 Flexbox 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  font-weight: bold;
+  background-color: transparent;
+}
+
+.puzzle-level-btn:hover {
+  background-image: url("assets/images/level_hover.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+.puzzle-level-btn.cleared {
+  aspect-ratio: 1 / 1;
+  background-image: url("assets/images/level_cleared.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+  image-rendering: pixelated;
+
+  /* 레벨 번호를 표시하기 위한 Flexbox 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  font-weight: bold;
+  background-color: transparent;
+}
+.puzzle-level-btn.cleared:hover {
+  background-image: url("assets/images/level_cleared_hover.png"); /* 👈 사용할 단일 이미지 경로 */
+  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
+  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
+  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  image-rendering: pixelated;
+}
+#puzzle-level-select-modal .shared-selection-area {
+  width: 60%; /* 모달에 적합하도록 너비를 60%로 조정 */
+  max-width: 900px; /* 너무 커지지 않도록 최대 너비 설정 */
+}
+
+/* 닫기 버튼 위치 미세 조정 */
+#puzzle-level-select-modal .close-button {
+  top: 35px;
+  right: 45px;
+}
+#conclusion-preview {
+  margin-top: 5px; /* 15px에서 수정 */
+  padding: 12px 15px; /* 상하 여백을 15px에서 8px로 수정 */
+  box-sizing: border-box;
+}
+#conclusion-preview-title {
+  margin: 0 0 8px 0;
+  font-size: 1.2em;
+  font-weight: normal;
+}
+#conclusion-preview-text {
+  font-size: 1.2em;
+  font-weight: normal;
+}
+#conclusion-preview-text i {
+  font-style: italic;
+  color: #7f8c8d;
+}
+/* 1. 모달 콘텐츠 영역을 자식 요소의 'position: absolute' 기준점으로 설정합니다. */
+#eureka-modal .modal-content {
+  position: relative;
+}
+
+/* 2. 결론 미리보기 섹션을 일반적인 흐름에서 제외하고, 위치를 직접 지정합니다. */
+#conclusion-preview {
+  position: absolute;
+  top: 135px; /* 제목과 워크벤치 컨트롤의 높이에 맞춰 조정된 값입니다. */
+  left: 25px; /* 부모 요소의 좌측 패딩과 동일한 값입니다. */
+  width: calc(100% - 50px); /* 부모 요소의 좌우 패딩을 제외한 너비입니다. */
+  z-index: 10; /* 다른 요소들 위에 표시되도록 설정합니다. */
+  background-color: #f5db97; /* 배경색을 추가하여 아래 텍스트가 비치지 않도록 합니다. */
+}
+#main-menu-title-img {
+  width: 80%; /* 이미지 너비 */
+  max-width: 500px; /* 최대 너비 */
+  height: auto; /* 높이는 비율에 맞게 자동 조절 */
+  margin-bottom: 40px; /* 버튼과의 아래쪽 간격 */
+  image-rendering: pixelated; /* 픽셀 아트 스타일 유지 */
+}
+
+/* 체크박스 비활성화 시 색상 유지 */
+input[type="checkbox"]:disabled {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+
+  /* --- 추가된 부분 --- */
+  /* 배경색을 강제로 밝은 색으로 지정 */
+  background-color: #f0f0f0 !important;
+  /* 테두리 색을 연한 회색으로 지정 */
+  border-color: #cccccc !important;
+}
