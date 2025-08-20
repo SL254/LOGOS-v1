@@ -903,19 +903,10 @@ function isValidPlay(cardToPlay, proposition) {
   const lastCardInfo = proposition[propLength - 1];
 
   if (cardToPlay.text === not) {
-    // '는 거짓이다'가 적용될 절(clause)을 찾습니다.
-    const connectiveIndex = proposition
-      .map((info) => info.card)
-      .findIndex(isConnective);
-    const clauseToNegate =
-      connectiveIndex > -1
-        ? proposition.slice(connectiveIndex + 1)
-        : [...proposition];
-    const newClauseWithNegation = [
-      ...clauseToNegate,
-      { card: cardToPlay, player: currentPlayer },
-    ];
-    return parsePropositionFromCards(newClauseWithNegation) !== null;
+    // '는 거짓이다'는 문법적으로 완결된 명제에만 붙일 수 있습니다.
+    const parsedProp = parsePropositionFromCards(proposition);
+    // 완결된 명제가 있을 때만 '는 거짓이다'를 놓을 수 있습니다.
+    return parsedProp !== null;
   }
 
   if (isConnective(cardToPlay)) {
