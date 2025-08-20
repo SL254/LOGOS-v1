@@ -2026,6 +2026,89 @@ function findBestGambitPlan(perspectivePlayer) {
   return viablePlans[0];
 }
 
+function calculateStrategicValue(proposition, perspectivePlayer) {
+  if (!proposition) return 0;
+
+  // ★★★ 핵심 수정: 어떤 명제든 평가하기 전에 먼저 정규화합니다. ★★★
+  const normalizedProp = normalizeProposition(proposition);
+
+  const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
+  const myVictoryData = truePropositions.find(
+    (p) => p.type === "victory" && p.owner === perspectivePlayer
+  );
+  const opponentVictoryData = truePropositions.find(
+    (p) => p.type === "victory" && p.owner === opponentPlayer
+  );
+
+  if (!myVictoryData || !opponentVictoryData) return 0;
+
+  let score = 0;
+  const myUltimateGoal = myVictoryData.ultimate_target;
+  const opponentLossCondition = {
+    type: "negation",
+    proposition: opponentVictoryData.ultimate_target,
+  };
+
+  // 1. 직접적인 승/패 조건과 일치하는지 확인 (정규화된 명제로 비교)
+  if (arePropositionsEqual(normalizedProp, myUltimateGoal)) score += 50000;
+  if (arePropositionsEqual(normalizedProp, opponentLossCondition))
+    score += 50000;
+
+  // 2. 전칭 양화문('모든')의 가치 평가 (정규화된 명제로 비교)
+  if (normalizedProp.type === "universal") {
+    const myWinPredicate = myVictoryData.core_goal.predicate;
+    const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
+    const predicatePairs = currentLang.contradictoryPredicates;
+    const opponentDefeatPredicate =
+      predicatePairs[opponentWinPredicate] ||
+      Object.keys(predicatePairs).find(
+        (key) => predicatePairs[key] === opponentWinPredicate
+      );
+
+    if (normalizedProp.predicate === myWinPredicate) score += 8000;
+    if (
+      opponentDefeatPredicate &&
+      normalizedProp.predicate === opponentDefeatPredicate
+    )
+      score += 7000;
+    if (normalizedProp.predicate === opponentWinPredicate) score -= 9000;
+  }
+
+  return score;
+}
+
+/**
+ * 특정 계획(경로)을 수행했을 때의 위험성을 평가하는 함수
+ * @param {Array<object>} path - findAllProofPaths가 반환한 계획 경로
+ * @param {string} perspectivePlayer - 'A' 또는 'B', 누구의 관점에서 평가할지
+ * @returns {boolean} 위험하면 true, 아니면 false
+ */
+function isPlanTooRisky(path, perspectivePlayer) {
+  if (!path || path.length === 0) return false;
+
+  const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
+  const opponentVictoryData = truePropositions.find(
+    (p) => p.type === "victory" && p.owner === opponentPlayer
+  );
+  if (!opponentVictoryData) return false;
+
+  // 계획의 최종 목표를 달성했을 때의 가상 진리 집합을 만듭니다.
+  const finalStep = path[path.length - 1];
+  const { success, expandedSet } = verifyAndExpandTruths(
+    finalStep,
+    internalTruthSet
+  );
+
+  if (!success) return true; // 계획 자체가 모순을 일으키면 위험
+
+  // 그 결과 상대의 승리가 증명된다면 이 계획은 위험합니다.
+  if (aiFindProof(opponentVictoryData.ultimate_target, expandedSet)) {
+    return true;
+  }
+
+  return false;
+}
+
 function executePlatoAbilityCheck(player) {
   // 1. 사용 가능한 '어떤' 명제 찾기
   const availableExistentials = truePropositions.filter(
