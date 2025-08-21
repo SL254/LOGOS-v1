@@ -194,21 +194,31 @@ function traceVictoryProof() {
 
 function getRuleNameInLanguage(ruleKey) {
   if (!currentLang || !currentLang.inferenceRules) return ruleKey;
-  
+
   const ruleNames = {
     modusPonens: currentLang.inferenceRules.modusPonens || "전건 긍정",
     modusTollens: currentLang.inferenceRules.modusTollens || "후건 부정",
-    hypotheticalSyllogism: currentLang.inferenceRules.hypotheticalSyllogism || "가언 삼단논법",
-    disjunctiveSyllogism: currentLang.inferenceRules.disjunctiveSyllogism || "선언 삼단논법",
-    conjunctionElimination: currentLang.inferenceRules.conjunctionElimination || "연언 소거",
-    conjunctionIntroduction: currentLang.inferenceRules.conjunctionIntroduction || "연언 도입",
-    doubleNegationElimination: currentLang.inferenceRules.doubleNegationElimination || "이중 부정 소거",
-    universalApplication: currentLang.inferenceRules.universalApplication || "보편 적용",
-    existentialInstantiation: currentLang.inferenceRules.existentialInstantiation || "존재 예화",
-    conditionalIntroduction: currentLang.inferenceRules.conditionalIntroduction || "조건부 도입",
-    reductioAdAbsurdum: currentLang.inferenceRules.reductioAdAbsurdum || "귀류법"
+    hypotheticalSyllogism:
+      currentLang.inferenceRules.hypotheticalSyllogism || "가설적 삼단논법",
+    disjunctiveSyllogism:
+      currentLang.inferenceRules.disjunctiveSyllogism || "선언적 삼단논법",
+    conjunctionElimination:
+      currentLang.inferenceRules.conjunctionElimination || "단순화",
+    conjunctionIntroduction:
+      currentLang.inferenceRules.conjunctionIntroduction || "연언 도입",
+    doubleNegationElimination:
+      currentLang.inferenceRules.doubleNegationElimination || "이중 부정 제거",
+    universalApplication:
+      currentLang.inferenceRules.universalApplication || "보편 적용",
+    existentialInstantiation:
+      currentLang.inferenceRules.existentialInstantiation || "존재화",
+    conditionalIntroduction:
+      currentLang.inferenceRules.conditionalIntroduction || "조건문 도입",
+    reductioAdAbsurdum:
+      currentLang.inferenceRules.reductioAdAbsurdum || "귀류법",
+    proofByCases: currentLang.inferenceRules.proofByCases || "경우 논증",
   };
-  
+
   return ruleNames[ruleKey] || ruleKey;
 }
 
@@ -268,30 +278,43 @@ function convertProofStepsToNaturalLanguage(steps) {
 
 // 가정 의존성을 판단하는 함수
 function isStepAssumptionDependent(step, allSteps) {
-  // 가정 자체는 가정 의존
-  if (step.type === 'assumption') return true;
-  
-  // 추론의 경우
-  if (step.type === 'inference') {
-    // 귀류법과 조건문 도입의 최종 결론은 가정을 소거하므로 가정 의존이 아님
-    if (step.rule === 'reductioAdAbsurdum' || step.rule === 'conditionalIntroduction') {
-      return false;
+  if (!step) return false;
+
+  // Use a stack for iteration to avoid recursion limits, and a set to track visited nodes.
+  const stack = [step];
+  const visited = new Set();
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+
+    if (visited.has(current.id)) {
+      continue;
     }
-    
-    // step.assumption이 있으면 가정 의존
-    if (step.assumption) {
+    visited.add(current.id);
+
+    // BASE CASE: If we find an assumption in the history, the original step is dependent.
+    if (current.type === 'assumption') {
       return true;
     }
-    
-    // 전제 중 하나라도 가정 의존이면 가정 의존
-    if (step.premises && step.premises.length > 0) {
-      return step.premises.some(premiseId => {
-        const premise = allSteps.find(s => s.id === premiseId);
-        return premise && isStepAssumptionDependent(premise, allSteps);
-      });
+
+    // RECURSIVE STEP: If the current step has premises, add them to the stack to check their history.
+    // We do NOT add premises of a RAA/CI conclusion, because that's where an assumption is discharged.
+    if (current.type === 'inference' && (current.rule === 'reductioAdAbsurdum' || current.rule === 'conditionalIntroduction')) {
+        // This step discharges an assumption. We stop traversing this path.
+        continue;
+    }
+
+    if (current.premises && current.premises.length > 0) {
+      for (const premiseId of current.premises) {
+        const premiseStep = allSteps.find(s => s.id === premiseId);
+        if (premiseStep) {
+          stack.push(premiseStep);
+        }
+      }
     }
   }
-  
+
+  // If we traverse all paths to their roots and find no assumption, it's not dependent.
   return false;
 }
 

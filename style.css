@@ -230,8 +230,6 @@ header h1 {
   border-image-repeat: stretch;
   background-color: transparent;
   font-size: 15px;
-  color: white;
-  font-weight: 600;
   transition: background-color 0.2s;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -2711,16 +2709,16 @@ input[type="checkbox"]:disabled {
 #proof-review-content {
   max-height: 60vh;
   overflow-y: auto;
-  padding: 20px;
+  padding: 30px;
   background-color: tramsparent; /* 배경을 투명하게 설정 */
-  margin-top: 15px;
+  margin-top: 8px;
 }
 
 .proof-group {
   margin-bottom: 25px;
   padding: 15px;
-  background-color: #e2965c;
-  border: 4px solid #b15139;
+  background-color: transparent;
+  border-bottom: 2px solid #b15139;
 }
 
 .proof-step {
