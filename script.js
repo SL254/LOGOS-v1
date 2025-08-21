@@ -245,6 +245,28 @@ function convertProofStepsToNaturalLanguage(steps) {
   return convertedSteps;
 }
 
+// 가정 의존성을 판단하는 함수
+function isStepAssumptionDependent(step, allSteps) {
+  // 가정 자체는 가정 의존
+  if (step.type === 'assumption') return true;
+  
+  // 추론의 경우
+  if (step.type === 'inference' && step.premises) {
+    // 귀류법과 조건문 도입의 결론은 가정을 소거하므로 가정 의존이 아님
+    if (step.rule === 'reductioAdAbsurdum' || step.rule === 'conditionalIntroduction') {
+      return false;
+    }
+    
+    // 다른 추론의 경우, 전제 중 하나라도 가정 의존이면 가정 의존
+    return step.premises.some(premiseId => {
+      const premise = allSteps.find(s => s.id === premiseId);
+      return premise && isStepAssumptionDependent(premise, allSteps);
+    });
+  }
+  
+  return false;
+}
+
 function showProofReviewModal() {
   if (!proofSteps || proofSteps.length === 0) {
     showAlert("논증 과정이 기록되지 않았습니다.");
@@ -313,24 +335,18 @@ function showProofReviewModal() {
       usedPremises.forEach(premise => {
         const premiseDiv = document.createElement('div');
         premiseDiv.className = `proof-step ${premise.type}`;
-        if (premise.type === 'assumption') {
+        
+        // 가정 의존성 확인 및 스타일 적용
+        if (isStepAssumptionDependent(premise, stepsToShow)) {
           premiseDiv.classList.add('assumption-dependent');
         }
         
-        let typeLabel;
         if (premise.type === 'assumption') {
-          typeLabel = currentLang.labels?.assumption || '[가정]';
-        } else if (premise.type === 'premise') {
-          typeLabel = currentLang.labels?.axiom || '[공리]';
-        } else if (premise.type === 'victory') {
-          typeLabel = currentLang.labels?.victory_condition || '[승리조건]';
-        } else if (premise.type === 'user-made') {
-          typeLabel = currentLang.labels?.proposition || '[명제]';
+          const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
+          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
         } else {
-          typeLabel = currentLang.labels?.theorem || '[정리]';
+          premiseDiv.innerHTML = propositionToPlainText(premise.conclusion);
         }
-        
-        premiseDiv.innerHTML = `<span class="proof-step-type">${typeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
         groupDiv.appendChild(premiseDiv);
       });
       
@@ -350,10 +366,13 @@ function showProofReviewModal() {
       relatedSteps.forEach(relatedStep => {
         const conclusionDiv = document.createElement('div');
         conclusionDiv.className = `proof-step conclusion`;
-        // 귀류법과 조건부 도입의 결과는 더 이상 가정에 의존하지 않음
         
-        const conclusionTypeLabel = currentLang.labels?.theorem || '[정리]';
-        conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToPlainText(relatedStep.conclusion)}`;
+        // 가정 의존성 확인 및 스타일 적용
+        if (isStepAssumptionDependent(relatedStep, stepsToShow)) {
+          conclusionDiv.classList.add('assumption-dependent');
+        }
+        
+        conclusionDiv.innerHTML = propositionToPlainText(relatedStep.conclusion);
         groupDiv.appendChild(conclusionDiv);
       });
       
@@ -377,24 +396,18 @@ function showProofReviewModal() {
       usedPremises.forEach(premise => {
         const premiseDiv = document.createElement('div');
         premiseDiv.className = `proof-step ${premise.type}`;
-        if (premise.type === 'assumption') {
+        
+        // 가정 의존성 확인 및 스타일 적용
+        if (isStepAssumptionDependent(premise, stepsToShow)) {
           premiseDiv.classList.add('assumption-dependent');
         }
         
-        let typeLabel;
         if (premise.type === 'assumption') {
-          typeLabel = currentLang.labels?.assumption || '[가정]';
-        } else if (premise.type === 'premise') {
-          typeLabel = currentLang.labels?.axiom || '[공리]';
-        } else if (premise.type === 'victory') {
-          typeLabel = currentLang.labels?.victory_condition || '[승리조건]';
-        } else if (premise.type === 'user-made') {
-          typeLabel = currentLang.labels?.proposition || '[명제]';
+          const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
+          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
         } else {
-          typeLabel = currentLang.labels?.theorem || '[정리]';
+          premiseDiv.innerHTML = propositionToPlainText(premise.conclusion);
         }
-        
-        premiseDiv.innerHTML = `<span class="proof-step-type">${typeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
         groupDiv.appendChild(premiseDiv);
       });
       
