@@ -300,190 +300,217 @@ function showProofReviewModal() {
     showAlert("논증 과정이 기록되지 않았습니다.");
     return;
   }
-  
+
   const relevantSteps = traceVictoryProof();
   const stepsToShow = relevantSteps;
-  
+
   const modal = document.getElementById("proof-review-modal");
   const title = document.getElementById("proof-review-title");
   const content = document.getElementById("proof-review-content");
-  
+
   title.textContent = currentLang.modals.proofReviewTitle;
-  
-  content.innerHTML = '';
-  
+
+  content.innerHTML = "";
+
   if (stepsToShow.length === 0) {
-    content.innerHTML = '<p>표시할 논증 과정이 없습니다.</p>';
+    content.innerHTML = "<p>표시할 논증 과정이 없습니다.</p>";
   } else {
     // 먼저 가정 단계들을 독립적으로 표시
-    const assumptionSteps = stepsToShow.filter(s => s.type === 'assumption');
-    assumptionSteps.forEach(assumptionStep => {
-      const assumptionGroupDiv = document.createElement('div');
-      assumptionGroupDiv.className = 'proof-group';
-      assumptionGroupDiv.style.marginBottom = '25px';
-      
-      const assumptionDiv = document.createElement('div');
+    const assumptionSteps = stepsToShow.filter((s) => s.type === "assumption");
+    assumptionSteps.forEach((assumptionStep) => {
+      const assumptionGroupDiv = document.createElement("div");
+      assumptionGroupDiv.className = "proof-group";
+      assumptionGroupDiv.style.marginBottom = "25px";
+
+      const assumptionDiv = document.createElement("div");
       assumptionDiv.className = `proof-step assumption`;
-      assumptionDiv.classList.add('assumption-dependent');
-      
-      const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
-      assumptionDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(assumptionStep.conclusion)}`;
+      assumptionDiv.classList.add("assumption-dependent");
+
+      const assumptionTypeLabel = currentLang.labels?.assumption || "[가정]";
+      assumptionDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
+        assumptionStep.conclusion
+      )}`;
       assumptionGroupDiv.appendChild(assumptionDiv);
-      
+
       content.appendChild(assumptionGroupDiv);
     });
-    
+
     // 기획서 형식으로 논증 단계 표시
-    const inferenceSteps = stepsToShow.filter(s => s.type === 'inference');
+    const inferenceSteps = stepsToShow.filter((s) => s.type === "inference");
     const processedRules = new Set();
-    
+
     inferenceSteps.forEach((step, index) => {
       // 같은 규칙과 같은 전제를 가진 단계들을 그룹화
-      const ruleKey = `${step.rule}_${step.premises?.join(',') || ''}`;
+      const ruleKey = `${step.rule}_${step.premises?.join(",") || ""}`;
       if (processedRules.has(ruleKey)) return;
       processedRules.add(ruleKey);
-      
+
       // 같은 규칙과 전제를 가진 모든 단계들 찾기
-      let relatedSteps = inferenceSteps.filter(s => 
-        s.rule === step.rule && 
-        JSON.stringify(s.premises) === JSON.stringify(step.premises)
-      );
-      
-      // 단순화 규칙의 경우, 전체 proofSteps에서 같은 전제를 가진 모든 단순화 결론을 찾아 추가
-      if (step.rule === 'conjunctionElimination') {
-        const allSimplificationSteps = proofSteps.filter(s => 
-          s.rule === 'conjunctionElimination' && 
+      let relatedSteps = inferenceSteps.filter(
+        (s) =>
+          s.rule === step.rule &&
           JSON.stringify(s.premises) === JSON.stringify(step.premises)
+      );
+
+      // 단순화 규칙의 경우, 전체 proofSteps에서 같은 전제를 가진 모든 단순화 결론을 찾아 추가
+      if (step.rule === "conjunctionElimination") {
+        const allSimplificationSteps = proofSteps.filter(
+          (s) =>
+            s.rule === "conjunctionElimination" &&
+            JSON.stringify(s.premises) === JSON.stringify(step.premises)
         );
         // 기존 relatedSteps에 없는 단계들을 추가
-        allSimplificationSteps.forEach(simStep => {
-          if (!relatedSteps.find(existing => existing.id === simStep.id)) {
+        allSimplificationSteps.forEach((simStep) => {
+          if (!relatedSteps.find((existing) => existing.id === simStep.id)) {
             relatedSteps.push(simStep);
           }
         });
       }
-      
-      
+
       // 추론 그룹 생성
-      const groupDiv = document.createElement('div');
-      groupDiv.className = 'proof-group';
-      groupDiv.style.marginBottom = '25px';
-      
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "proof-group";
+      groupDiv.style.marginBottom = "25px";
+
       // 이 추론에 사용된 전제들 찾기
-      const usedPremises = step.premises ? 
-        step.premises.map(premiseId => proofSteps.find(s => s.id === premiseId)).filter(Boolean) :
-        [];
-      
+      const usedPremises = step.premises
+        ? step.premises
+            .map((premiseId) => proofSteps.find((s) => s.id === premiseId))
+            .filter(Boolean)
+        : [];
+
       // 전제들 표시
-      usedPremises.forEach(premise => {
-        const premiseDiv = document.createElement('div');
+      usedPremises.forEach((premise) => {
+        const premiseDiv = document.createElement("div");
         premiseDiv.className = `proof-step ${premise.type}`;
-        
+
         // 가정 의존성 확인 및 스타일 적용
         const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
         if (isAssumptionDep) {
-          premiseDiv.classList.add('assumption-dependent');
+          premiseDiv.classList.add("assumption-dependent");
         }
-        
-        if (premise.type === 'assumption') {
-          const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
-          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
+
+        if (premise.type === "assumption") {
+          const assumptionTypeLabel =
+            currentLang.labels?.assumption || "[가정]";
+          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
+            premise.conclusion
+          )}`;
         } else {
-          premiseDiv.innerHTML = propositionToPlainText(premise.conclusion);
+          premiseDiv.innerHTML = propositionToNaturalText(premise.conclusion);
         }
         groupDiv.appendChild(premiseDiv);
       });
-      
+
       // 추론 규칙 표시
       if (step.rule) {
-        const ruleDiv = document.createElement('div');
-        ruleDiv.className = 'proof-step-rule';
-        ruleDiv.style.textAlign = 'center';
-        ruleDiv.style.margin = '10px 0';
-        ruleDiv.style.fontStyle = 'italic';
-        ruleDiv.style.color = '#7f8c8d';
-        ruleDiv.textContent = getRuleNameInLanguage(step.rule).replace(/\s*\([^)]*\)/, ''); // 괄호 안 설명 제거
+        const ruleDiv = document.createElement("div");
+        ruleDiv.className = "proof-step-rule";
+        ruleDiv.style.textAlign = "center";
+        ruleDiv.style.margin = "10px 0";
+        ruleDiv.style.fontStyle = "normal";
+        ruleDiv.style.color = "black";
+        ruleDiv.textContent = getRuleNameInLanguage(step.rule).replace(
+          /\s*\([^)]*\)/,
+          ""
+        ); // 괄호 안 설명 제거
         groupDiv.appendChild(ruleDiv);
       }
-      
+
       // 모든 관련 결론들 표시
-      relatedSteps.forEach(relatedStep => {
-        const conclusionDiv = document.createElement('div');
+      relatedSteps.forEach((relatedStep) => {
+        const conclusionDiv = document.createElement("div");
         conclusionDiv.className = `proof-step conclusion`;
-        
+
         // 가정 의존성 확인 및 스타일 적용
         if (isStepAssumptionDependent(relatedStep, proofSteps)) {
-          conclusionDiv.classList.add('assumption-dependent');
+          conclusionDiv.classList.add("assumption-dependent");
         }
-        
-        conclusionDiv.innerHTML = propositionToPlainText(relatedStep.conclusion);
+
+        conclusionDiv.innerHTML = propositionToNaturalText(
+          relatedStep.conclusion
+        );
         groupDiv.appendChild(conclusionDiv);
       });
-      
+
       content.appendChild(groupDiv);
     });
-    
+
     // 승리 단계 표시
-    const victorySteps = stepsToShow.filter(s => s.type === 'victory');
-    victorySteps.forEach(step => {
+    const victorySteps = stepsToShow.filter((s) => s.type === "victory");
+    victorySteps.forEach((step) => {
       // 승리 추론 그룹 생성 (다른 추론과 동일한 형식)
-      const groupDiv = document.createElement('div');
-      groupDiv.className = 'proof-group';
-      groupDiv.style.marginBottom = '25px';
-      
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "proof-group";
+      groupDiv.style.marginBottom = "25px";
+
       // 승리로 이어진 전제들 찾기
-      const usedPremises = step.premises ? 
-        step.premises.map(premiseId => proofSteps.find(s => s.id === premiseId)).filter(Boolean) :
-        [];
-      
+      const usedPremises = step.premises
+        ? step.premises
+            .map((premiseId) => proofSteps.find((s) => s.id === premiseId))
+            .filter(Boolean)
+        : [];
+
       // 전제들 표시
-      usedPremises.forEach(premise => {
-        const premiseDiv = document.createElement('div');
+      usedPremises.forEach((premise) => {
+        const premiseDiv = document.createElement("div");
         premiseDiv.className = `proof-step ${premise.type}`;
-        
+
         // 가정 의존성 확인 및 스타일 적용
         const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
-        console.log('Premise dependency check:', premise.type, premise.id, isAssumptionDep);
+        console.log(
+          "Premise dependency check:",
+          premise.type,
+          premise.id,
+          isAssumptionDep
+        );
         if (isAssumptionDep) {
-          premiseDiv.classList.add('assumption-dependent');
+          premiseDiv.classList.add("assumption-dependent");
         }
-        
-        if (premise.type === 'assumption') {
-          const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
-          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
+
+        if (premise.type === "assumption") {
+          const assumptionTypeLabel =
+            currentLang.labels?.assumption || "[가정]";
+          premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
+            premise.conclusion
+          )}`;
         } else {
-          premiseDiv.innerHTML = propositionToPlainText(premise.conclusion);
+          premiseDiv.innerHTML = propositionToNaturalText(premise.conclusion);
         }
         groupDiv.appendChild(premiseDiv);
       });
-      
+
       // 승리 추론에 사용된 규칙 표시 (있다면)
       if (usedPremises.length > 0) {
-        const ruleDiv = document.createElement('div');
-        ruleDiv.className = 'proof-step-rule';
-        ruleDiv.style.textAlign = 'center';
-        ruleDiv.style.margin = '10px 0';
-        ruleDiv.style.fontStyle = 'italic';
-        ruleDiv.style.color = '#7f8c8d';
-        
+        const ruleDiv = document.createElement("div");
+        ruleDiv.className = "proof-step-rule";
+        ruleDiv.style.textAlign = "center";
+        ruleDiv.style.margin = "10px 0";
+        ruleDiv.style.fontStyle = "normal";
+        ruleDiv.style.color = "black";
+
         // 승리 단계에서 사용된 추론 규칙이 있다면 표시, 없으면 기본 텍스트
-        const ruleText = step.rule ? getRuleNameInLanguage(step.rule).replace(/\s*\([^)]*\)/, '') : '추론';
+        const ruleText = step.rule
+          ? getRuleNameInLanguage(step.rule).replace(/\s*\([^)]*\)/, "")
+          : "추론";
         ruleDiv.textContent = ruleText;
         groupDiv.appendChild(ruleDiv);
       }
-      
+
       // 승리 결론 표시
-      const conclusionDiv = document.createElement('div');
+      const conclusionDiv = document.createElement("div");
       conclusionDiv.className = `proof-step conclusion`;
-      
-      const conclusionTypeLabel = '[승리]';
-      conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToPlainText(step.conclusion)}`;
+
+      const conclusionTypeLabel = "[승리]";
+      conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToNaturalText(
+        step.conclusion
+      )}`;
       groupDiv.appendChild(conclusionDiv);
-      
+
       content.appendChild(groupDiv);
     });
   }
-  
+
   modal.classList.add("visible");
 }
 
