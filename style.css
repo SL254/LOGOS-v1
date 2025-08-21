@@ -2744,36 +2744,6 @@ input[type="checkbox"]:disabled {
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
 }
 
-.proof-step.assumption {
-  border-style: solid;
-  border-color: transparent;
-
-  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
-  border-image-source: url("assets/images/pre_li_assu.png");
-
-  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
-  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
-
-  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
-  border-image-repeat: stretch;
-  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
-}
-
-.proof-step.assumption-dependent {
-  border-style: solid;
-  border-color: transparent;
-
-  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
-  border-image-source: url("assets/images/pre_li_assu.png");
-
-  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
-  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
-
-  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
-  border-image-repeat: stretch;
-  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
-}
-
 .proof-step.conclusion {
   border-style: solid;
   border-color: transparent;
@@ -2810,6 +2780,36 @@ input[type="checkbox"]:disabled {
 
   /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
   border-image-source: url("assets/images/pre_li.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.proof-step.assumption {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.proof-step.assumption-dependent {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_assu.png");
 
   /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
   border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
