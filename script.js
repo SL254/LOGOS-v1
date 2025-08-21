@@ -402,8 +402,22 @@ function showProofReviewModal() {
             .filter(Boolean)
         : [];
 
+      let premisesToDisplay = usedPremises;
+      if (step.rule === "reductioAdAbsurdum") {
+        const assumptionStep = usedPremises.find((p) => p.type === "assumption");
+        const otherPremises = assumptionStep
+          ? usedPremises.filter((p) => p.id !== assumptionStep.id)
+          : usedPremises;
+
+        if (otherPremises.length === 1 && assumptionStep) {
+          premisesToDisplay = [assumptionStep, otherPremises[0]];
+        } else {
+          premisesToDisplay = otherPremises;
+        }
+      }
+
       // 전제들 표시
-      usedPremises.forEach((premise) => {
+      premisesToDisplay.forEach((premise) => {
         const premiseDiv = document.createElement("div");
         premiseDiv.className = `proof-step ${premise.type}`;
 
