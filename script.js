@@ -132,6 +132,18 @@ function traceVictoryProof() {
       step.premises.forEach(premiseId => traceStep(premiseId));
     }
     
+    // 조건문 도입이나 귀류법에서 사용된 가정도 추적
+    if (step.assumption && (step.rule === 'conditionalIntroduction' || step.rule === 'reductioAdAbsurdum')) {
+      const assumptionStep = proofSteps.find(s => 
+        s.type === 'assumption' && 
+        s.conclusion && 
+        arePropositionsEqual(s.conclusion, step.assumption)
+      );
+      if (assumptionStep) {
+        traceStep(assumptionStep.id);
+      }
+    }
+    
     relevantSteps.add(step);
   }
   
@@ -156,7 +168,15 @@ function traceVictoryProof() {
   
   // 추적이 제대로 안됐다면 디버깅용 로그 출력
   console.log('Traced steps:', Array.from(relevantSteps).map(s => ({ id: s.id, type: s.type, premises: s.premises })));
-  console.log('All proof steps:', proofSteps.map(s => ({ id: s.id, type: s.type, premises: s.premises })));
+  console.log('All proof steps:', proofSteps.map(s => ({ id: s.id, type: s.type, premises: s.premises, rule: s.rule, assumption: s.assumption })));
+  
+  // 가정 단계들 확인
+  const assumptionSteps = proofSteps.filter(s => s.type === 'assumption');
+  console.log('Assumption steps:', assumptionSteps.map(s => ({ 
+    id: s.id, 
+    type: s.type,
+    conclusion: s.conclusion ? propositionToPlainText(s.conclusion) : 'no conclusion'
+  })));
   
   // 중요한 추론 단계들의 premise 내용 확인
   const inferenceSteps = proofSteps.filter(s => s.type === 'inference');
@@ -164,6 +184,7 @@ function traceVictoryProof() {
     id: s.id, 
     premises: s.premises, 
     rule: s.rule,
+    assumption: s.assumption ? propositionToPlainText(s.assumption) : 'no assumption',
     conclusion: s.conclusion ? propositionToPlainText(s.conclusion) : 'no conclusion'
   })));
   
@@ -252,7 +273,7 @@ function isStepAssumptionDependent(step, allSteps) {
   
   // 추론의 경우
   if (step.type === 'inference' && step.premises) {
-    // 귀류법과 조건문 도입의 결론은 가정을 소거하므로 가정 의존이 아님
+    // 귀류법과 조건문 도입의 최종 결론은 가정을 소거하므로 가정 의존이 아님
     if (step.rule === 'reductioAdAbsurdum' || step.rule === 'conditionalIntroduction') {
       return false;
     }

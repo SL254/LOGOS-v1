@@ -368,6 +368,13 @@ function addAssumption() {
       const parsedProp = parsePropositionFromString(propositionText);
       if (parsedProp) {
         currentAssumption = parsedProp;
+        
+        // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
+        if (isRecordingProof) {
+          const stepId = recordProofStep('assumption', [], parsedProp, null, parsedProp);
+          parsedProp.proofStepId = stepId;
+        }
+        
         addPremiseToWorkbench({
           proposition: parsedProp,
           type: "assumption",
@@ -375,12 +382,6 @@ function addAssumption() {
           isAssumption: true,
           label: currentLang.labels.assumption,
         });
-        
-        // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
-        if (isRecordingProof) {
-          const stepId = recordProofStep('assumption', [], parsedProp, null, parsedProp);
-          parsedProp.proofStepId = stepId;
-        }
         
         // 가정 추가 성공 시 pop 사운드 재생
         audioManager.playSfx("pop");
@@ -490,6 +491,9 @@ function applyRule() {
     );
     const sourcePremisesForCI = [assumptionData, conclusionData];
 
+    // 논증 과정 기록을 위해 currentAssumption을 미리 저장
+    const assumptionForRecord = currentAssumption;
+
     derivedPropositionsInModal = derivedPropositionsInModal.filter(
       (p) => !p.dependsOnAssumption
     );
@@ -509,6 +513,16 @@ function applyRule() {
         if (!p) return null;
         if (p.proofStepId) return p.proofStepId;
         
+        // 가정의 경우 별도로 찾기
+        if (p.isAssumption && assumptionForRecord) {
+          const assumptionStep = proofSteps.find(step => 
+            step.type === 'assumption' && 
+            step.conclusion && 
+            arePropositionsEqual(step.conclusion, assumptionForRecord)
+          );
+          return assumptionStep ? assumptionStep.id : null;
+        }
+        
         // proofSteps에서 직접 찾기
         const proofStep = proofSteps.find(step => 
           step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
@@ -516,7 +530,7 @@ function applyRule() {
         return proofStep ? proofStep.id : null;
       }).filter(id => id);
       
-      const stepId = recordProofStep('inference', premiseIds, newConditional, 'conditionalIntroduction', currentAssumption);
+      const stepId = recordProofStep('inference', premiseIds, newConditional, 'conditionalIntroduction', assumptionForRecord);
       newConditional.proofStepId = stepId;
     }
     
