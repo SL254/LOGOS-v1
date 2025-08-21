@@ -371,7 +371,7 @@ function showProofReviewModal() {
       
       // 이 추론에 사용된 전제들 찾기
       const usedPremises = step.premises ? 
-        step.premises.map(premiseId => stepsToShow.find(s => s.id === premiseId)).filter(Boolean) :
+        step.premises.map(premiseId => proofSteps.find(s => s.id === premiseId)).filter(Boolean) :
         [];
       
       // 전제들 표시
@@ -380,8 +380,7 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
         
         // 가정 의존성 확인 및 스타일 적용
-        const isAssumptionDep = isStepAssumptionDependent(premise, stepsToShow);
-        console.log('Premise dependency check:', premise.type, premise.id, isAssumptionDep);
+        const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
         if (isAssumptionDep) {
           premiseDiv.classList.add('assumption-dependent');
         }
@@ -413,7 +412,7 @@ function showProofReviewModal() {
         conclusionDiv.className = `proof-step conclusion`;
         
         // 가정 의존성 확인 및 스타일 적용
-        if (isStepAssumptionDependent(relatedStep, stepsToShow)) {
+        if (isStepAssumptionDependent(relatedStep, proofSteps)) {
           conclusionDiv.classList.add('assumption-dependent');
         }
         
@@ -434,7 +433,7 @@ function showProofReviewModal() {
       
       // 승리로 이어진 전제들 찾기
       const usedPremises = step.premises ? 
-        step.premises.map(premiseId => stepsToShow.find(s => s.id === premiseId)).filter(Boolean) :
+        step.premises.map(premiseId => proofSteps.find(s => s.id === premiseId)).filter(Boolean) :
         [];
       
       // 전제들 표시
@@ -443,7 +442,7 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
         
         // 가정 의존성 확인 및 스타일 적용
-        const isAssumptionDep = isStepAssumptionDependent(premise, stepsToShow);
+        const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
         console.log('Premise dependency check:', premise.type, premise.id, isAssumptionDep);
         if (isAssumptionDep) {
           premiseDiv.classList.add('assumption-dependent');

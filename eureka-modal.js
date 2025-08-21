@@ -381,6 +381,7 @@ function addAssumption() {
           dependsOnAssumption: true,
           isAssumption: true,
           label: currentLang.labels.assumption,
+          proofStepId: parsedProp.proofStepId, // proofStepId 명시적으로 전달
         });
         
         // 가정 추가 성공 시 pop 사운드 재생
@@ -424,8 +425,8 @@ function cancelAssumption() {
 }
 
 function addPremiseToWorkbench(propObject) {
-  // 기존 전제들에서 proofStepId 찾아서 설정
-  if (!propObject.proofStepId && propObject.proposition) {
+  // 기존 전제들에서 proofStepId 찾아서 설정 (가정인 경우 제외)
+  if (!propObject.proofStepId && propObject.proposition && !propObject.isAssumption) {
     const existing = [...parsedAxioms, ...truePropositions].find(existing => 
       existing.proposition && arePropositionsEqual(existing.proposition, propObject.proposition)
     );
@@ -523,7 +524,12 @@ function applyRule() {
           return assumptionStep ? assumptionStep.id : null;
         }
         
-        // proofSteps에서 직접 찾기
+        // proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+        const assumptionStep = proofSteps.find(step => 
+          step.type === 'assumption' && step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+        );
+        if (assumptionStep) return assumptionStep.id;
+        
         const proofStep = proofSteps.find(step => 
           step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
         );
@@ -574,7 +580,16 @@ function applyRule() {
             return assumptionStep ? assumptionStep.id : null;
           }
           
-          return null;
+          // 다른 전제들도 proofSteps에서 찾기 (가정을 우선적으로)
+          const assumptionStep = proofSteps.find(step => 
+            step.type === 'assumption' && step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+          );
+          if (assumptionStep) return assumptionStep.id;
+          
+          const proofStep = proofSteps.find(step => 
+            step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+          );
+          return proofStep ? proofStep.id : null;
         }).filter(id => id);
         
         console.log('RAA premise IDs:', premiseIds, 'from sources:', sourcePremisesForRAA.map(p => p ? {type: p.type || 'unknown', isAssumption: p.isAssumption, proofStepId: p.proofStepId} : 'null'));
@@ -651,13 +666,20 @@ function applyRule() {
           );
           if (modalProp && modalProp.proofStepId) return modalProp.proofStepId;
           
-          // 3. 기존 전제들에서 찾기
-          const existing = [...parsedAxioms, ...truePropositions].find(existing => 
-            existing.proposition && arePropositionsEqual(existing.proposition, p.proposition)
-          );
-          if (existing && existing.proofStepId) return existing.proofStepId;
+          // 3. 기존 전제들에서 찾기 (가정인 경우 제외)
+          if (!p.isAssumption) {
+            const existing = [...parsedAxioms, ...truePropositions].find(existing => 
+              existing.proposition && arePropositionsEqual(existing.proposition, p.proposition)
+            );
+            if (existing && existing.proofStepId) return existing.proofStepId;
+          }
           
-          // 4. proofSteps에서 직접 찾기 (귀류법 등으로 생성된 정리들)
+          // 4. proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+          const assumptionStep = proofSteps.find(step => 
+            step.type === 'assumption' && step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+          );
+          if (assumptionStep) return assumptionStep.id;
+          
           const proofStep = proofSteps.find(step => 
             step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
           );
