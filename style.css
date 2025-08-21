@@ -1054,6 +1054,49 @@ summary {
   cursor: pointer;
 }
 
+.premise-selection li.newly-derived {
+  margin-bottom: 5.5px;
+  padding: 8px;
+  border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_new.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+
+  cursor: pointer;
+}
+
+.premise-selection li.newly-derived:hover {
+  border-style: solid;
+  border-color: transparent;
+
+  /* 9조각으로 나눌 이미지 (배경 패턴 포함) */
+  border-image-source: url("assets/images/pre_li_new_hover.png");
+
+  /* 이미지를 10px 기준으로 자르고, 가운데 부분으로 배경을 채움 */
+  border-image-slice: 6 fill; /* 👈 fill 키워드 추가가 핵심! */
+
+  /* 너비나 높이가 변해도 깨지지 않도록 설정 */
+  border-image-repeat: stretch;
+  background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
+}
+
+.premise-selection li.newly-derived.selected {
+  border-image-source: url("assets/images/pre_li_new_selected.png");
+}
+
 .premise-selection li.assumption-dependent {
   border-style: solid;
   border-color: transparent;
@@ -1137,7 +1180,7 @@ summary {
   border-image-source: url("assets/images/pre_li_selected.png");
 }
 
-/* 가정 의존 항목이 선택됐을 때의 스타일 */
+/* 가정 의존 항목이 선택됐을 때의 스타일 (높은 우선순위 유지) */
 .premise-selection li.assumption-dependent.selected,
 .premise-selection li.assumption-itself.selected {
   border-image-source: url("assets/images/pre_li_assu_selected.png");
@@ -1767,7 +1810,10 @@ body::after {
     url("assets/images/complete_hover.png") url("assets/images/undo_hover.png")
     url("assets/images/end_hover.png") url("assets/images/eureka_1.png")
     url("assets/images/close_hover.png") url("assets/images/pre_li_hover.png")
-    url("assets/images/pre_li_assu_hover.png") /* 카드 이미지 */
+    url("assets/images/pre_li_assu_hover.png")
+    url("assets/images/pre_li_new.png")
+    url("assets/images/pre_li_new_hover.png")
+    url("assets/images/pre_li_new_selected.png") /* 카드 이미지 */
     url("assets/images/card_white.png") url("assets/images/card_black.png")
     url("assets/images/card_white_hover.png")
     url("assets/images/card_black_hover.png")

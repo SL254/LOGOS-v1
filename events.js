@@ -86,6 +86,8 @@ function setupEventListeners() {
       // ▼▼▼ [수정] 아래 두 줄을 추가하여 모달의 내부 상태를 초기화합니다. ▼▼▼
       derivedPropositionsInModal = [];
       currentAssumption = null;
+      // 모달 세션 종료 - newly-derived 플래그 제거
+      window.currentModalSessionStart = null;
       // ▲▲▲ [수정] 코드 추가 끝 ▲▲▲
 
       if (inPuzzleMode) {

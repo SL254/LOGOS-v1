@@ -1158,16 +1158,25 @@ function completePropositionTutorial() {
 function openEurekaModalTutorial() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
+  // 현재 모달 세션 시작 시점을 기록 (튜토리얼용)
+  window.currentModalSessionStart = Date.now();
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
 
   const allSelectablePropositions = [
     ...parsedAxioms,
-    ...truePropositions.filter(
-      (p) =>
-        p.type === "user-made" || p.type === "theorem" || p.type === "victory"
-    ),
+    ...truePropositions
+      .filter(
+        (p) =>
+          p.type === "user-made" || p.type === "theorem" || p.type === "victory"
+      )
+      .map((p) => {
+        const cleaned = { ...p };
+        // 이전 세션의 newly-derived 플래그 제거 (튜토리얼용)
+        delete cleaned.isNewlyDerived;
+        return cleaned;
+      }),
   ];
   // 공리들을 그룹별로 분류하고 순서대로 추가 (튜토리얼 버전)
   const axioms = allSelectablePropositions.filter((p) => p.type === "axiom");
@@ -1587,7 +1596,7 @@ function applyRuleTutorial() {
         dependsOnAssumption: false,
         isAssumption: false,
         label: currentLang.labels.ci_theorem,
-      });
+      }, true); // 현재 세션에서 도출된 정리
       // 튜토리얼 조건부 도입 성공 시 사운드 재생
       audioManager.playSfx("pop");
     }
@@ -1608,7 +1617,7 @@ function applyRuleTutorial() {
         dependsOnAssumption: false,
         isAssumption: false,
         label: currentLang.labels.raa_theorem,
-      });
+      }, true); // 현재 세션에서 도출된 정리
       // 튜토리얼 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
     }
@@ -1635,7 +1644,7 @@ function applyRuleTutorial() {
         dependsOnAssumption: isDependent,
         isAssumption: false,
         label: currentLang.labels.theorem,
-      });
+      }, true); // 현재 세션에서 도출된 정리
     });
     // 튜토리얼 추론 규칙 적용 성공 시 사운드 재생
     audioManager.playSfx("pop");
@@ -1686,6 +1695,8 @@ function addTheoremsToListTutorial() {
       });
     }
   });
+  // 튜토리얼 모달 세션 종료 - newly-derived 플래그 제거
+  window.currentModalSessionStart = null;
   document.getElementById("eureka-modal").classList.remove("visible");
   render();
 }
@@ -1800,6 +1811,8 @@ function endTutorial() {
     .forEach((btn) => {
       btn.disabled = false;
     });
+  // 튜토리얼 모달 세션 종료 - newly-derived 플래그 제거
+  window.currentModalSessionStart = null;
   document.getElementById("eureka-modal").classList.remove("visible");
 
   // 메인 메뉴를 표시하여 게임 상태를 완전히 초기화합니다.

@@ -1,13 +1,20 @@
 function openEurekaModal() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
+  // 현재 모달 세션 시작 시점을 기록
+  window.currentModalSessionStart = Date.now();
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
   const allSelectablePropositions = [
     ...parsedAxioms,
     ...truePropositions
-      .map((p) => ({ ...p, proposition: p.proposition }))
+      .map((p) => {
+        const cleaned = { ...p, proposition: p.proposition };
+        // 이전 세션의 newly-derived 플래그 제거
+        delete cleaned.isNewlyDerived;
+        return cleaned;
+      })
       .filter((p) => p.proposition),
   ].filter(
     (propData) =>
@@ -402,7 +409,25 @@ function cancelAssumption() {
   updateConclusionPreview();
 }
 
-function addPremiseToWorkbench(propObject) {
+function addPremiseToWorkbench(propObject, isFromCurrentSession = false) {
+  // 기존의 isNewlyDerived 플래그 제거
+  if (propObject.isNewlyDerived !== undefined) {
+    delete propObject.isNewlyDerived;
+  }
+  
+  // 현재 세션에서 새로 도출된 정리인지 확인 (isFromCurrentSession이 true일 때만)
+  if (isFromCurrentSession && propObject.type === "theorem" && window.currentModalSessionStart) {
+    // 정리가 모달 세션 시작 후에 생성된 것인지 확인
+    const isNewlyDerived = !derivedPropositionsInModal.some(p => 
+      p.type === "theorem" && 
+      arePropositionsEqual(p.proposition, propObject.proposition)
+    );
+    
+    if (isNewlyDerived) {
+      propObject.isNewlyDerived = true;
+    }
+  }
+  
   derivedPropositionsInModal.push(propObject);
 }
 
@@ -471,7 +496,7 @@ function applyRule() {
       isAssumption: false,
       label: currentLang.labels.ci_theorem,
       sourcePremises: sourcePremisesForCI, // source 정보 추가
-    });
+    }, true); // 현재 세션에서 도출된 정리
     // 조건부 도입 성공 시 사운드 재생
     audioManager.playSfx("pop");
   } else if (rule === "reductioAdAbsurdum") {
@@ -507,7 +532,7 @@ function applyRule() {
         isAssumption: false,
         label: currentLang.labels.raa_theorem,
         sourcePremises: sourcePremisesForRAA, // source 정보 추가
-      });
+      }, true); // 현재 세션에서 도출된 정리
       // 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
     } else {
@@ -549,7 +574,7 @@ function applyRule() {
         isAssumption: false,
         label: currentLang.labels.theorem,
         sourcePremises: premisesData, // source 정보 추가
-      });
+      }, true); // 현재 세션에서 도출된 정리
     });
     // 추론 규칙 적용 성공 시 사운드 재생
     audioManager.playSfx("pop");
@@ -868,6 +893,8 @@ function renderModal() {
     if (propData.isAssumption) li.classList.add("assumption-itself");
     else if (propData.dependsOnAssumption)
       li.classList.add("assumption-dependent");
+    else if (propData.isNewlyDerived)
+      li.classList.add("newly-derived");
 
     // 체크박스 비활성화는 handleTutorialRuleApplication에서 처리
 
