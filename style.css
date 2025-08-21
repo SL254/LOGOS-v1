@@ -2474,7 +2474,8 @@ select:focus {
 #true-propositions,
 .premise-selection,
 #kant-hand-display,
-#credits-content {
+#credits-content,
+#proof-review-content {
   /* 핸들 색상, 트랙 색상 */
   scrollbar-color: #b15139 transparent;
   scrollbar-width: thin;
