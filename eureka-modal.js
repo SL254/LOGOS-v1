@@ -371,7 +371,7 @@ function addAssumption() {
         
         // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
         if (isRecordingProof) {
-          const stepId = recordProofStep('assumption', [], parsedProp, null, parsedProp);
+          const stepId = recordProofStep('assumption', [], parsedProp, null, null);
           parsedProp.proofStepId = stepId;
         }
         

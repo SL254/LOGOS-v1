@@ -272,17 +272,24 @@ function isStepAssumptionDependent(step, allSteps) {
   if (step.type === 'assumption') return true;
   
   // 추론의 경우
-  if (step.type === 'inference' && step.premises) {
+  if (step.type === 'inference') {
     // 귀류법과 조건문 도입의 최종 결론은 가정을 소거하므로 가정 의존이 아님
     if (step.rule === 'reductioAdAbsurdum' || step.rule === 'conditionalIntroduction') {
       return false;
     }
     
-    // 다른 추론의 경우, 전제 중 하나라도 가정 의존이면 가정 의존
-    return step.premises.some(premiseId => {
-      const premise = allSteps.find(s => s.id === premiseId);
-      return premise && isStepAssumptionDependent(premise, allSteps);
-    });
+    // step.assumption이 있으면 가정 의존
+    if (step.assumption) {
+      return true;
+    }
+    
+    // 전제 중 하나라도 가정 의존이면 가정 의존
+    if (step.premises && step.premises.length > 0) {
+      return step.premises.some(premiseId => {
+        const premise = allSteps.find(s => s.id === premiseId);
+        return premise && isStepAssumptionDependent(premise, allSteps);
+      });
+    }
   }
   
   return false;
@@ -373,7 +380,9 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
         
         // 가정 의존성 확인 및 스타일 적용
-        if (isStepAssumptionDependent(premise, stepsToShow)) {
+        const isAssumptionDep = isStepAssumptionDependent(premise, stepsToShow);
+        console.log('Premise dependency check:', premise.type, premise.id, isAssumptionDep);
+        if (isAssumptionDep) {
           premiseDiv.classList.add('assumption-dependent');
         }
         
@@ -434,7 +443,9 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
         
         // 가정 의존성 확인 및 스타일 적용
-        if (isStepAssumptionDependent(premise, stepsToShow)) {
+        const isAssumptionDep = isStepAssumptionDependent(premise, stepsToShow);
+        console.log('Premise dependency check:', premise.type, premise.id, isAssumptionDep);
+        if (isAssumptionDep) {
           premiseDiv.classList.add('assumption-dependent');
         }
         

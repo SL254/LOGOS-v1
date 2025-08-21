@@ -2834,7 +2834,6 @@ input[type="checkbox"]:disabled {
   font-weight: 500;
 }
 
-/* 논증 다시보기에서만 가정 의존 명제를 빨간색으로 표시 */
 #proof-review-content .assumption-dependent {
   font-style: italic;
 }
