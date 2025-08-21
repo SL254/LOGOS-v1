@@ -538,7 +538,7 @@ function showProofReviewModal() {
       const conclusionDiv = document.createElement("div");
       conclusionDiv.className = `proof-step conclusion`;
 
-      const conclusionTypeLabel = "[승리]";
+      const conclusionTypeLabel = currentLang.labels?.victory || "[승리]";
       conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToNaturalText(
         step.conclusion
       )}`;

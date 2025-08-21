@@ -266,6 +266,7 @@ const TEXTS = {
     victoryPredicates: ["선하다", "악하다", "지혜롭다", "어리석다"],
     contradictoryPredicates: { 선하다: "악하다", 지혜롭다: "어리석다" },
     labels: {
+      victory: "[승리]",
       proposition: "[명제]",
       axiom: "[공리]",
       victory_condition: "[승리 조건]",
@@ -560,6 +561,7 @@ const TEXTS = {
       "is wise": "is foolish",
     },
     labels: {
+      victory: "[Victory]",
       proposition: "[Prop]",
       axiom: "[Axiom]",
       victory_condition: "[WinCon]",
