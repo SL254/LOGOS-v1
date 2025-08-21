@@ -316,10 +316,25 @@ function showProofReviewModal() {
       processedRules.add(ruleKey);
       
       // 같은 규칙과 전제를 가진 모든 단계들 찾기
-      const relatedSteps = inferenceSteps.filter(s => 
+      let relatedSteps = inferenceSteps.filter(s => 
         s.rule === step.rule && 
         JSON.stringify(s.premises) === JSON.stringify(step.premises)
       );
+      
+      // 단순화 규칙의 경우, 전체 proofSteps에서 같은 전제를 가진 모든 단순화 결론을 찾아 추가
+      if (step.rule === 'conjunctionElimination') {
+        const allSimplificationSteps = proofSteps.filter(s => 
+          s.rule === 'conjunctionElimination' && 
+          JSON.stringify(s.premises) === JSON.stringify(step.premises)
+        );
+        // 기존 relatedSteps에 없는 단계들을 추가
+        allSimplificationSteps.forEach(simStep => {
+          if (!relatedSteps.find(existing => existing.id === simStep.id)) {
+            relatedSteps.push(simStep);
+          }
+        });
+      }
+      
       
       // 추론 그룹 생성
       const groupDiv = document.createElement('div');
