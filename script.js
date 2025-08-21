@@ -37,7 +37,415 @@ let kantProposition = [];
 
 let currentAxioms = []; // 현재 게임의 공리를 저장할 배열
 
+// Proof recording system
+let proofSteps = []; // 논증 과정을 기록하는 배열
+let isRecordingProof = false; // 논증 기록 중인지 여부
+let stepCounter = 0; // 논증 단계 카운터
+let victoryProposition = null; // 승리 명제 저장
+
 let aiTimeoutId = null;
+
+// --- PROOF RECORDING FUNCTIONS ---
+
+function startProofRecording() {
+  isRecordingProof = true;
+  proofSteps = [];
+  stepCounter = 0;
+  victoryProposition = null;
+}
+
+function stopProofRecording() {
+  isRecordingProof = false;
+}
+
+function recordProofStep(stepType, premises, conclusion, rule, assumption = null) {
+  if (!isRecordingProof) return;
+  
+  stepCounter++;
+  
+  const step = {
+    id: stepCounter,
+    type: stepType, // 'premise', 'assumption', 'inference', 'victory'
+    premises: premises ? [...premises] : [], // 사용된 전제들의 ID 배열
+    conclusion: conclusion ? {...conclusion} : null, // 결론 명제
+    rule: rule || null, // 사용된 추론 규칙
+    assumption: assumption ? {...assumption} : null, // 가정 명제 (있을 경우)
+    timestamp: Date.now()
+  };
+  
+  // 각 명제에 고유 ID 부여
+  if (step.conclusion && !step.conclusion.proofStepId) {
+    step.conclusion.proofStepId = stepCounter;
+  }
+  
+  proofSteps.push(step);
+  
+  // 승리 명제인지 확인
+  if (conclusion && isVictoryProposition(conclusion)) {
+    victoryProposition = {...conclusion};
+    step.type = 'victory';
+  }
+  
+  return stepCounter;
+}
+
+function isVictoryProposition(proposition) {
+  if (!proposition) return false;
+  
+  // "X는 승리한다" 또는 "X wins" 패턴 확인
+  const winTexts = currentLang.keywords.wins ? [currentLang.keywords.wins] : ["승리한다", "wins"];
+  
+  if (proposition.type === "atomic") {
+    return winTexts.some(winText => proposition.predicate.includes(winText));
+  }
+  
+  // "X는 승리한다는 거짓이다" 형태도 승리 조건
+  if (proposition.type === "negation" && proposition.proposition.type === "atomic") {
+    return winTexts.some(winText => proposition.proposition.predicate.includes(winText));
+  }
+  
+  return false;
+}
+
+function addPropositionId(proposition, stepId) {
+  if (proposition && typeof proposition === 'object') {
+    proposition.proofStepId = stepId;
+  }
+  return proposition;
+}
+
+function traceVictoryProof() {
+  if (!victoryProposition || proofSteps.length === 0) {
+    return [];
+  }
+  
+  const relevantSteps = new Set();
+  
+  function traceStep(stepId) {
+    if (!stepId) return;
+    
+    const step = proofSteps.find(s => s.id === stepId);
+    if (!step || relevantSteps.has(step)) return;
+    
+    // 전제들을 먼저 추적 (깊이 우선 탐색)
+    if (step.premises && step.premises.length > 0) {
+      step.premises.forEach(premiseId => traceStep(premiseId));
+    }
+    
+    relevantSteps.add(step);
+  }
+  
+  // 승리 명제부터 역추적 시작
+  const victoryStep = proofSteps.find(step => 
+    step.type === 'victory' || 
+    (step.conclusion && isVictoryProposition(step.conclusion))
+  );
+  
+  if (victoryStep) {
+    traceStep(victoryStep.id);
+  } else {
+    // 승리 단계가 없으면 마지막 추론 단계부터 시작
+    const lastInferenceStep = proofSteps
+      .filter(s => s.type === 'inference')
+      .sort((a, b) => b.timestamp - a.timestamp)[0];
+    
+    if (lastInferenceStep) {
+      traceStep(lastInferenceStep.id);
+    }
+  }
+  
+  // 추적이 제대로 안됐다면 디버깅용 로그 출력
+  console.log('Traced steps:', Array.from(relevantSteps).map(s => ({ id: s.id, type: s.type, premises: s.premises })));
+  console.log('All proof steps:', proofSteps.map(s => ({ id: s.id, type: s.type, premises: s.premises })));
+  
+  // 중요한 추론 단계들의 premise 내용 확인
+  const inferenceSteps = proofSteps.filter(s => s.type === 'inference');
+  console.log('Inference steps details:', inferenceSteps.map(s => ({ 
+    id: s.id, 
+    premises: s.premises, 
+    rule: s.rule,
+    conclusion: s.conclusion ? propositionToPlainText(s.conclusion) : 'no conclusion'
+  })));
+  
+  // Set을 배열로 변환하고 시간순으로 정렬하여 반환
+  return Array.from(relevantSteps).sort((a, b) => a.timestamp - b.timestamp);
+}
+
+function getRuleNameInLanguage(ruleKey) {
+  if (!currentLang || !currentLang.inferenceRules) return ruleKey;
+  
+  const ruleNames = {
+    modusPonens: currentLang.inferenceRules.modusPonens || "전건 긍정",
+    modusTollens: currentLang.inferenceRules.modusTollens || "후건 부정",
+    hypotheticalSyllogism: currentLang.inferenceRules.hypotheticalSyllogism || "가언 삼단논법",
+    disjunctiveSyllogism: currentLang.inferenceRules.disjunctiveSyllogism || "선언 삼단논법",
+    conjunctionElimination: currentLang.inferenceRules.conjunctionElimination || "연언 소거",
+    conjunctionIntroduction: currentLang.inferenceRules.conjunctionIntroduction || "연언 도입",
+    doubleNegationElimination: currentLang.inferenceRules.doubleNegationElimination || "이중 부정 소거",
+    universalApplication: currentLang.inferenceRules.universalApplication || "보편 적용",
+    existentialInstantiation: currentLang.inferenceRules.existentialInstantiation || "존재 예화",
+    conditionalIntroduction: currentLang.inferenceRules.conditionalIntroduction || "조건부 도입",
+    reductioAdAbsurdum: currentLang.inferenceRules.reductioAdAbsurdum || "귀류법"
+  };
+  
+  return ruleNames[ruleKey] || ruleKey;
+}
+
+function convertProofStepsToNaturalLanguage(steps) {
+  if (!steps || steps.length === 0) return [];
+  
+  const convertedSteps = [];
+  
+  steps.forEach(step => {
+    let stepText = '';
+    let stepType = '';
+    let isAssumptionDependent = false;
+    
+    switch (step.type) {
+      case 'premise':
+        stepType = currentLang.labels?.axiom || '[명제]';
+        stepText = propositionToPlainText(step.conclusion);
+        break;
+        
+      case 'assumption':
+        stepType = currentLang.labels?.assumption || '[가정]';
+        stepText = propositionToPlainText(step.conclusion);
+        isAssumptionDependent = true;
+        break;
+        
+      case 'inference':
+        stepType = currentLang.labels?.theorem || '[정리]';
+        stepText = propositionToPlainText(step.conclusion);
+        isAssumptionDependent = step.assumption !== null;
+        break;
+        
+      case 'victory':
+        stepType = currentLang.labels?.victory || '[승리]';
+        stepText = propositionToPlainText(step.conclusion);
+        break;
+        
+      default:
+        stepType = '[단계]';
+        stepText = step.conclusion ? propositionToPlainText(step.conclusion) : '';
+    }
+    
+    const convertedStep = {
+      id: step.id,
+      type: step.type,
+      typeLabel: stepType,
+      content: stepText,
+      rule: step.rule ? getRuleNameInLanguage(step.rule) : null,
+      isAssumptionDependent: isAssumptionDependent,
+      originalStep: step
+    };
+    
+    convertedSteps.push(convertedStep);
+  });
+  
+  return convertedSteps;
+}
+
+function showProofReviewModal() {
+  if (!proofSteps || proofSteps.length === 0) {
+    showAlert("논증 과정이 기록되지 않았습니다.");
+    return;
+  }
+  
+  const relevantSteps = traceVictoryProof();
+  const stepsToShow = relevantSteps;
+  
+  const modal = document.getElementById("proof-review-modal");
+  const title = document.getElementById("proof-review-title");
+  const content = document.getElementById("proof-review-content");
+  
+  title.textContent = currentLang.modals.proofReviewTitle;
+  
+  content.innerHTML = '';
+  
+  if (stepsToShow.length === 0) {
+    content.innerHTML = '<p>표시할 논증 과정이 없습니다.</p>';
+  } else {
+    // 먼저 가정 단계들을 독립적으로 표시
+    const assumptionSteps = stepsToShow.filter(s => s.type === 'assumption');
+    assumptionSteps.forEach(assumptionStep => {
+      const assumptionGroupDiv = document.createElement('div');
+      assumptionGroupDiv.className = 'proof-group';
+      assumptionGroupDiv.style.marginBottom = '25px';
+      
+      const assumptionDiv = document.createElement('div');
+      assumptionDiv.className = `proof-step assumption`;
+      assumptionDiv.classList.add('assumption-dependent');
+      
+      const assumptionTypeLabel = currentLang.labels?.assumption || '[가정]';
+      assumptionDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToPlainText(assumptionStep.conclusion)}`;
+      assumptionGroupDiv.appendChild(assumptionDiv);
+      
+      content.appendChild(assumptionGroupDiv);
+    });
+    
+    // 기획서 형식으로 논증 단계 표시
+    const inferenceSteps = stepsToShow.filter(s => s.type === 'inference');
+    const processedRules = new Set();
+    
+    inferenceSteps.forEach((step, index) => {
+      // 같은 규칙과 같은 전제를 가진 단계들을 그룹화
+      const ruleKey = `${step.rule}_${step.premises?.join(',') || ''}`;
+      if (processedRules.has(ruleKey)) return;
+      processedRules.add(ruleKey);
+      
+      // 같은 규칙과 전제를 가진 모든 단계들 찾기
+      const relatedSteps = inferenceSteps.filter(s => 
+        s.rule === step.rule && 
+        JSON.stringify(s.premises) === JSON.stringify(step.premises)
+      );
+      
+      // 추론 그룹 생성
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'proof-group';
+      groupDiv.style.marginBottom = '25px';
+      
+      // 이 추론에 사용된 전제들 찾기
+      const usedPremises = step.premises ? 
+        step.premises.map(premiseId => stepsToShow.find(s => s.id === premiseId)).filter(Boolean) :
+        [];
+      
+      // 전제들 표시
+      usedPremises.forEach(premise => {
+        const premiseDiv = document.createElement('div');
+        premiseDiv.className = `proof-step ${premise.type}`;
+        if (premise.type === 'assumption') {
+          premiseDiv.classList.add('assumption-dependent');
+        }
+        
+        let typeLabel;
+        if (premise.type === 'assumption') {
+          typeLabel = currentLang.labels?.assumption || '[가정]';
+        } else if (premise.type === 'premise') {
+          typeLabel = currentLang.labels?.axiom || '[공리]';
+        } else if (premise.type === 'victory') {
+          typeLabel = currentLang.labels?.victory_condition || '[승리조건]';
+        } else if (premise.type === 'user-made') {
+          typeLabel = currentLang.labels?.proposition || '[명제]';
+        } else {
+          typeLabel = currentLang.labels?.theorem || '[정리]';
+        }
+        
+        premiseDiv.innerHTML = `<span class="proof-step-type">${typeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
+        groupDiv.appendChild(premiseDiv);
+      });
+      
+      // 추론 규칙 표시
+      if (step.rule) {
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'proof-step-rule';
+        ruleDiv.style.textAlign = 'center';
+        ruleDiv.style.margin = '10px 0';
+        ruleDiv.style.fontStyle = 'italic';
+        ruleDiv.style.color = '#7f8c8d';
+        ruleDiv.textContent = getRuleNameInLanguage(step.rule).replace(/\s*\([^)]*\)/, ''); // 괄호 안 설명 제거
+        groupDiv.appendChild(ruleDiv);
+      }
+      
+      // 모든 관련 결론들 표시
+      relatedSteps.forEach(relatedStep => {
+        const conclusionDiv = document.createElement('div');
+        conclusionDiv.className = `proof-step conclusion`;
+        // 귀류법과 조건부 도입의 결과는 더 이상 가정에 의존하지 않음
+        
+        const conclusionTypeLabel = currentLang.labels?.theorem || '[정리]';
+        conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToPlainText(relatedStep.conclusion)}`;
+        groupDiv.appendChild(conclusionDiv);
+      });
+      
+      content.appendChild(groupDiv);
+    });
+    
+    // 승리 단계 표시
+    const victorySteps = stepsToShow.filter(s => s.type === 'victory');
+    victorySteps.forEach(step => {
+      // 승리 추론 그룹 생성 (다른 추론과 동일한 형식)
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'proof-group';
+      groupDiv.style.marginBottom = '25px';
+      
+      // 승리로 이어진 전제들 찾기
+      const usedPremises = step.premises ? 
+        step.premises.map(premiseId => stepsToShow.find(s => s.id === premiseId)).filter(Boolean) :
+        [];
+      
+      // 전제들 표시
+      usedPremises.forEach(premise => {
+        const premiseDiv = document.createElement('div');
+        premiseDiv.className = `proof-step ${premise.type}`;
+        if (premise.type === 'assumption') {
+          premiseDiv.classList.add('assumption-dependent');
+        }
+        
+        let typeLabel;
+        if (premise.type === 'assumption') {
+          typeLabel = currentLang.labels?.assumption || '[가정]';
+        } else if (premise.type === 'premise') {
+          typeLabel = currentLang.labels?.axiom || '[공리]';
+        } else if (premise.type === 'victory') {
+          typeLabel = currentLang.labels?.victory_condition || '[승리조건]';
+        } else if (premise.type === 'user-made') {
+          typeLabel = currentLang.labels?.proposition || '[명제]';
+        } else {
+          typeLabel = currentLang.labels?.theorem || '[정리]';
+        }
+        
+        premiseDiv.innerHTML = `<span class="proof-step-type">${typeLabel}</span> ${propositionToPlainText(premise.conclusion)}`;
+        groupDiv.appendChild(premiseDiv);
+      });
+      
+      // 승리 추론에 사용된 규칙 표시 (있다면)
+      if (usedPremises.length > 0) {
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'proof-step-rule';
+        ruleDiv.style.textAlign = 'center';
+        ruleDiv.style.margin = '10px 0';
+        ruleDiv.style.fontStyle = 'italic';
+        ruleDiv.style.color = '#7f8c8d';
+        
+        // 승리 단계에서 사용된 추론 규칙이 있다면 표시, 없으면 기본 텍스트
+        const ruleText = step.rule ? getRuleNameInLanguage(step.rule).replace(/\s*\([^)]*\)/, '') : '추론';
+        ruleDiv.textContent = ruleText;
+        groupDiv.appendChild(ruleDiv);
+      }
+      
+      // 승리 결론 표시
+      const conclusionDiv = document.createElement('div');
+      conclusionDiv.className = `proof-step conclusion`;
+      
+      const conclusionTypeLabel = '[승리]';
+      conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToPlainText(step.conclusion)}`;
+      groupDiv.appendChild(conclusionDiv);
+      
+      content.appendChild(groupDiv);
+    });
+  }
+  
+  modal.classList.add("visible");
+}
+
+function hideProofReviewModal() {
+  document.getElementById("proof-review-modal").classList.remove("visible");
+}
+
+function showProofReviewButton() {
+  const button = document.getElementById("proof-review-btn");
+  if (button) {
+    button.classList.remove("hidden");
+    button.textContent = currentLang.ui.proofReviewButton;
+  }
+}
+
+function hideProofReviewButton() {
+  const button = document.getElementById("proof-review-btn");
+  if (button) {
+    button.classList.add("hidden");
+  }
+}
 
 function parseTokensToProposition(tokens) {
   if (!tokens || tokens.length === 0) return null;
@@ -427,6 +835,7 @@ function showMainMenu() {
   document.getElementById("container").classList.add("ready");
   document.querySelector(".main-center-bg").classList.remove("hidden");
   document.getElementById("credits-btn").classList.remove("hidden");
+  hideProofReviewButton(); // 논증 다시보기 버튼 숨김
   updateMainMenuBtnVisibility();
   updateMainCenterVisibility();
 }
@@ -547,6 +956,13 @@ function setupGame(selectedCharacters, testConfig = null) {
   playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
   playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
   truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
+  
+  // 논증 기록 시스템 초기화
+  proofSteps = [];
+  isRecordingProof = false;
+  stepCounter = 0;
+  victoryProposition = null;
+  hideProofReviewButton();
 
   const p1_id = selectedCharacters.p1;
   const p2_id = selectedCharacters.p2;
@@ -1586,6 +2002,11 @@ function endGame(winner, winningProposition) {
       }
     });
   });
+  
+  // 논증 다시보기 버튼 표시 (퍼즐 모드나 튜토리얼이 아닌 경우만)
+  if (!inPuzzleMode && !inTutorialMode && proofSteps && proofSteps.length > 0) {
+    showProofReviewButton();
+  }
 }
 function checkRoundEndConditions() {
   if (gameIsOver || isThinkingTime || cardsPlayedThisTurn[currentPlayer] > 0)

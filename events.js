@@ -155,4 +155,17 @@ function setupEventListeners() {
         .classList.remove("visible");
       showMainMenu();
     });
+
+  // Proof Review Modal Events
+  document
+    .getElementById("proof-review-btn")
+    .addEventListener("click", () => {
+      showProofReviewModal();
+    });
+
+  document
+    .getElementById("close-proof-review-modal-btn")
+    .addEventListener("click", () => {
+      hideProofReviewModal();
+    });
 }

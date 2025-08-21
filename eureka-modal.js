@@ -1,6 +1,19 @@
 function openEurekaModal() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
+  
+  // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
+  if (!isThinkingTime) {
+    startProofRecording();
+    
+    // 기존 전제들(공리, 승리 조건 등)을 논증 기록에 추가
+    [...parsedAxioms, ...truePropositions].forEach(propData => {
+      if (propData.proposition) {
+        const stepId = recordProofStep('premise', [], propData.proposition, null);
+        propData.proofStepId = stepId;
+      }
+    });
+  }
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
@@ -362,6 +375,13 @@ function addAssumption() {
           isAssumption: true,
           label: currentLang.labels.assumption,
         });
+        
+        // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
+        if (isRecordingProof) {
+          const stepId = recordProofStep('assumption', [], parsedProp, null, parsedProp);
+          parsedProp.proofStepId = stepId;
+        }
+        
         // 가정 추가 성공 시 pop 사운드 재생
         audioManager.playSfx("pop");
         renderModal();
@@ -403,6 +423,16 @@ function cancelAssumption() {
 }
 
 function addPremiseToWorkbench(propObject) {
+  // 기존 전제들에서 proofStepId 찾아서 설정
+  if (!propObject.proofStepId && propObject.proposition) {
+    const existing = [...parsedAxioms, ...truePropositions].find(existing => 
+      existing.proposition && arePropositionsEqual(existing.proposition, propObject.proposition)
+    );
+    if (existing && existing.proofStepId) {
+      propObject.proofStepId = existing.proofStepId;
+    }
+  }
+  
   derivedPropositionsInModal.push(propObject);
 }
 
@@ -472,6 +502,24 @@ function applyRule() {
       label: currentLang.labels.ci_theorem,
       sourcePremises: sourcePremisesForCI, // source 정보 추가
     });
+    
+    // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
+    if (isRecordingProof) {
+      const premiseIds = sourcePremisesForCI.map(p => {
+        if (!p) return null;
+        if (p.proofStepId) return p.proofStepId;
+        
+        // proofSteps에서 직접 찾기
+        const proofStep = proofSteps.find(step => 
+          step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+        );
+        return proofStep ? proofStep.id : null;
+      }).filter(id => id);
+      
+      const stepId = recordProofStep('inference', premiseIds, newConditional, 'conditionalIntroduction', currentAssumption);
+      newConditional.proofStepId = stepId;
+    }
+    
     // 조건부 도입 성공 시 사운드 재생
     audioManager.playSfx("pop");
   } else if (rule === "reductioAdAbsurdum") {
@@ -496,6 +544,31 @@ function applyRule() {
       currentAssumption
     );
     if (result) {
+      // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - 삭제하기 전에 먼저 기록
+      if (isRecordingProof) {
+        const premiseIds = sourcePremisesForRAA.map(p => {
+          if (!p) return null;
+          if (p.proofStepId) return p.proofStepId;
+          
+          // 가정의 경우 별도로 찾기
+          if (p.isAssumption && currentAssumption) {
+            const assumptionStep = proofSteps.find(step => 
+              step.type === 'assumption' && 
+              step.conclusion && 
+              arePropositionsEqual(step.conclusion, currentAssumption)
+            );
+            return assumptionStep ? assumptionStep.id : null;
+          }
+          
+          return null;
+        }).filter(id => id);
+        
+        console.log('RAA premise IDs:', premiseIds, 'from sources:', sourcePremisesForRAA.map(p => p ? {type: p.type || 'unknown', isAssumption: p.isAssumption, proofStepId: p.proofStepId} : 'null'));
+        
+        const stepId = recordProofStep('inference', premiseIds, result, 'reductioAdAbsurdum', currentAssumption);
+        result.proofStepId = stepId;
+      }
+      
       derivedPropositionsInModal = derivedPropositionsInModal.filter(
         (p) => !p.dependsOnAssumption
       );
@@ -508,6 +581,7 @@ function applyRule() {
         label: currentLang.labels.raa_theorem,
         sourcePremises: sourcePremisesForRAA, // source 정보 추가
       });
+      
       // 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
     } else {
@@ -550,6 +624,44 @@ function applyRule() {
         label: currentLang.labels.theorem,
         sourcePremises: premisesData, // source 정보 추가
       });
+      
+      // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
+      if (isRecordingProof) {
+        const premiseIds = premisesData.map(p => {
+          // 1. 전제 데이터에서 proofStepId 찾기
+          if (p.proofStepId) return p.proofStepId;
+          
+          // 2. derivedPropositionsInModal에서 찾기 (모달 내에서 생성된 것들)
+          const modalProp = derivedPropositionsInModal.find(modal => 
+            modal.proposition && arePropositionsEqual(modal.proposition, p.proposition)
+          );
+          if (modalProp && modalProp.proofStepId) return modalProp.proofStepId;
+          
+          // 3. 기존 전제들에서 찾기
+          const existing = [...parsedAxioms, ...truePropositions].find(existing => 
+            existing.proposition && arePropositionsEqual(existing.proposition, p.proposition)
+          );
+          if (existing && existing.proofStepId) return existing.proofStepId;
+          
+          // 4. proofSteps에서 직접 찾기 (귀류법 등으로 생성된 정리들)
+          const proofStep = proofSteps.find(step => 
+            step.conclusion && arePropositionsEqual(step.conclusion, p.proposition)
+          );
+          return proofStep ? proofStep.id : null;
+        }).filter(id => id);
+        
+        
+        const stepId = recordProofStep('inference', premiseIds, conc, rule, currentAssumption);
+        conc.proofStepId = stepId;
+        
+        // 생성된 결론을 모달 내 명제들에도 ID 부여
+        const modalConclusion = derivedPropositionsInModal.find(modal => 
+          modal.proposition && arePropositionsEqual(modal.proposition, conc)
+        );
+        if (modalConclusion) {
+          modalConclusion.proofStepId = stepId;
+        }
+      }
     });
     // 추론 규칙 적용 성공 시 사운드 재생
     audioManager.playSfx("pop");
@@ -822,6 +934,27 @@ function proveVictory() {
         return;
       }
     }
+    
+    // 논증 기록 완료 및 승리 명제 기록
+    if (isRecordingProof) {
+      const victoryProp = isMyVictoryProven ? myUltimateTarget : opponentLossCondition;
+      
+      // 승리 명제를 직접 도출한 마지막 추론 단계 찾기
+      const lastInferenceStep = proofSteps
+        .filter(step => step.type === 'inference')
+        .reverse()
+        .find(step => step.conclusion && arePropositionsEqual(step.conclusion, victoryProp));
+      
+      let victoryPremises = [];
+      if (lastInferenceStep) {
+        // 마지막 추론 단계의 ID를 전제로 사용
+        victoryPremises = [lastInferenceStep.id];
+      }
+      
+      recordProofStep('victory', victoryPremises, victoryProp, null);
+      stopProofRecording();
+    }
+    
     endGame(currentPlayer);
     return;
   }

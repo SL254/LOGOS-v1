@@ -92,6 +92,7 @@ const TEXTS = {
         "게임의 기본 규칙과 논리적 추론 규칙을<br>배울 수 있습니다.",
       puzzleDesc:
         "경쟁 없이, 미리 준비된 논리 추론 퍼즐을<br>풀어볼 수 있습니다.",
+      proofReviewButton: "논증 다시보기",
     },
     modals: {
       characterSelectTitle: "철학자 선택",
@@ -107,6 +108,7 @@ const TEXTS = {
       tutorialTitle: "LOGOS ORGANON 튜토리얼",
       promptInputPlaceholder: "명제를 입력하세요...",
       puzzleTitle: "레벨 선택",
+      proofReviewTitle: "승리 논증 다시보기",
     },
 
     inferenceRules: {
@@ -375,6 +377,7 @@ const TEXTS = {
         "Learn the basic rules of the game and the rules of inference.",
       puzzleDesc:
         "Solve pre-made logical reasoning puzzles without competition.",
+      proofReviewButton: "Review Proof",
     },
     modals: {
       characterSelectTitle: "Select Your Philosopher",
@@ -390,6 +393,7 @@ const TEXTS = {
       tutorialTitle: "LOGOS ORGANON Tutorial",
       promptInputPlaceholder: "Enter proposition...",
       puzzleTitle: "Select Level",
+      proofReviewTitle: "Victory Proof Review",
     },
 
     inferenceRules: {
