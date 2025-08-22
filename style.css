@@ -1862,6 +1862,39 @@ body::after {
   flex-direction: column;
 }
 
+.press-any-key-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.press-any-key-screen h2 {
+  font-size: 2.5em;
+  color: #8B4513;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  animation: pulse 2s infinite ease-in-out;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
 .main-center-buttons {
   display: flex;
   flex-direction: column; /* 세로로 배치 */
@@ -1869,6 +1902,10 @@ body::after {
   align-items: center;
   z-index: 2;
   position: relative;
+}
+
+.main-center-buttons.invisible {
+  visibility: hidden;
 }
 
 .main-center-buttons {

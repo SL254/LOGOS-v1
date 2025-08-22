@@ -45,6 +45,7 @@ let victoryProposition = null; // 승리 명제 저장
 
 let aiTimeoutId = null;
 let victorySoundPlayed = false; // 승리 효과음 재생 여부 플래그
+let hasUserInteracted = false; // 사용자 상호작용 여부 플래그
 
 // --- LANGUAGE DETECTION FUNCTIONS ---
 
@@ -1014,13 +1015,18 @@ function initializeGame(lang) {
   setupModeDescriptionHovers();
   loadSettings();
   showMainMenu();
+  showPressAnyKeyScreen(); // 메인 메뉴 위에 Press any key 화면 표시
   addGlobalSoundEvents();
 }
 
 function showMainMenu() {
   // 새로운 오디오 시스템을 사용하도록 수정
   audioManager.stopAll();
-  audioManager.play("main-menu"); // 볼륨 60%로 메인 메뉴 음악 재생
+  
+  // 사용자가 상호작용한 경우에만 BGM 재생
+  if (hasUserInteracted) {
+    audioManager.play("main-menu"); // 볼륨 60%로 메인 메뉴 음악 재생
+  }
 
   // 메인 메뉴로 돌아갈 때 밤 테마 제거
   document.body.classList.remove("thinking-time-night");
@@ -1034,6 +1040,67 @@ function showMainMenu() {
   updateMainMenuBtnVisibility();
   updateLanguageSelectState(); // 언어 선택 드롭다운 활성화
   updateMainCenterVisibility();
+}
+
+function showPressAnyKeyScreen() {
+  // 이미 사용자가 상호작용했다면 Press any key 화면을 표시하지 않음
+  if (hasUserInteracted) {
+    activateMainMenu();
+    return;
+  }
+  
+  // Press any key 텍스트 설정
+  document.getElementById("press-any-key-text").textContent = currentLang.ui.pressAnyKeyText;
+  
+  // Press any key 화면 표시 (메인 버튼들은 자리를 차지하되 보이지 않게)
+  document.getElementById("press-any-key").classList.remove("hidden");
+  document.querySelector(".main-center-buttons").classList.add("invisible");
+  
+  // 일부 헤더 버튼들만 숨김 (전체화면, 설정 버튼은 항상 표시)
+  document.getElementById("new-game-btn").classList.add("hidden");
+  document.getElementById("credits-btn").classList.add("hidden");
+  document.getElementById("main-menu-btn").classList.add("hidden");
+  // 전체화면 버튼과 설정 버튼은 항상 표시되도록 함
+  // 논증 다시보기 버튼은 이미 숨겨져 있으므로 건드리지 않음
+  
+  // 사용자 상호작용 이벤트 리스너 등록
+  addUserInteractionListeners();
+}
+
+function activateMainMenu() {
+  // Press any key 화면 숨기고 메인 버튼들 표시
+  document.getElementById("press-any-key").classList.add("hidden");
+  document.querySelector(".main-center-buttons").classList.remove("invisible");
+  
+  // 헤더 버튼들을 개별적으로 표시 (논증 다시보기 버튼 제외)
+  document.getElementById("new-game-btn").classList.remove("hidden");
+  document.getElementById("credits-btn").classList.remove("hidden");
+  document.getElementById("main-menu-btn").classList.remove("hidden");
+  // 전체화면 버튼과 설정 버튼은 이미 표시되어 있음
+  // 논증 다시보기 버튼은 의도적으로 제외 (게임 종료 시에만 표시)
+  
+  // BGM 재생 시작
+  hasUserInteracted = true;
+  audioManager.play("main-menu");
+  
+  // 사용자 상호작용 이벤트 리스너 제거
+  removeUserInteractionListeners();
+}
+
+function addUserInteractionListeners() {
+  document.addEventListener("keydown", handleFirstUserInteraction);
+  document.addEventListener("click", handleFirstUserInteraction);
+  document.addEventListener("touchstart", handleFirstUserInteraction);
+}
+
+function removeUserInteractionListeners() {
+  document.removeEventListener("keydown", handleFirstUserInteraction);
+  document.removeEventListener("click", handleFirstUserInteraction);
+  document.removeEventListener("touchstart", handleFirstUserInteraction);
+}
+
+function handleFirstUserInteraction() {
+  activateMainMenu();
 }
 
 document.getElementById("vs-ai-battle-btn").addEventListener("click", () => {
