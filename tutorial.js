@@ -288,6 +288,7 @@ function startTutorial(startStep = 0) {
   document.getElementById("credits-btn").classList.add("hidden");
   updateMainMenuBtnVisibility();
   updateMainCenterVisibility();
+  updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
 
   document
     .querySelectorAll(

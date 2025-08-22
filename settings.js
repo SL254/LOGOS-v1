@@ -36,6 +36,9 @@ function loadSettings() {
   if (languageSelect && currentLang) {
     languageSelect.value = currentLang.langCode;
   }
+  
+  // 초기 언어 선택 상태 업데이트
+  updateLanguageSelectState();
 }
 
 function getPreferredLanguage() {
@@ -127,6 +130,15 @@ if (sfxSlider) {
     audioManager.playSfx("hover"); // 새로운 함수 호출
     saveSettings();
   });
+}
+
+// --- 언어 선택 제어 함수 ---
+function updateLanguageSelectState() {
+  const languageSelect = document.getElementById("language-select");
+  if (!languageSelect) return;
+  
+  const isMainMenuVisible = !document.querySelector(".main-center-bg")?.classList.contains("hidden");
+  languageSelect.disabled = !isMainMenuVisible;
 }
 
 // --- 언어 선택 이벤트 리스너 ---

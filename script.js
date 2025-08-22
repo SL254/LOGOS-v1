@@ -1032,6 +1032,7 @@ function showMainMenu() {
   document.getElementById("credits-btn").classList.remove("hidden");
   hideProofReviewButton(); // 논증 다시보기 버튼 숨김
   updateMainMenuBtnVisibility();
+  updateLanguageSelectState(); // 언어 선택 드롭다운 활성화
   updateMainCenterVisibility();
 }
 

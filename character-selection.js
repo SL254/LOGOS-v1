@@ -15,6 +15,7 @@ function startCharacterSelection(mode) {
 
   document.querySelector(".main-center-bg").classList.add("hidden");
   document.getElementById("credits-btn").classList.add("hidden");
+  updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
 
   updatePlayerDisplay("p1", null);
   updatePlayerDisplay("p2", null);
