@@ -1841,42 +1841,22 @@ function aiFindProof(targetProposition, initialTruths = internalTruthSet) {
     }
 
     // ★★★ 수정된 부분: 경우 논증 (Proof by Cases) 최적화 ★★★
-    // 1. 모든 '또는' 명제와 '라면' 명제를 미리 분류하여 검색 범위를 줄입니다.
-    const disjunctions = knownTruths.filter((p) => p.type === "disjunction");
-    const conditionals = knownTruths.filter((p) => p.type === "conditional");
 
-    // 2. '또는' 명제를 기준으로 탐색을 시작합니다.
-    for (const disjunction of disjunctions) {
-      // 예: (P ∨ Q)
-      const p = disjunction.left;
-      const q = disjunction.right;
+    for (let i = 0; i < knownTruths.length; i++) {
+      for (let j = i + 1; j < knownTruths.length; j++) {
+        for (let k = j + 1; k < knownTruths.length; k++) {
+          const p1 = knownTruths[i];
+          const p2 = knownTruths[j];
+          const p3 = knownTruths[k];
 
-      // 3. P로 시작하는 '라면' 명제들 (P → R)을 찾습니다.
-      const pConditionals = conditionals.filter((c) =>
-        arePropositionsEqual(c.left, p)
-      );
-      if (pConditionals.length === 0) continue; // 없으면 다음 '또는' 명제로 넘어감
+          const result = proofByCases(p1, p2, p3);
 
-      // 4. Q로 시작하는 '라면' 명제들 (Q → R)을 찾습니다.
-      const qConditionals = conditionals.filter((c) =>
-        arePropositionsEqual(c.left, q)
-      );
-      if (qConditionals.length === 0) continue; // 없으면 다음 '또는' 명제로 넘어감
-
-      // 5. 찾아낸 두 '라면' 명제 그룹을 비교하여 결론(R)이 같은 쌍을 찾습니다.
-      for (const pCond of pConditionals) {
-        for (const qCond of qConditionals) {
-          // 결론(pCond.right와 qCond.right)이 동일한지 확인
-          if (arePropositionsEqual(pCond.right, qCond.right)) {
-            const result = pCond.right; // 최종 결론 R
-            // 새로운 결론이라면 참 목록에 추가
-            if (
-              result &&
-              !tempTruths.some((t) => arePropositionsEqual(t, result))
-            ) {
-              tempTruths.push(result);
-              newTruthsFoundInIteration = true;
-            }
+          if (
+            result &&
+            !tempTruths.some((t) => arePropositionsEqual(t, result))
+          ) {
+            tempTruths.push(result);
+            newTruthsFoundInIteration = true;
           }
         }
       }
