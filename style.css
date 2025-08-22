@@ -1908,6 +1908,11 @@ body::after {
   visibility: hidden;
 }
 
+.header-buttons-left button.invisible,
+.header-buttons-right button.invisible {
+  visibility: hidden;
+}
+
 .main-center-buttons {
   display: flex;
   flex-direction: column;

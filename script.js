@@ -1056,11 +1056,12 @@ function showPressAnyKeyScreen() {
   document.getElementById("press-any-key").classList.remove("hidden");
   document.querySelector(".main-center-buttons").classList.add("invisible");
   
-  // 일부 헤더 버튼들만 숨김 (전체화면, 설정 버튼은 항상 표시)
-  document.getElementById("new-game-btn").classList.add("hidden");
-  document.getElementById("credits-btn").classList.add("hidden");
-  document.getElementById("main-menu-btn").classList.add("hidden");
-  // 전체화면 버튼과 설정 버튼은 항상 표시되도록 함
+  // 헤더 버튼들을 자리를 차지하면서 숨김
+  document.getElementById("new-game-btn").classList.add("invisible");
+  document.getElementById("credits-btn").classList.add("invisible");
+  document.getElementById("main-menu-btn").classList.add("invisible");
+  document.getElementById("fullscreen-btn").classList.add("invisible");
+  document.getElementById("settings-btn").classList.add("invisible");
   // 논증 다시보기 버튼은 이미 숨겨져 있으므로 건드리지 않음
   
   // 사용자 상호작용 이벤트 리스너 등록
@@ -1073,10 +1074,11 @@ function activateMainMenu() {
   document.querySelector(".main-center-buttons").classList.remove("invisible");
   
   // 헤더 버튼들을 개별적으로 표시 (논증 다시보기 버튼 제외)
-  document.getElementById("new-game-btn").classList.remove("hidden");
-  document.getElementById("credits-btn").classList.remove("hidden");
-  document.getElementById("main-menu-btn").classList.remove("hidden");
-  // 전체화면 버튼과 설정 버튼은 이미 표시되어 있음
+  document.getElementById("new-game-btn").classList.remove("invisible");
+  document.getElementById("credits-btn").classList.remove("invisible");
+  document.getElementById("main-menu-btn").classList.remove("invisible");
+  document.getElementById("fullscreen-btn").classList.remove("invisible");
+  document.getElementById("settings-btn").classList.remove("invisible");
   // 논증 다시보기 버튼은 의도적으로 제외 (게임 종료 시에만 표시)
   
   // BGM 재생 시작
