@@ -41,7 +41,7 @@ const audioManager = {
       end: "assets/sounds/end.wav",
       eureka: "assets/sounds/eureka.wav",
       victory: "assets/sounds/victory.wav",
-      start: "assets/sounds/start.wav",
+      start: "assets/sounds/start.ogg",
     },
   },
   buffers: {},
