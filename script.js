@@ -1090,18 +1090,59 @@ function activateMainMenu() {
 }
 
 function addUserInteractionListeners() {
-  document.addEventListener("keydown", handleFirstUserInteraction);
-  document.addEventListener("click", handleFirstUserInteraction);
-  document.addEventListener("touchstart", handleFirstUserInteraction);
+  // 키보드 이벤트를 여러 방법으로 등록
+  document.addEventListener("keydown", handleFirstUserInteraction, true);
+  document.addEventListener("keyup", handleFirstUserInteraction, true);
+  document.addEventListener("keypress", handleFirstUserInteraction, true);
+  window.addEventListener("keydown", handleFirstUserInteraction, true);
+  window.addEventListener("keyup", handleFirstUserInteraction, true);
+  
+  // 마우스 이벤트
+  document.addEventListener("click", handleFirstUserInteraction, true);
+  document.addEventListener("mousedown", handleFirstUserInteraction, true);
+  document.addEventListener("touchstart", handleFirstUserInteraction, true);
+  
+  // body에도 tabindex를 설정하여 포커스 가능하게 만들기
+  document.body.tabIndex = 0;
+  document.body.focus();
+  
+  console.log("User interaction listeners added");
 }
 
 function removeUserInteractionListeners() {
-  document.removeEventListener("keydown", handleFirstUserInteraction);
-  document.removeEventListener("click", handleFirstUserInteraction);
-  document.removeEventListener("touchstart", handleFirstUserInteraction);
+  // 모든 등록된 이벤트 리스너 제거
+  document.removeEventListener("keydown", handleFirstUserInteraction, true);
+  document.removeEventListener("keyup", handleFirstUserInteraction, true);
+  document.removeEventListener("keypress", handleFirstUserInteraction, true);
+  window.removeEventListener("keydown", handleFirstUserInteraction, true);
+  window.removeEventListener("keyup", handleFirstUserInteraction, true);
+  
+  document.removeEventListener("click", handleFirstUserInteraction, true);
+  document.removeEventListener("mousedown", handleFirstUserInteraction, true);
+  document.removeEventListener("touchstart", handleFirstUserInteraction, true);
+  
+  console.log("User interaction listeners removed");
 }
 
-function handleFirstUserInteraction() {
+function handleFirstUserInteraction(event) {
+  console.log("User interaction detected:", event?.type, event?.key || event?.button);
+  
+  // 이미 처리되었다면 중복 실행 방지
+  if (hasUserInteracted) {
+    console.log("Already interacted, skipping");
+    return;
+  }
+  
+  // 이벤트 전파 중지 및 기본 동작 방지
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  console.log("Activating main menu...");
+  
+  // 시작 효과음 재생
+  audioManager.playSfx("start");
   activateMainMenu();
 }
 
