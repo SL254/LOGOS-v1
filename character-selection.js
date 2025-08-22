@@ -99,6 +99,9 @@ function beginPlayerSelectionTurn(player) {
   charIndicator.textContent = instruction;
   charIndicator.classList.remove("hidden");
 
+  // 확인 버튼 텍스트를 현재 언어에 맞게 설정
+  document.getElementById("confirm-selection-btn").textContent = currentLang.ui.confirmSelectionButton;
+
   // [수정된 부분 2] 누락되었던 캐릭터 아이콘 생성 코드가 여기에 다시 포함되었습니다.
   const grid = document.getElementById("shared-char-grid");
   grid.innerHTML = "";
