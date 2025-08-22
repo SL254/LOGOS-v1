@@ -1724,7 +1724,8 @@ function aiDeclareEureka() {
 
   if (!myVictoryCondition || !opponentVictoryCondition) return false;
 
-  const temporaryTruthSetForAI = getTemporaryUsableTruths();
+  // AI가 사용할 수 있는 '확장된' 진리 집합 (승리 가능성 '확인'용)
+  const expandedTruthSetForAI = getTemporaryUsableTruths();
 
   const myGoal = myVictoryCondition.ultimate_target;
   const opponentGoal = {
@@ -1732,27 +1733,43 @@ function aiDeclareEureka() {
     proposition: opponentVictoryCondition.ultimate_target,
   };
 
-  if (aiFindProof(myGoal, temporaryTruthSetForAI)) {
-    console.log(
-      "AI Eureka! Proved own victory based on fair, reconstructed knowledge."
-    );
-    audioManager.playSfx("eureka");
+  let victoryFound = false;
+  let goalToProve = null;
 
-    showAlert(currentLang.alerts.aiEurekaDeclared, () =>
-      endGame(currentPlayer)
+  // 1. 승리 가능성 확인은 기존과 같이 '확장된' 세트로 빠르게 수행
+  if (aiFindProof(myGoal, expandedTruthSetForAI)) {
+    victoryFound = true;
+    goalToProve = myGoal;
+    console.log("AI Eureka! Proved own victory. Generating proof path...");
+  } else if (aiFindProof(opponentGoal, expandedTruthSetForAI)) {
+    victoryFound = true;
+    goalToProve = opponentGoal;
+    console.log(
+      "AI Eureka! Proved opponent's defeat. Generating proof path..."
     );
-    return true;
   }
 
-  if (aiFindProof(opponentGoal, temporaryTruthSetForAI)) {
-    console.log(
-      "AI Eureka! Proved opponent's defeat based on fair, reconstructed knowledge."
-    );
-    audioManager.playSfx("eureka");
+  if (victoryFound) {
+    // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
+    // 2. '경로 생성'을 위해서는 추론이 완료되지 않은 '순수 전제'들을 전달해야 함
 
-    showAlert(currentLang.alerts.aiEurekaDeclared, () =>
-      endGame(currentPlayer)
+    // 소크라테스 능력으로 비활성화된 명제를 제외한 순수 전제 목록 생성
+    const activePropositions = truePropositions.filter(
+      (p) =>
+        !p.propId || !socratesDisabledProps.some((dp) => dp.propId === p.propId)
     );
+
+    // 공리와 활성화된 명제들만 모아서 '순수한 문제집'을 만듦
+    const foundationalTruths = [
+      ...parsedAxioms.map((a) => a.proposition),
+      ...activePropositions.map((p) => p.proposition).filter(Boolean), // proposition이 있는 경우만
+    ];
+
+    // 3. '순수한 문제집'을 전달하여 '풀이 과정' 기록을 시작
+    const fullProofLog = expandAndRecordTruths(foundationalTruths);
+    // ★★★★★★★★★★ 수정 끝 ★★★★★★★★★★
+
+    prepareAndShowAIProof(fullProofLog, goalToProve);
     return true;
   }
 
@@ -3516,4 +3533,192 @@ function getOppositePredicate(predicate) {
     if (predicatePairs[key] === predicate) return key;
   }
   return null;
+}
+
+/**
+ * 모든 순방향 추론 과정을 '족보(lineage)'와 함께 기록하여 반환합니다. (버그 수정 최종본)
+ * @param {object[]} initialTruths - 추론의 시작점이 될 참인 명제 객체들의 배열.
+ * @returns {{id: number, proposition: object, rule: string, premises: number[]}[]} 모든 추론 단계를 포함하는 ProofNode 객체 배열.
+ */
+function expandAndRecordTruths(initialTruths) {
+  let stepCounter = 0;
+  let fullProofLog = [];
+
+  const addNodeIfNew = (conclusion, rule, premiseNodes) => {
+    if (!conclusion) return false;
+    const isAlreadyKnown = fullProofLog.some((p) =>
+      arePropositionsEqual(p.proposition, conclusion)
+    );
+    if (isAlreadyKnown) {
+      return false;
+    }
+    stepCounter++;
+    fullProofLog.push({
+      id: stepCounter,
+      proposition: conclusion,
+      rule: rule,
+      premises: premiseNodes.map((node) => node.id),
+    });
+    return true;
+  };
+
+  initialTruths.forEach((prop) => {
+    stepCounter++;
+    fullProofLog.push({
+      id: stepCounter,
+      proposition: prop,
+      rule: "Initial Truth",
+      premises: [],
+    });
+  });
+
+  let newTruthsFoundInIteration = true;
+  while (newTruthsFoundInIteration) {
+    newTruthsFoundInIteration = false;
+    const currentSnapshot = [...fullProofLog];
+
+    for (let i = 0; i < currentSnapshot.length; i++) {
+      const node1 = currentSnapshot[i];
+
+      // --- 1개 전제 규칙 (명시적 호출) ---
+      let onePremiseResults = [];
+      onePremiseResults.push({
+        result: doubleNegationElimination(node1.proposition),
+        rule: "doubleNegationElimination",
+      });
+      onePremiseResults.push({
+        result: existentialInstantiation(node1.proposition),
+        rule: "existentialInstantiation",
+      });
+      // conjunctionElimination은 결과가 배열이므로 별도 처리
+      const ceResult = conjunctionElimination(node1.proposition);
+      if (ceResult) {
+        onePremiseResults.push({
+          result: ceResult[0],
+          rule: "conjunctionElimination",
+        });
+        onePremiseResults.push({
+          result: ceResult[1],
+          rule: "conjunctionElimination",
+        });
+      }
+
+      for (const item of onePremiseResults) {
+        if (addNodeIfNew(item.result, item.rule, [node1])) {
+          newTruthsFoundInIteration = true;
+        }
+      }
+
+      // --- 2개 전제 규칙 (명시적 호출) ---
+      for (let j = i + 1; j < currentSnapshot.length; j++) {
+        // i + 1로 중복 조합 방지
+        const node2 = currentSnapshot[j];
+
+        let twoPremiseResults = [];
+        twoPremiseResults.push({
+          result: modusPonens(node1.proposition, node2.proposition),
+          rule: "modusPonens",
+        });
+        twoPremiseResults.push({
+          result: modusTollens(node1.proposition, node2.proposition),
+          rule: "modusTollens",
+        });
+        twoPremiseResults.push({
+          result: hypotheticalSyllogism(node1.proposition, node2.proposition),
+          rule: "hypotheticalSyllogism",
+        });
+        twoPremiseResults.push({
+          result: disjunctiveSyllogism(node1.proposition, node2.proposition),
+          rule: "disjunctiveSyllogism",
+        });
+        twoPremiseResults.push({
+          result: universalApplication(node1.proposition, node2.proposition),
+          rule: "universalApplication",
+        });
+
+        for (const item of twoPremiseResults) {
+          if (addNodeIfNew(item.result, item.rule, [node1, node2])) {
+            newTruthsFoundInIteration = true;
+          }
+        }
+
+        // --- 3개 전제 규칙 (명시적 호출) ---
+        for (let k = j + 1; k < currentSnapshot.length; k++) {
+          // j + 1로 중복 조합 방지
+          const node3 = currentSnapshot[k];
+          const pbcResult = proofByCases(
+            node1.proposition,
+            node2.proposition,
+            node3.proposition
+          );
+          if (addNodeIfNew(pbcResult, "proofByCases", [node1, node2, node3])) {
+            newTruthsFoundInIteration = true;
+          }
+        }
+      }
+    }
+  }
+  console.log(
+    `[expandAndRecordTruths] Total ${fullProofLog.length} steps recorded.`
+  );
+  return fullProofLog;
+}
+/**
+ * AI가 생성한 전체 증명 로그를 '논증 다시보기' 형식으로 변환하고,
+ * 정해진 UI 순서에 따라 모달을 표시합니다.
+ * @param {object[]} fullProofLog - expandAndRecordTruths가 반환한 전체 ProofNode 배열
+ * @param {object} goal - AI가 최종적으로 증명한 승리 명제
+ */
+function prepareAndShowAIProof(fullProofLog, goal) {
+  // --- 1단계: 데이터 준비 (기존과 동일) ---
+  proofSteps = fullProofLog.map((node) => ({
+    id: node.id,
+    conclusion: node.proposition,
+    type: node.rule === "Initial Truth" ? "premise" : "inference",
+    rule: node.rule,
+    premises: node.premises,
+    timestamp: Date.now(),
+  }));
+
+  victoryProposition = goal;
+
+  // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
+  // 2. 최종 승리 단계(goal)를 찾아서 type을 'victory'로 명시적으로 변경
+  const finalVictoryStep = proofSteps.find((step) =>
+    arePropositionsEqual(step.conclusion, goal)
+  );
+  if (finalVictoryStep) {
+    finalVictoryStep.type = "victory";
+    console.log(
+      `Victory step (ID: ${finalVictoryStep.id}) has been explicitly tagged.`
+    );
+  } else {
+    console.error(
+      "CRITICAL: The victory proposition was not found in the generated proof log."
+    );
+    // 승리 단계를 못찾으면 추적이 불가능하므로, 여기서 게임을 종료하고 오류를 알림
+    showAlert(currentLang.alerts.aiEurekaDeclared, () =>
+      endGame(currentPlayer)
+    );
+    return;
+  }
+  // ★★★★★★★★★★ 수정 끝 ★★★★★★★★★★
+
+  // --- 3단계: 유레카 선언 알림 (기존과 동일) ---
+  showAlert(currentLang.alerts.aiEurekaDeclared, () => {
+    // --- 4단계: 논증 다시보기 표시 (기존과 동일) ---
+    showProofReviewModal();
+
+    const closeBtn = document.getElementById("close-proof-review-modal-btn");
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        hideProofReviewModal();
+        endGame(currentPlayer);
+
+        // ★★★ (선택사항) 다음 게임을 위해 버튼의 onclick을 원래대로 되돌려 놓는 것이 좋습니다.
+        // 이 부분은 events.js나 초기화 로직에 따라 달라질 수 있습니다.
+        // closeBtn.onclick = hideProofReviewModal;
+      };
+    }
+  });
 }
