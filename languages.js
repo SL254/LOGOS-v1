@@ -45,7 +45,7 @@ const TEXTS = {
       yesButton: "예",
       noButton: "아니오",
       cancelAssumptionButton: "가정 취소",
-      confirmSelectionButton: "확인",
+      confirmSelectionButton: "확 인",
       pressAnyKeyText: "-아무 키나 마우스를 누르세요-",
       selectP1Philosopher: "1P, 철학자를 선택하세요",
       selectP2Philosopher: "2P, 철학자를 선택하세요",
