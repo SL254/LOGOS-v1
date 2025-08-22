@@ -1,19 +1,20 @@
 function setupEventListeners() {
   // --- EVENT LISTENERS ---
-  document.getElementById("lang-en").addEventListener("click", () => {
-    // AudioContext가 suspended 상태일 경우 즉시 활성화합니다.
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
-    }
-    initializeGame("en");
-  });
-  document.getElementById("lang-ko").addEventListener("click", () => {
-    // AudioContext가 suspended 상태일 경우 즉시 활성화합니다.
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
-    }
-    initializeGame("ko");
-  });
+  // 언어 선택 이벤트 리스너 (현재 사용 안함 - 자동 언어 감지 사용)
+  // document.getElementById("lang-en").addEventListener("click", () => {
+  //   // AudioContext가 suspended 상태일 경우 즉시 활성화합니다.
+  //   if (audioContext.state === "suspended") {
+  //     audioContext.resume();
+  //   }
+  //   initializeGame("en");
+  // });
+  // document.getElementById("lang-ko").addEventListener("click", () => {
+  //   // AudioContext가 suspended 상태일 경우 즉시 활성화합니다.
+  //   if (audioContext.state === "suspended") {
+  //     audioContext.resume();
+  //   }
+  //   initializeGame("ko");
+  // });
   document.getElementById("new-game-btn").addEventListener("click", () => {
     if (inTutorialMode) return;
 

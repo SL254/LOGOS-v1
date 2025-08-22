@@ -46,6 +46,22 @@ let victoryProposition = null; // 승리 명제 저장
 let aiTimeoutId = null;
 let victorySoundPlayed = false; // 승리 효과음 재생 여부 플래그
 
+// --- LANGUAGE DETECTION FUNCTIONS ---
+
+function detectBrowserLanguage() {
+  const browserLang = navigator.language || navigator.userLanguage || "en";
+  // 한국어 계열이면 한국어, 아니면 영어
+  if (browserLang.startsWith("ko")) {
+    return "ko";
+  }
+  return "en";
+}
+
+function autoInitializeGame() {
+  const detectedLang = detectBrowserLanguage();
+  initializeGame(detectedLang);
+}
+
 // --- PROOF RECORDING FUNCTIONS ---
 
 function startProofRecording() {
@@ -993,7 +1009,7 @@ function initializeGame(lang) {
   fullDeck = currentLang.cards;
   cardTypeOrder = currentLang.cardTypes;
 
-  document.getElementById("language-modal").classList.remove("visible");
+  // 언어 모달은 이제 기본적으로 숨겨져 있음
   setupUI();
   setupModeDescriptionHovers();
   loadSettings();
@@ -3025,3 +3041,8 @@ function promptAndSetupTestGame(selectedCharacters) {
 }
 
 setupEventListeners();
+
+// 페이지 로드 시 자동으로 브라우저 언어를 감지하여 게임 초기화
+document.addEventListener("DOMContentLoaded", () => {
+  autoInitializeGame();
+});
