@@ -44,6 +44,7 @@ let stepCounter = 0; // 논증 단계 카운터
 let victoryProposition = null; // 승리 명제 저장
 
 let aiTimeoutId = null;
+let victorySoundPlayed = false; // 승리 효과음 재생 여부 플래그
 
 // --- PROOF RECORDING FUNCTIONS ---
 
@@ -1388,6 +1389,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   document.body.classList.remove("thinking-time-night");
 
   socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
+  victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
 
   playerA_Hand = [];
   playerB_Hand = [];
@@ -2023,7 +2025,10 @@ function declareEureka(player) {
 }
 
 function endGame(winner, winningProposition) {
-  audioManager.playSfx("victory");
+  if (!victorySoundPlayed) {
+    audioManager.playSfx("victory");
+    victorySoundPlayed = true;
+  }
   audioManager.fadeOut("game-play");
   audioManager.fadeOut("thinking-time");
   gameIsOver = true;

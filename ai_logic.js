@@ -1750,7 +1750,6 @@ function aiDeclareEureka() {
   }
 
   if (victoryFound) {
-    // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
     // 2. '경로 생성'을 위해서는 추론이 완료되지 않은 '순수 전제'들을 전달해야 함
 
     // 소크라테스 능력으로 비활성화된 명제를 제외한 순수 전제 목록 생성
@@ -1767,7 +1766,6 @@ function aiDeclareEureka() {
 
     // 3. '순수한 문제집'을 전달하여 '풀이 과정' 기록을 시작
     const fullProofLog = expandAndRecordTruths(foundationalTruths);
-    // ★★★★★★★★★★ 수정 끝 ★★★★★★★★★★
 
     prepareAndShowAIProof(fullProofLog, goalToProve);
     return true;
@@ -3677,6 +3675,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
       "CRITICAL: The victory proposition was not found in the generated proof log."
     );
     // 승리 단계를 못찾으면 추적이 불가능하므로, 여기서 게임을 종료하고 오류를 알림
+    audioManager.playSfx("eureka");
     showAlert(currentLang.alerts.aiEurekaDeclared, () =>
       endGame(currentPlayer)
     );
@@ -3685,6 +3684,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
   // ★★★★★★★★★★ 수정 끝 ★★★★★★★★★★
 
   // --- 3단계: 유레카 선언 알림 (기존과 동일) ---
+  audioManager.playSfx("eureka");
   showAlert(currentLang.alerts.aiEurekaDeclared, () => {
     // --- 4단계: 논증 다시보기 표시 (기존과 동일) ---
     showProofReviewModal();
