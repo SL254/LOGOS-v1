@@ -1864,7 +1864,7 @@ body::after {
 
 .press-any-key-screen {
   position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
@@ -1875,17 +1875,17 @@ body::after {
 }
 
 .press-any-key-screen h2 {
-  font-size: 2.5em;
-  color: #8B4513;
+  font-size: 2em;
+  color: #8b4513;
   text-align: center;
   margin: 0;
-  padding: 20px;
+
   animation: pulse 2s infinite ease-in-out;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }

@@ -334,7 +334,7 @@ const TEXTS = {
       noButton: "No",
       cancelAssumptionButton: "Cancel",
       confirmSelectionButton: "Confirm",
-      pressAnyKeyText: "Press any key or click to start",
+      pressAnyKeyText: "Press any key or click",
       selectP1Philosopher: "1P, Select Your Philosopher",
       selectP2Philosopher: "2P, Select Your Philosopher",
       selectYourPhilosopher: "Select Your Philosopher",
@@ -428,7 +428,8 @@ const TEXTS = {
       incompleteProposition:
         "The proposition is incomplete or could not be parsed.",
       duplicateProposition: "The same proposition already exists.",
-      assumptionDependentNotAllowed: "Assumption-dependent propositions cannot be added.",
+      assumptionDependentNotAllowed:
+        "Assumption-dependent propositions cannot be added.",
       contradictionFound:
         "Contradiction found!<br>This proposition is not compatible with the set of true propositions.",
       undoLastCard: "Reverted the last played card.",
