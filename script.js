@@ -59,57 +59,70 @@ function stopProofRecording() {
   isRecordingProof = false;
 }
 
-function recordProofStep(stepType, premises, conclusion, rule, assumption = null) {
+function recordProofStep(
+  stepType,
+  premises,
+  conclusion,
+  rule,
+  assumption = null
+) {
   if (!isRecordingProof) return;
-  
+
   stepCounter++;
-  
+
   const step = {
     id: stepCounter,
     type: stepType, // 'premise', 'assumption', 'inference', 'victory'
     premises: premises ? [...premises] : [], // 사용된 전제들의 ID 배열
-    conclusion: conclusion ? {...conclusion} : null, // 결론 명제
+    conclusion: conclusion ? { ...conclusion } : null, // 결론 명제
     rule: rule || null, // 사용된 추론 규칙
-    assumption: assumption ? {...assumption} : null, // 가정 명제 (있을 경우)
-    timestamp: Date.now()
+    assumption: assumption ? { ...assumption } : null, // 가정 명제 (있을 경우)
+    timestamp: Date.now(),
   };
-  
+
   // 각 명제에 고유 ID 부여
   if (step.conclusion && !step.conclusion.proofStepId) {
     step.conclusion.proofStepId = stepCounter;
   }
-  
+
   proofSteps.push(step);
-  
+
   // 승리 명제인지 확인
   if (conclusion && isVictoryProposition(conclusion)) {
-    victoryProposition = {...conclusion};
-    step.type = 'victory';
+    victoryProposition = { ...conclusion };
+    step.type = "victory";
   }
-  
+
   return stepCounter;
 }
 
 function isVictoryProposition(proposition) {
   if (!proposition) return false;
-  
+
   // "X는 승리한다" 또는 "X wins" 패턴 확인
-  const winTexts = currentLang.keywords.wins ? [currentLang.keywords.wins] : ["승리한다", "wins"];
-  
+  const winTexts = currentLang.keywords.wins
+    ? [currentLang.keywords.wins]
+    : ["승리한다", "wins"];
+
   if (proposition.type === "atomic") {
-    return winTexts.some(winText => proposition.predicate.includes(winText));
+    return winTexts.some((winText) => proposition.predicate.includes(winText));
   }
-  
+
   // "X는 승리한다는 거짓이다" 형태도 승리 조건
-  if (proposition.type === "negation" && proposition.proposition.type === "atomic") {
-    return winTexts.some(winText => proposition.proposition.predicate.includes(winText));
+  if (
+    proposition.type === "negation" &&
+    proposition.proposition.type === "atomic"
+  ) {
+    return winTexts.some((winText) =>
+      proposition.proposition.predicate.includes(winText)
+    );
   }
-  
+
   return false;
 }
 
 function addPropositionId(proposition, stepId) {
-  if (proposition && typeof proposition === 'object') {
+  if (proposition && typeof proposition === "object") {
     proposition.proofStepId = stepId;
   }
   return proposition;
@@ -119,76 +132,110 @@ function traceVictoryProof() {
   if (!victoryProposition || proofSteps.length === 0) {
     return [];
   }
-  
+
   const relevantSteps = new Set();
-  
+
   function traceStep(stepId) {
     if (!stepId) return;
-    
-    const step = proofSteps.find(s => s.id === stepId);
+
+    const step = proofSteps.find((s) => s.id === stepId);
     if (!step || relevantSteps.has(step)) return;
-    
+
     // 전제들을 먼저 추적 (깊이 우선 탐색)
     if (step.premises && step.premises.length > 0) {
-      step.premises.forEach(premiseId => traceStep(premiseId));
+      step.premises.forEach((premiseId) => traceStep(premiseId));
     }
-    
+
     // 조건문 도입이나 귀류법에서 사용된 가정도 추적
-    if (step.assumption && (step.rule === 'conditionalIntroduction' || step.rule === 'reductioAdAbsurdum')) {
-      const assumptionStep = proofSteps.find(s => 
-        s.type === 'assumption' && 
-        s.conclusion && 
-        arePropositionsEqual(s.conclusion, step.assumption)
+    if (
+      step.assumption &&
+      (step.rule === "conditionalIntroduction" ||
+        step.rule === "reductioAdAbsurdum")
+    ) {
+      const assumptionStep = proofSteps.find(
+        (s) =>
+          s.type === "assumption" &&
+          s.conclusion &&
+          arePropositionsEqual(s.conclusion, step.assumption)
       );
       if (assumptionStep) {
         traceStep(assumptionStep.id);
       }
     }
-    
+
     relevantSteps.add(step);
   }
-  
+
   // 승리 명제부터 역추적 시작
-  const victoryStep = proofSteps.find(step => 
-    step.type === 'victory' || 
-    (step.conclusion && isVictoryProposition(step.conclusion))
+  const victoryStep = proofSteps.find(
+    (step) =>
+      step.type === "victory" ||
+      (step.conclusion && isVictoryProposition(step.conclusion))
   );
-  
+
   if (victoryStep) {
     traceStep(victoryStep.id);
   } else {
     // 승리 단계가 없으면 마지막 추론 단계부터 시작
     const lastInferenceStep = proofSteps
-      .filter(s => s.type === 'inference')
+      .filter((s) => s.type === "inference")
       .sort((a, b) => b.timestamp - a.timestamp)[0];
-    
+
     if (lastInferenceStep) {
       traceStep(lastInferenceStep.id);
     }
   }
-  
+
   // 추적이 제대로 안됐다면 디버깅용 로그 출력
-  console.log('Traced steps:', Array.from(relevantSteps).map(s => ({ id: s.id, type: s.type, premises: s.premises })));
-  console.log('All proof steps:', proofSteps.map(s => ({ id: s.id, type: s.type, premises: s.premises, rule: s.rule, assumption: s.assumption })));
-  
+  console.log(
+    "Traced steps:",
+    Array.from(relevantSteps).map((s) => ({
+      id: s.id,
+      type: s.type,
+      premises: s.premises,
+    }))
+  );
+  console.log(
+    "All proof steps:",
+    proofSteps.map((s) => ({
+      id: s.id,
+      type: s.type,
+      premises: s.premises,
+      rule: s.rule,
+      assumption: s.assumption,
+    }))
+  );
+
   // 가정 단계들 확인
-  const assumptionSteps = proofSteps.filter(s => s.type === 'assumption');
-  console.log('Assumption steps:', assumptionSteps.map(s => ({ 
-    id: s.id, 
-    type: s.type,
-    conclusion: s.conclusion ? propositionToPlainText(s.conclusion) : 'no conclusion'
-  })));
-  
+  const assumptionSteps = proofSteps.filter((s) => s.type === "assumption");
+  console.log(
+    "Assumption steps:",
+    assumptionSteps.map((s) => ({
+      id: s.id,
+      type: s.type,
+      conclusion: s.conclusion
+        ? propositionToPlainText(s.conclusion)
+        : "no conclusion",
+    }))
+  );
+
   // 중요한 추론 단계들의 premise 내용 확인
-  const inferenceSteps = proofSteps.filter(s => s.type === 'inference');
-  console.log('Inference steps details:', inferenceSteps.map(s => ({ 
-    id: s.id, 
-    premises: s.premises, 
-    rule: s.rule,
-    assumption: s.assumption ? propositionToPlainText(s.assumption) : 'no assumption',
-    conclusion: s.conclusion ? propositionToPlainText(s.conclusion) : 'no conclusion'
-  })));
-  
+  const inferenceSteps = proofSteps.filter((s) => s.type === "inference");
+  console.log(
+    "Inference steps details:",
+    inferenceSteps.map((s) => ({
+      id: s.id,
+      premises: s.premises,
+      rule: s.rule,
+      assumption: s.assumption
+        ? propositionToPlainText(s.assumption)
+        : "no assumption",
+      conclusion: s.conclusion
+        ? propositionToPlainText(s.conclusion)
+        : "no conclusion",
+    }))
+  );
+
   // Set을 배열로 변환하고 시간순으로 정렬하여 반환
   return Array.from(relevantSteps).sort((a, b) => a.timestamp - b.timestamp);
 }
@@ -225,42 +272,44 @@ function getRuleNameInLanguage(ruleKey) {
 
 function convertProofStepsToNaturalLanguage(steps) {
   if (!steps || steps.length === 0) return [];
-  
+
   const convertedSteps = [];
-  
-  steps.forEach(step => {
-    let stepText = '';
-    let stepType = '';
+
+  steps.forEach((step) => {
+    let stepText = "";
+    let stepType = "";
     let isAssumptionDependent = false;
-    
+
     switch (step.type) {
-      case 'premise':
-        stepType = currentLang.labels?.axiom || '[명제]';
+      case "premise":
+        stepType = currentLang.labels?.axiom || "[명제]";
         stepText = propositionToPlainText(step.conclusion);
         break;
-        
-      case 'assumption':
-        stepType = currentLang.labels?.assumption || '[가정]';
+
+      case "assumption":
+        stepType = currentLang.labels?.assumption || "[가정]";
         stepText = propositionToPlainText(step.conclusion);
         isAssumptionDependent = true;
         break;
-        
-      case 'inference':
-        stepType = currentLang.labels?.theorem || '[정리]';
+
+      case "inference":
+        stepType = currentLang.labels?.theorem || "[정리]";
         stepText = propositionToPlainText(step.conclusion);
         isAssumptionDependent = step.assumption !== null;
         break;
-        
-      case 'victory':
-        stepType = currentLang.labels?.victory || '[승리]';
+
+      case "victory":
+        stepType = currentLang.labels?.victory || "[승리]";
         stepText = propositionToPlainText(step.conclusion);
         break;
-        
+
       default:
-        stepType = '[단계]';
-        stepText = step.conclusion ? propositionToPlainText(step.conclusion) : '';
+        stepType = "[단계]";
+        stepText = step.conclusion
+          ? propositionToPlainText(step.conclusion)
+          : "";
     }
-    
+
     const convertedStep = {
       id: step.id,
       type: step.type,
@@ -268,12 +317,12 @@ function convertProofStepsToNaturalLanguage(steps) {
       content: stepText,
       rule: step.rule ? getRuleNameInLanguage(step.rule) : null,
       isAssumptionDependent: isAssumptionDependent,
-      originalStep: step
+      originalStep: step,
     };
-    
+
     convertedSteps.push(convertedStep);
   });
-  
+
   return convertedSteps;
 }
 
@@ -294,20 +343,24 @@ function isStepAssumptionDependent(step, allSteps) {
     visited.add(current.id);
 
     // BASE CASE: If we find an assumption in the history, the original step is dependent.
-    if (current.type === 'assumption') {
+    if (current.type === "assumption") {
       return true;
     }
 
     // RECURSIVE STEP: If the current step has premises, add them to the stack to check their history.
     // We do NOT add premises of a RAA/CI conclusion, because that's where an assumption is discharged.
-    if (current.type === 'inference' && (current.rule === 'reductioAdAbsurdum' || current.rule === 'conditionalIntroduction')) {
-        // This step discharges an assumption. We stop traversing this path.
-        continue;
+    if (
+      current.type === "inference" &&
+      (current.rule === "reductioAdAbsurdum" ||
+        current.rule === "conditionalIntroduction")
+    ) {
+      // This step discharges an assumption. We stop traversing this path.
+      continue;
     }
 
     if (current.premises && current.premises.length > 0) {
       for (const premiseId of current.premises) {
-        const premiseStep = allSteps.find(s => s.id === premiseId);
+        const premiseStep = allSteps.find((s) => s.id === premiseId);
         if (premiseStep) {
           stack.push(premiseStep);
         }
@@ -405,7 +458,9 @@ function showProofReviewModal() {
 
       let premisesToDisplay = usedPremises;
       if (step.rule === "reductioAdAbsurdum") {
-        const assumptionStep = usedPremises.find((p) => p.type === "assumption");
+        const assumptionStep = usedPremises.find(
+          (p) => p.type === "assumption"
+        );
         const otherPremises = assumptionStep
           ? usedPremises.filter((p) => p.id !== assumptionStep.id)
           : usedPremises;
@@ -1080,7 +1135,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
   playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
   truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
-  
+
   // 논증 기록 시스템 초기화
   proofSteps = [];
   isRecordingProof = false;
@@ -2130,7 +2185,7 @@ function endGame(winner, winningProposition) {
       }
     });
   });
-  
+
   // 논증 다시보기 버튼 표시 (퍼즐 모드나 튜토리얼이 아닌 경우만)
   if (!inPuzzleMode && !inTutorialMode && proofSteps && proofSteps.length > 0) {
     showProofReviewButton();

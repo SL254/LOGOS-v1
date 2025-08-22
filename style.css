@@ -859,7 +859,6 @@ summary {
   background-size: contain; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
-  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 .player-title-box.active-turn {
   background-image: url("assets/images/player_active.png"); /* 턴이 활성화됐을 때의 이미지 */
