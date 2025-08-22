@@ -2426,6 +2426,25 @@ button,
   width: 50px; /* 너비를 고정하여 정렬을 맞춤 */
   text-align: right;
 }
+.settings-group select {
+  font-size: 1.2em;
+  padding: 5px 10px;
+  border: 2px solid #666;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-family: "font", "Malgun Gothic", "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+.settings-group select:hover {
+  background-color: #fff;
+  border-color: #333;
+}
+.settings-group select:focus {
+  outline: none;
+  border-color: #007acc;
+  background-color: #fff;
+}
 button:focus,
 select:focus {
   outline: none;

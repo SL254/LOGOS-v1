@@ -2,6 +2,7 @@ function saveSettings() {
   const settings = {
     bgmVolume: bgmVolume,
     sfxVolume: sfxVolume,
+    language: currentLang ? currentLang.langCode : 'ko',
   };
   localStorage.setItem("logos_settings", JSON.stringify(settings));
 }
@@ -22,6 +23,7 @@ function loadSettings() {
   const bgmValueSpan = document.getElementById("bgm-volume-value");
   const sfxSlider = document.getElementById("sfx-volume-slider");
   const sfxValueSpan = document.getElementById("sfx-volume-value");
+  const languageSelect = document.getElementById("language-select");
 
   if (bgmSlider) {
     bgmSlider.value = bgmVolume;
@@ -31,6 +33,42 @@ function loadSettings() {
     sfxSlider.value = sfxVolume;
     sfxValueSpan.textContent = `${Math.round(sfxVolume * 100)}%`;
   }
+  if (languageSelect && currentLang) {
+    languageSelect.value = currentLang.langCode;
+  }
+}
+
+function getPreferredLanguage() {
+  const savedSettings = localStorage.getItem("logos_settings");
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    if (settings.language && ['ko', 'en'].includes(settings.language)) {
+      return settings.language;
+    }
+  }
+  return detectBrowserLanguage();
+}
+
+function changeLanguage(newLang) {
+  if (!['ko', 'en'].includes(newLang)) return;
+  
+  // 언어 변경
+  currentLang = TEXTS[newLang];
+  document.documentElement.lang = currentLang.langCode;
+  document.title = currentLang.ui.title;
+  
+  // 카드 덱 업데이트
+  fullDeck = currentLang.cards;
+  cardTypeOrder = currentLang.cardTypes;
+  
+  // UI 텍스트 업데이트
+  setupUI();
+  
+  // 설정 저장
+  saveSettings();
+  
+  // 효과음 재생
+  audioManager.playSfx("hover");
 }
 const settingsBtn = document.getElementById("settings-btn");
 const settingsModal = document.getElementById("settings-modal");
@@ -67,6 +105,7 @@ const bgmSlider = document.getElementById("bgm-volume-slider");
 const bgmValueSpan = document.getElementById("bgm-volume-value");
 const sfxSlider = document.getElementById("sfx-volume-slider");
 const sfxValueSpan = document.getElementById("sfx-volume-value");
+const languageSelect = document.getElementById("language-select");
 
 if (bgmSlider) {
   bgmSlider.addEventListener("input", (e) => {
@@ -87,5 +126,13 @@ if (sfxSlider) {
   sfxSlider.addEventListener("change", () => {
     audioManager.playSfx("hover"); // 새로운 함수 호출
     saveSettings();
+  });
+}
+
+// --- 언어 선택 이벤트 리스너 ---
+if (languageSelect) {
+  languageSelect.addEventListener("change", (e) => {
+    const newLang = e.target.value;
+    changeLanguage(newLang);
   });
 }

@@ -58,8 +58,8 @@ function detectBrowserLanguage() {
 }
 
 function autoInitializeGame() {
-  const detectedLang = detectBrowserLanguage();
-  initializeGame(detectedLang);
+  const preferredLang = getPreferredLanguage();
+  initializeGame(preferredLang);
 }
 
 // --- PROOF RECORDING FUNCTIONS ---
