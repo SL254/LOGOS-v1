@@ -21,6 +21,9 @@ function startCharacterSelection(mode) {
   document.getElementById("p1-ready-overlay").classList.remove("visible");
   document.getElementById("p2-ready-overlay").classList.remove("visible");
 
+  // 확인 버튼 초기화 - 항상 비활성화 상태로 시작
+  document.getElementById("confirm-selection-btn").disabled = true;
+
   if (mode === "AI") {
     // 기존 1P vs AI 모드 로직 (수정 없음)
     const turnModal = document.getElementById("turn-order-modal");
@@ -99,8 +102,9 @@ function beginPlayerSelectionTurn(player) {
   charIndicator.textContent = instruction;
   charIndicator.classList.remove("hidden");
 
-  // 확인 버튼 텍스트를 현재 언어에 맞게 설정
+  // 확인 버튼 텍스트를 현재 언어에 맞게 설정 및 비활성화
   document.getElementById("confirm-selection-btn").textContent = currentLang.ui.confirmSelectionButton;
+  document.getElementById("confirm-selection-btn").disabled = true;
 
   // [수정된 부분 2] 누락되었던 캐릭터 아이콘 생성 코드가 여기에 다시 포함되었습니다.
   const grid = document.getElementById("shared-char-grid");
@@ -136,6 +140,11 @@ function beginPlayerSelectionTurn(player) {
     handleCharacterClick(randomId);
   };
   grid.appendChild(randomIconEl);
+
+  // 모든 캐릭터 아이콘의 선택 상태 초기화
+  document.querySelectorAll(".char-icon").forEach((icon) => {
+    icon.classList.remove("selected");
+  });
 }
 
 function handleCharacterClick(philosopherId) {
