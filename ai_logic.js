@@ -140,18 +140,13 @@ function aiThinkingTimeTurn() {
     }
   }
 
-  // 소크라테스 능력 체크 (다중 사용)
+  // 소크라테스 능력 체크 (단일 사용으로 변경)
   if (philosopherId === "socrates") {
-    while (
-      abilityUsedState[thinkingTimeTurn] && // 👈 수정
-      abilityUsedState[thinkingTimeTurn].usedCount < // 👈 수정
-        abilityUsedState[thinkingTimeTurn].maxUses // 👈 수정
-    ) {
+    // 'used' 플래그를 확인하여 아직 사용하지 않았을 경우에만 실행
+    if (!abilityUsedState[thinkingTimeTurn]?.used) {
       const abilityAction = executeSocratesAbilityCheck(thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
-      } else {
-        break;
       }
     }
   }
@@ -2271,9 +2266,10 @@ function executePlatoAbilityCheck(player) {
   };
 }
 function executeSocratesAbilityCheck(player) {
-  // 1. 능력 사용 기본 조건 확인
+  // 1. 능력 사용 기본 조건 확인 (used 플래그로 변경)
   const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
-  if (abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses) {
+  if (abilityUsedState[player]?.used) {
+    // 👈 usedCount >= maxUses 대신 .used가 있는지 확인
     return null;
   }
   const availablePropositions = truePropositions.filter((p) => {
@@ -2454,10 +2450,9 @@ function executeSocratesAbilityCheck(player) {
     return null;
   }
 
-  abilityUsedState[player].usedCount++;
+  abilityUsedState[player].used = true;
   socratesDisabledProps.push({
     propId: bestCandidate.propData.propId,
-    reEnableRound: currentRound + 2,
   });
 
   console.log(
