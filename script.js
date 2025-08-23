@@ -1887,11 +1887,8 @@ function getAbilityButtonStateFor(player) {
       break; // platocase 끝
 
     case "socrates":
-      // 사유 시간이고, 사용 횟수가 남아있을 때 버튼 표시
-      if (
-        isThinkingTime &&
-        abilityUsedState[player].usedCount < abilityUsedState[player].maxUses
-      ) {
+      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
+      if (isThinkingTime && !abilityUsedState[player]?.used) {
         return {
           visible: true,
           disabled:
@@ -1908,7 +1905,8 @@ function getAbilityButtonStateFor(player) {
       break;
 
     case "descartes":
-      if (isThinkingTime) {
+      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
+      if (isThinkingTime && !abilityUsedState[player]?.used) {
         return {
           visible: true,
           // 자신의 사유 시간 턴이 아닐 경우 버튼을 비활성화합니다.
@@ -1921,7 +1919,8 @@ function getAbilityButtonStateFor(player) {
       break;
 
     case "wittgenstein":
-      if (isThinkingTime) {
+      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
+      if (isThinkingTime && !abilityUsedState[player]?.used) {
         return {
           visible: true,
           disabled:
@@ -1933,7 +1932,8 @@ function getAbilityButtonStateFor(player) {
       break;
 
     case "derrida":
-      if (isThinkingTime) {
+      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
+      if (isThinkingTime && !abilityUsedState[player]?.used) {
         return {
           visible: true,
           disabled:
@@ -1962,7 +1962,7 @@ function getAbilityButtonStateFor(player) {
         (p) => p.type === "user-made"
       ).length;
 
-      if (isThinkingTime && userMadePropsCount >= 15) {
+      if (isThinkingTime && userMadePropsCount >= 15 && !abilityUsedState[player]?.used) {
         return {
           visible: true,
           disabled:
