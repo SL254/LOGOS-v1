@@ -132,7 +132,10 @@ function aiThinkingTimeTurn() {
   // 플라톤 능력 체크 (최대 2회, 한 턴에 여러 번 사용 가능)
   if (philosopherId === "plato") {
     // 사용 가능한 횟수만큼 반복 시도
-    while (abilityUsedState[thinkingTimeTurn].usedCount < abilityUsedState[thinkingTimeTurn].maxUses) {
+    while (
+      abilityUsedState[thinkingTimeTurn].usedCount <
+      abilityUsedState[thinkingTimeTurn].maxUses
+    ) {
       const abilityAction = executePlatoAbilityCheck(thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -2601,7 +2604,7 @@ function executeDescartesAbilityCheck(player) {
   };
 }
 /**
- * AI가 흄의 '인과 비판' 능력을 사용할지 결정하고 실행하는 함수 (신규 로직)
+ * AI가 흄의 '인과성 비판' 능력을 사용할지 결정하고 실행하는 함수 (신규 로직)
  * @param {string} player - 능력을 사용하려는 AI 플레이어 ('A' 또는 'B')
  * @returns {object|null} AI 행동 요약 객체 또는 null
  */

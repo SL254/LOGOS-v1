@@ -65,7 +65,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/hu_icon.png",
     skill: {
-      ko: "인과 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해할 수 있습니다.",
+      ko: "인과성 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해할 수 있습니다.",
       en: "Critique of Causality: Once per game, during Thinking Time, you may choose one non-axiom, non-victory-condition proposition connected by 'then', and decompose it into two atomic propositions, as long as no contradiction arises.",
     },
   },
@@ -244,7 +244,7 @@ function confirmPlatoAbility() {
     // 4. 검증 성공 시, 능력 사용 상태를 기록하고 새 명제를 추가합니다.
     const philosopherId =
       thinkingTimeTurn === "A" ? playerA_Data.id : playerB_Data.id;
-    
+
     // 플라톤 능력 사용 횟수 증가
     if (abilityUsedState[thinkingTimeTurn].usedCount !== undefined) {
       abilityUsedState[thinkingTimeTurn].usedCount++;
@@ -1113,7 +1113,7 @@ function activateHumeAbility(player) {
   // 2. 범용 능력 모달 UI를 흄에 맞게 설정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    currentLang.langCode === "ko" ? "인과 비판" : "Critique of Causality"; // 👈 능력 이름 변경
+    currentLang.langCode === "ko" ? "인과성 비판" : "Critique of Causality"; // 👈 능력 이름 변경
   document.getElementById("ability-confirm-btn").textContent =
     currentLang.langCode === "ko"
       ? "이 명제를 분해하기"
