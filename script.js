@@ -1838,8 +1838,8 @@ function updateAbilityButtonsState() {
 }
 
 function getAbilityButtonStateFor(player) {
-  // 기본값: 버튼은 보이지 않고 비활성화 상태
-  const defaultState = { visible: false, disabled: true, text: "" };
+  // 기본값: 버튼은 보이되 비활성화 상태
+  const defaultState = { visible: true, disabled: true, text: currentLang.ui.useAbilityButton };
 
   // 현재 게임이 진행 중이 아니거나, 해당 플레이어의 철학자 정보가 없으면 기본 상태 반환
   if (
@@ -1847,23 +1847,15 @@ function getAbilityButtonStateFor(player) {
     (player === "A" && !playerA_Data) ||
     (player === "B" && !playerB_Data)
   ) {
-    return defaultState;
+    return { visible: false, disabled: true, text: "" }; // 게임 종료 시에만 숨김
   }
 
   const philosopherData = player === "A" ? playerA_Data : playerB_Data;
   const philosopherId = philosopherData.id;
 
-  // 해당 철학자의 능력이 이미 사용되었다면 기본 상태 반환
-  if (abilityUsedState[player]) {
-    // usedCount 기반 철학자 (소크라테스, 플라톤)
-    if (abilityUsedState[player].usedCount !== undefined && 
-        abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses) {
-      return defaultState;
-    }
-    // used 기반 철학자 (기타)
-    if (abilityUsedState[player].used) {
-      return defaultState;
-    }
+  // 사유 시간이 아니면 버튼 숨김
+  if (!isThinkingTime) {
+    return { visible: false, disabled: true, text: "" };
   }
 
   // ⭐ 앞으로 모든 능력의 조건은 이 switch 문 안에 추가됩니다.
@@ -1899,9 +1891,19 @@ function getAbilityButtonStateFor(player) {
       }
       break;
 
+    case "aristotle":
+      // 아리스토텔레스는 특별한 능력이 없습니다.
+      return { visible: false, disabled: true, text: "" };
+      break;
+      
     case "nietzsche":
       // 니체의 능력은 패시브이므로, 활성화 버튼이 필요 없습니다.
-      // 따라서 아무것도 반환하지 않고 그냥 break 합니다.
+      return { visible: false, disabled: true, text: "" };
+      break;
+      
+    case "marx":
+      // 마르크스의 능력은 게임 시작 시 효과이므로, 활성화 버튼이 필요 없습니다.
+      return { visible: false, disabled: true, text: "" };
       break;
 
     case "descartes":
