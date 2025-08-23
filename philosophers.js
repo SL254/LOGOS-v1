@@ -23,8 +23,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/socra_icon.png",
     skill: {
-      ko: "무지의 자각: 게임당 두 번, 사유 시간에 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택할 수 있습니다. 그 명제는 다음 라운드동안 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
-      en: "Awareness of Ignorance: Twice per game, during Thinking Time, you may choose one proposition from the list of true propositions that is not an axiom or a win condition. For the next round, that proposition cannot be used as a premise by either player.",
+      ko: "무지의 자각: 게임당 한 번, 사유 시간에 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택할 수 있습니다. 그 명제는 게임이 끝날 때까지 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
+      en: "Awareness of Ignorance: Once per game, during Thinking Time, you may choose one proposition from the list of true propositions that is not an axiom or a win condition. For the rest of the game, that proposition cannot be used as a premise by either player.",
     },
   },
   plato: {
@@ -350,7 +350,6 @@ function confirmSocratesAbility() {
   // 더 이상 proposition 객체를 저장할 필요가 없습니다.
   socratesDisabledProps.push({
     propId: selectedPropId,
-    reEnableRound: currentRound + 2,
   });
 
   // 능력 사용 처리
@@ -361,8 +360,8 @@ function confirmSocratesAbility() {
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
     currentLang.langCode === "ko"
-      ? "선택한 명제가 다음 라운드 동안 논증에서 제외됩니다."
-      : "The selected proposition will be excluded from arguments for the next round."
+      ? "선택한 명제가 논증에서 제외됩니다."
+      : "The selected proposition will be excluded from arguments."
   );
   render(); // UI 즉시 갱신
 }

@@ -61,7 +61,7 @@ const TEXTS = {
       platoAbilityTitle: "이데아 회상",
       platoConfirmButton: "이 명제를 보편화하기",
       socratesAbilityTitle: "무지의 자각",
-      socratesConfirmButton: "이 명제를 다음 라운드까지 제외",
+      socratesConfirmButton: "이 명제를 게임에서 제외",
       wittgensteinAbilityTitle: "사다리 걷어차기",
       wittgensteinConfirmButton: "정리 도출 및 전제 삭제",
       vsAIBattleButton: "AI 대전", // AI 대전 버튼
@@ -75,7 +75,21 @@ const TEXTS = {
       platoAbilityDescription:
         "[이데아 회상] 능력으로 '{proposition}' 명제를 도출했습니다.",
       socratesAbilityDescription:
-        "[무지의 자각] 능력으로 '{proposition}' 명제를 다음 라운드까지 논증에서 제외합니다.",
+        "[무지의 자각] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
+      wittgensteinAbilityTitle: "사다리 걷어차기",
+      wittgensteinConfirmButton: "정리 도출 및 전제 삭제",
+      vsAIBattleButton: "AI 대전", // AI 대전 버튼
+      selectAIP1Philosopher: "AI 1P, 철학자를 선택하세요", // AI 1P 선택 안내
+      selectAIP2Philosopher: "AI 2P, 철학자를 선택하세요", // AI 2P 선택 안내
+      aiSummaryTitleDefault: "AI의 턴 결과",
+      aiSummaryTitleTheorem: "AI가 새로운 정리를 도출했습니다.",
+      aiSummaryTitleAbility: "AI가 능력을 사용했습니다.",
+      abilityLabel: "[능력]",
+      theoremLabel: "[정리]",
+      platoAbilityDescription:
+        "[이데아 회상] 능력으로 '{proposition}' 명제를 도출했습니다.",
+      socratesAbilityDescription:
+        "[무지의 자각] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
       descartesAbilityDescription:
         "[방법적 회의] 능력으로 '{proposition}' 명제를 참 목록에서 삭제했습니다.",
       humeAbilityDescription:
@@ -349,7 +363,7 @@ const TEXTS = {
       platoAbilityTitle: "Recollection of Forms",
       platoConfirmButton: "Universalize this Proposition",
       socratesAbilityTitle: "Awareness of Ignorance",
-      socratesConfirmButton: "Exclude this proposition from arguments",
+      socratesConfirmButton: "Exclude this proposition from the game",
       wittgensteinAbilityTitle: "Kicking Away the Ladder",
       wittgensteinConfirmButton: "Derive Theorem & Delete Premises",
       vsAIBattleButton: "AI vs AI",
@@ -363,7 +377,21 @@ const TEXTS = {
       platoAbilityDescription:
         "[Recollection of Forms] ability was used to derive '{proposition}'.",
       socratesAbilityDescription:
-        "[Awareness of Ignorance] ability was used to exclude '{proposition}' from arguments for the next round.",
+        "[Awareness of Ignorance] ability was used to exclude '{proposition}' from arguments in the game.",
+      wittgensteinAbilityTitle: "Kicking Away the Ladder",
+      wittgensteinConfirmButton: "Derive Theorem & Delete Premises",
+      vsAIBattleButton: "AI vs AI",
+      selectAIP1Philosopher: "Select AI 1P's Philosopher",
+      selectAIP2Philosopher: "Select AI 2P's Philosopher",
+      aiSummaryTitleDefault: "AI's Turn Result",
+      aiSummaryTitleTheorem: "AI has derived a new theorem.",
+      aiSummaryTitleAbility: "AI has used an ability.",
+      abilityLabel: "[Ability]",
+      theoremLabel: "[Theorem]",
+      platoAbilityDescription:
+        "[Recollection of Forms] ability was used to derive '{proposition}'.",
+      socratesAbilityDescription:
+        "[Awareness of Ignorance] ability was used to exclude '{proposition}' from arguments in the game.",
       descartesAbilityDescription:
         "[Methodic Doubt] ability was used to delete '{proposition}' from the list of true propositions.",
       humeAbilityDescription:

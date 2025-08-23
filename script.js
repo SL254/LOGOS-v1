@@ -1539,15 +1539,19 @@ function setupGame(selectedCharacters, testConfig = null) {
   abilityUsedState = {};
 
   // 플레이어 A의 능력 상태 설정 (이미 선언된 p1_id 변수 사용)
-  if (p1_id === "hume" || p1_id === "socrates") {
+  if (p1_id === "hume") {
     abilityUsedState["A"] = { usedCount: 0, maxUses: 2 };
+  } else if (p1_id === "socrates") {
+    abilityUsedState["A"] = { usedCount: 0, maxUses: 1 };
   } else {
     abilityUsedState["A"] = { used: false };
   }
 
   // 플레이어 B의 능력 상태 설정 (이미 선언된 p2_id 변수 사용)
-  if (p2_id === "hume" || p2_id === "socrates") {
+  if (p2_id === "hume") {
     abilityUsedState["B"] = { usedCount: 0, maxUses: 2 };
+  } else if (p2_id === "socrates") {
+    abilityUsedState["B"] = { usedCount: 0, maxUses: 1 };
   } else {
     abilityUsedState["B"] = { used: false };
   }
@@ -2391,9 +2395,7 @@ function endThinkingTime() {
   audioManager.fadeOut("thinking-time"); // 기존 코드
   audioManager.play("game-play"); // 기존 코드
 
-  socratesDisabledProps = socratesDisabledProps.filter(
-    (prop) => prop.reEnableRound > currentRound + 1
-  ); // 기존 코드
+  
 
   isThinkingTime = false; // 기존 코드
   thinkingTimeTurn = null; // 기존 코드
