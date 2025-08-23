@@ -1869,15 +1869,13 @@ function getAbilityButtonStateFor(player) {
   // ⭐ 앞으로 모든 능력의 조건은 이 switch 문 안에 추가됩니다.
   switch (philosopherId) {
     case "plato":
-      // 사유 시간이고, 사용 횟수가 남아있을 때 버튼 표시
-      if (
-        isThinkingTime &&
-        abilityUsedState[player].usedCount < abilityUsedState[player].maxUses
-      ) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
-          // 자기 턴이 아닐 때(!==) 비활성화(disabled: true)
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
@@ -1887,11 +1885,13 @@ function getAbilityButtonStateFor(player) {
       break; // platocase 끝
 
     case "socrates":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
@@ -1905,12 +1905,13 @@ function getAbilityButtonStateFor(player) {
       break;
 
     case "descartes":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
-          // 자신의 사유 시간 턴이 아닐 경우 버튼을 비활성화합니다.
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
@@ -1919,37 +1920,42 @@ function getAbilityButtonStateFor(player) {
       break;
 
     case "wittgenstein":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player), // 자신의 턴일 때만 활성화
+            (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
         };
       }
       break;
 
     case "derrida":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player), // 자신의 턴일 때만 활성화
+            (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
         };
       }
       break;
     case "hume":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
-        // 👈 '게임당 1회' 규칙으로 변경
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
@@ -1957,28 +1963,33 @@ function getAbilityButtonStateFor(player) {
       }
       break;
     case "kuhn":
-      // 플레이어가 카드를 놓아 생성한 명제만 카운트
-      const userMadePropsCount = truePropositions.filter(
-        (p) => p.type === "user-made"
-      ).length;
-
-      if (isThinkingTime && userMadePropsCount >= 15 && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
+        // 플레이어가 카드를 놓아 생성한 명제만 카운트
+        const userMadePropsCount = truePropositions.filter(
+          (p) => p.type === "user-made"
+        ).length;
+        
         return {
           visible: true,
+          // 사용 완료, 조건 미달(15개 미만), 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
+            userMadePropsCount < 15 ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player), // 자신의 턴일 때만 활성화
+            (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
         };
       }
       break;
     case "kant":
-      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
-      if (isThinkingTime && !abilityUsedState[player]?.used) {
+      // 사유 시간일 때 항상 버튼 표시
+      if (isThinkingTime) {
         return {
           visible: true,
-          // 자신의 턴이 아니면 비활성화
+          // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
+            abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
