@@ -2501,7 +2501,7 @@ select:focus {
 #credits-btn:hover {
   border-image-source: url("assets/images/full_hover.png");
 }
-
+#vs-ai-test-btn,
 #vs-ai-battle-btn,
 #tutorial-puzzle-btn,
 #exit-game-btn {
