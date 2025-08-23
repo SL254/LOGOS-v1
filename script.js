@@ -1022,7 +1022,7 @@ function initializeGame(lang) {
 function showMainMenu() {
   // 새로운 오디오 시스템을 사용하도록 수정
   audioManager.stopAll();
-  
+
   // 사용자가 상호작용한 경우에만 BGM 재생
   if (hasUserInteracted) {
     audioManager.play("main-menu"); // 볼륨 60%로 메인 메뉴 음악 재생
@@ -1048,14 +1048,15 @@ function showPressAnyKeyScreen() {
     activateMainMenu();
     return;
   }
-  
+
   // Press any key 텍스트 설정
-  document.getElementById("press-any-key-text").textContent = currentLang.ui.pressAnyKeyText;
-  
+  document.getElementById("press-any-key-text").textContent =
+    currentLang.ui.pressAnyKeyText;
+
   // Press any key 화면 표시 (메인 버튼들은 자리를 차지하되 보이지 않게)
   document.getElementById("press-any-key").classList.remove("hidden");
   document.querySelector(".main-center-buttons").classList.add("invisible");
-  
+
   // 헤더 버튼들을 자리를 차지하면서 숨김
   document.getElementById("new-game-btn").classList.add("invisible");
   document.getElementById("credits-btn").classList.add("invisible");
@@ -1063,7 +1064,7 @@ function showPressAnyKeyScreen() {
   document.getElementById("fullscreen-btn").classList.add("invisible");
   document.getElementById("settings-btn").classList.add("invisible");
   // 논증 다시보기 버튼은 이미 숨겨져 있으므로 건드리지 않음
-  
+
   // 사용자 상호작용 이벤트 리스너 등록
   addUserInteractionListeners();
 }
@@ -1072,7 +1073,7 @@ function activateMainMenu() {
   // Press any key 화면 숨기고 메인 버튼들 표시
   document.getElementById("press-any-key").classList.add("hidden");
   document.querySelector(".main-center-buttons").classList.remove("invisible");
-  
+
   // 헤더 버튼들을 개별적으로 표시 (논증 다시보기 버튼 제외)
   document.getElementById("new-game-btn").classList.remove("invisible");
   document.getElementById("credits-btn").classList.remove("invisible");
@@ -1080,11 +1081,11 @@ function activateMainMenu() {
   document.getElementById("fullscreen-btn").classList.remove("invisible");
   document.getElementById("settings-btn").classList.remove("invisible");
   // 논증 다시보기 버튼은 의도적으로 제외 (게임 종료 시에만 표시)
-  
+
   // BGM 재생 시작
   hasUserInteracted = true;
   audioManager.play("main-menu");
-  
+
   // 사용자 상호작용 이벤트 리스너 제거
   removeUserInteractionListeners();
 }
@@ -1096,16 +1097,16 @@ function addUserInteractionListeners() {
   document.addEventListener("keypress", handleFirstUserInteraction, true);
   window.addEventListener("keydown", handleFirstUserInteraction, true);
   window.addEventListener("keyup", handleFirstUserInteraction, true);
-  
+
   // 마우스 이벤트
   document.addEventListener("click", handleFirstUserInteraction, true);
   document.addEventListener("mousedown", handleFirstUserInteraction, true);
   document.addEventListener("touchstart", handleFirstUserInteraction, true);
-  
+
   // body에도 tabindex를 설정하여 포커스 가능하게 만들기
   document.body.tabIndex = 0;
   document.body.focus();
-  
+
   console.log("User interaction listeners added");
 }
 
@@ -1116,31 +1117,35 @@ function removeUserInteractionListeners() {
   document.removeEventListener("keypress", handleFirstUserInteraction, true);
   window.removeEventListener("keydown", handleFirstUserInteraction, true);
   window.removeEventListener("keyup", handleFirstUserInteraction, true);
-  
+
   document.removeEventListener("click", handleFirstUserInteraction, true);
   document.removeEventListener("mousedown", handleFirstUserInteraction, true);
   document.removeEventListener("touchstart", handleFirstUserInteraction, true);
-  
+
   console.log("User interaction listeners removed");
 }
 
 function handleFirstUserInteraction(event) {
-  console.log("User interaction detected:", event?.type, event?.key || event?.button);
-  
+  console.log(
+    "User interaction detected:",
+    event?.type,
+    event?.key || event?.button
+  );
+
   // 이미 처리되었다면 중복 실행 방지
   if (hasUserInteracted) {
     console.log("Already interacted, skipping");
     return;
   }
-  
+
   // 이벤트 전파 중지 및 기본 동작 방지
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   console.log("Activating main menu...");
-  
+
   // 시작 효과음 재생
   audioManager.playSfx("start");
   activateMainMenu();
@@ -1540,7 +1545,7 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   // 플레이어 A의 능력 상태 설정 (이미 선언된 p1_id 변수 사용)
   if (p1_id === "hume") {
-    abilityUsedState["A"] = { usedCount: 0, maxUses: 2 };
+    abilityUsedState["A"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p1_id === "socrates") {
     abilityUsedState["A"] = { usedCount: 0, maxUses: 1 };
   } else {
@@ -1549,7 +1554,7 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   // 플레이어 B의 능력 상태 설정 (이미 선언된 p2_id 변수 사용)
   if (p2_id === "hume") {
-    abilityUsedState["B"] = { usedCount: 0, maxUses: 2 };
+    abilityUsedState["B"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p2_id === "socrates") {
     abilityUsedState["B"] = { usedCount: 0, maxUses: 1 };
   } else {
@@ -1924,16 +1929,14 @@ function getAbilityButtonStateFor(player) {
       }
       break;
     case "hume":
-      // 사유 시간이고, 사용 횟수가 남아있을 때 버튼 표시
-      if (
-        isThinkingTime &&
-        abilityUsedState[player].usedCount < abilityUsedState[player].maxUses
-      ) {
+      // 사유 시간이고, 아직 능력을 사용하지 않았을 때 버튼 표시
+      if (isThinkingTime && !abilityUsedState[player]?.used) {
+        // 👈 '게임당 1회' 규칙으로 변경
         return {
           visible: true,
           disabled:
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player), // 자신의 턴일 때만 활성화
+            (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
         };
       }
@@ -2394,8 +2397,6 @@ function startThinkingTime() {
 function endThinkingTime() {
   audioManager.fadeOut("thinking-time"); // 기존 코드
   audioManager.play("game-play"); // 기존 코드
-
-  
 
   isThinkingTime = false; // 기존 코드
   thinkingTimeTurn = null; // 기존 코드

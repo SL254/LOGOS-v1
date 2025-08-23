@@ -161,18 +161,13 @@ function aiThinkingTimeTurn() {
       }
     }
   }
-  // 흄 능력 체크 (2회 사용)
+  // 흄 능력 체크 (단일 사용으로 수정)
   if (philosopherId === "hume") {
-    while (
-      abilityUsedState[thinkingTimeTurn] && // 👈 수정
-      abilityUsedState[thinkingTimeTurn].usedCount < // 👈 수정
-        abilityUsedState[thinkingTimeTurn].maxUses // 👈 수정
-    ) {
+    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+      // 👈 이렇게 바꿔야 합니다.
       const abilityAction = executeHumeAbilityCheck(thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
-      } else {
-        break;
       }
     }
   }
@@ -2597,25 +2592,28 @@ function executeDescartesAbilityCheck(player) {
     ),
   };
 }
+/**
+ * AI가 흄의 '인과 비판' 능력을 사용할지 결정하고 실행하는 함수 (신규 로직)
+ * @param {string} player - 능력을 사용하려는 AI 플레이어 ('A' 또는 'B')
+ * @returns {object|null} AI 행동 요약 객체 또는 null
+ */
 function executeHumeAbilityCheck(player) {
-  // --- 1. 기본 조건 확인 ---
+  // --- 기본 조건 검사 ---
   const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
-  if (
-    !abilityUsedState[player] ||
-    abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses
-  ) {
-    return null; // 사용 횟수 초과
+  if (abilityUsedState[player]?.used) {
+    return null; // 이미 능력을 사용했으면 종료
   }
 
+  // --- 1. '라면'으로 연결된 명제만 찾기 (핵심 수정) ---
   const availablePropositions = truePropositions.filter(
-    (p) => p.proposition && p.proposition.type === "universal" && p.propId
+    (p) => p.propId && p.proposition && p.proposition.type === "conditional" // 👈 '라면' 명제만 필터링
   );
 
   if (availablePropositions.length === 0) {
-    return null; // 교체할 명제 없음
+    return null; // 분해할 후보 명제가 없으면 종료
   }
 
-  // --- 2. 위협 점수 산출을 위한 데이터 준비 ---
+  // AI와 상대방의 승리 조건 데이터 가져오기 (데리다 로직과 동일)
   const opponent = player === "A" ? "B" : "A";
   const myVictoryData = truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
@@ -2626,98 +2624,136 @@ function executeHumeAbilityCheck(player) {
 
   if (!myVictoryData || !opponentVictoryData) return null;
 
-  const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
-  const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = currentLang.contradictoryPredicates;
-  const myOppositePredicate =
-    predicatePairs[myWinPredicate] ||
-    Object.keys(predicatePairs).find(
-      (key) => predicatePairs[key] === myWinPredicate
+  let scoredCandidates = [];
+
+  // 모든 후보 명제를 순회하며 평가 (데리다 로직과 동일)
+  for (const propData of availablePropositions) {
+    const originalProp = propData.proposition;
+    const { left, right } = originalProp;
+
+    // --- 2. 알아서 분해되는 명제 거르기 (데리다 로직과 동일) ---
+    if (aiFindProof(originalProp.left, internalTruthSet)) {
+      continue;
+    }
+
+    // --- 3. 안전성 검사 (데리다 로직과 동일) ---
+    const propositionsWithoutOriginal = truePropositions.filter(
+      (p) => p.propId !== propData.propId
     );
+    let tempTruthSet = parsedAxioms.map((a) => a.proposition);
+    propositionsWithoutOriginal.forEach((p) => {
+      if (p.proposition) tempTruthSet.push(p.proposition);
+    });
 
-  // --- 3. 각 후보의 '위협 점수' 계산 ---
-  const scoredCandidates = availablePropositions.map((propData) => {
-    let score = 0;
-    const candidateProp = propData.proposition;
+    const baseVerification = verifyAndExpandTruths(null, tempTruthSet);
+    if (!baseVerification.success) continue;
+    let truthSetAfterDeconstruction = baseVerification.expandedSet;
 
-    // 상대 승리 조건과 직접적으로 관련될수록 위협적
-    if (candidateProp.predicate === opponentWinPredicate) {
-      score += 5000;
+    const verification1 = verifyAndExpandTruths(
+      left,
+      truthSetAfterDeconstruction
+    );
+    if (!verification1.success) continue;
+
+    const verification2 = verifyAndExpandTruths(
+      right,
+      verification1.expandedSet
+    );
+    if (!verification2.success) continue;
+
+    const finalTruthSet = verification2.expandedSet;
+
+    if (aiFindProof(opponentVictoryData.ultimate_target, finalTruthSet)) {
+      continue;
     }
 
-    // 내 승리 조건에 반대될수록 위협적
-    if (
-      myOppositePredicate &&
-      candidateProp.predicate === myOppositePredicate
-    ) {
-      score += 4000;
-    }
+    // --- 4. 기회 검사 및 점수화 (데리다 로직과 동일) ---
+    let currentScore = 0;
+    const myUltimateGoal = myVictoryData.ultimate_target;
+    const myWinPredicate = myVictoryData.core_goal.predicate;
 
-    return { propData, score };
-  });
-
-  scoredCandidates.sort((a, b) => b.score - a.score);
-
-  const bestCandidate =
-    scoredCandidates.length > 0 ? scoredCandidates[0] : null;
-
-  // --- 4. 실행 결정 및 능력 발동 ---
-  const MINIMUM_THREAT_SCORE = 2000; // 기준 점수 설정
-  if (!bestCandidate || bestCandidate.score < MINIMUM_THREAT_SCORE) {
-    return null; // 사용할 가치가 있는 명제가 없음
-  }
-
-  console.log(
-    `%cAI Hume used Problem of Induction on: ${propositionToNaturalText(
-      bestCandidate.propData.proposition
-    )} (Threat Score: ${bestCandidate.score})`,
-    "color: #e67e22; font-weight: bold;"
-  );
-
-  const propIndex = truePropositions.findIndex(
-    (p) => p.propId === bestCandidate.propData.propId
-  );
-  if (propIndex === -1) return null;
-
-  const originalProp = truePropositions[propIndex].proposition;
-  const newExistentialProp = {
-    type: "existential",
-    entity: originalProp.entity,
-    predicate: originalProp.predicate,
-  };
-
-  // 실제 게임 상태 변경
-  truePropositions[propIndex].proposition = newExistentialProp;
-  truePropositions[propIndex].original_cards = null; // 렌더링을 위해 카드 정보 초기화
-  truePropositions[propIndex].type = "theorem";
-  truePropositions[propIndex].source = "hume_ability";
-
-  abilityUsedState[player].usedCount++;
-
-  // 진리 집합 재구성
-  let newTruthSet = parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = truePropositions
-    .filter((p) => p.proposition)
-    .map((p) => p.proposition);
-
-  for (const prop of propositionsToReverify) {
-    const verificationResult = verifyAndExpandTruths(prop, newTruthSet);
-    if (verificationResult.success) {
-      newTruthSet = verificationResult.expandedSet;
+    if (aiFindProof(myUltimateGoal, finalTruthSet)) {
+      currentScore += 100000;
     } else {
-      console.error(
-        "Critical error after AI Hume's ability: Inconsistency found."
-      );
+      const scoreComponent = (component) => {
+        let score = 0;
+        if (
+          component.type === "universal" &&
+          component.predicate === myWinPredicate
+        ) {
+          score += 5000;
+        } else if (
+          component.type === "existential" &&
+          component.predicate === myWinPredicate
+        ) {
+          score += 2000;
+        }
+        return score;
+      };
+      currentScore += scoreComponent(left);
+      currentScore += scoreComponent(right);
+    }
+
+    if (currentScore > 0) {
+      scoredCandidates.push({
+        propData,
+        score: currentScore,
+        finalTruthSet,
+      });
     }
   }
-  internalTruthSet = newTruthSet;
+
+  if (scoredCandidates.length === 0) return null;
+
+  // --- 5. 최종 선택 및 실행 (데리다 로직과 동일) ---
+  scoredCandidates.sort((a, b) => b.score - a.score);
+  const bestCandidate = scoredCandidates[0];
+
+  const MINIMUM_SCORE_THRESHOLD = 2001;
+  if (bestCandidate.score < MINIMUM_SCORE_THRESHOLD) {
+    return null;
+  }
+
+  // --- 능력 실행 ---
+  console.log(
+    `%c[AI Hume] Target Acquired: ${propositionToNaturalText(
+      // 👈 로그 메시지 변경
+      bestCandidate.propData.proposition
+    )} (Score: ${bestCandidate.score})`,
+    "color: #e67e22; font-weight: bold;" // 흄의 색상 코드로 변경
+  );
+
+  abilityUsedState[player].used = true;
+
+  truePropositions = truePropositions.filter(
+    (p) => p.propId !== bestCandidate.propData.propId
+  );
+
+  const { left, right } = bestCandidate.propData.proposition;
+  const newProps = [
+    {
+      propId: `prop_${Date.now()}_${Math.random()}`,
+      type: "theorem",
+      source: "hume_ability", // 👈 출처를 흄으로 변경
+      proposition: left,
+    },
+    {
+      propId: `prop_${Date.now()}_${Math.random()}`,
+      type: "theorem",
+      source: "hume_ability", // 👈 출처를 흄으로 변경
+      proposition: right,
+    },
+  ];
+  truePropositions.push(...newProps);
+  internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
   return {
     type: "ability",
     description: currentLang.ui.humeAbilityDescription.replace(
+      // 👈 흄의 설명 텍스트 사용
       "{proposition}",
-      propositionToNaturalText(originalProp)
+      propositionToNaturalText(bestCandidate.propData.proposition)
     ),
   };
 }

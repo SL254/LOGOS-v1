@@ -65,8 +65,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/hu_icon.png",
     skill: {
-      ko: "귀납의 문제: 게임당 두 번, 사유 시간에 '모든 A는 B다' 하나를 '어떤 A는 B다'로 교체할 수 있습니다.",
-      en: "Problem of Induction: Twice per game, during Thinking Time, you may replace an 'Every A is B' proposition with 'Some A is B'.",
+      ko: "인과 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해할 수 있습니다.",
+      en: "Critique of Causality: Once per game, during Thinking Time, you may choose one non-axiom, non-victory-condition proposition connected by 'then', and decompose it into two atomic propositions, as long as no contradiction arises.",
     },
   },
   kant: {
@@ -1086,16 +1086,20 @@ function confirmDerridaAbility() {
   render();
 }
 function activateHumeAbility(player) {
-  // 1. 교체 가능한 명제('모든'으로 시작하는 전칭 양화문)만 필터링합니다.
+  // 함수 이름을 activateHumeAbility로 변경
+  // 1. 분해 가능한 명제('라면'으로 이어진 명제만) 필터링합니다.
   const availablePropositions = truePropositions.filter(
-    (p) => p.proposition && p.proposition.type === "universal"
+    (p) =>
+      p.type !== "victory" &&
+      p.proposition &&
+      p.proposition.type === "conditional" // 👈 '라면' 명제만 대상으로 변경
   );
 
   if (availablePropositions.length === 0) {
     showAlert(
       currentLang.langCode === "ko"
-        ? "교체할 수 있는 전칭 명제가 없습니다."
-        : "There are no universal propositions to replace."
+        ? "분해할 수 있는 '라면' 명제가 없습니다."
+        : "There are no 'then' propositions to deconstruct."
     );
     return;
   }
@@ -1103,22 +1107,22 @@ function activateHumeAbility(player) {
   // 2. 범용 능력 모달 UI를 흄에 맞게 설정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    currentLang.langCode === "ko" ? "귀납의 문제" : "Problem of Induction";
+    currentLang.langCode === "ko" ? "인과 비판" : "Critique of Causality"; // 👈 능력 이름 변경
   document.getElementById("ability-confirm-btn").textContent =
     currentLang.langCode === "ko"
-      ? "이 명제를 교체하기"
-      : "Replace this Proposition";
+      ? "이 명제를 분해하기"
+      : "Decompose this Proposition"; // 👈 버튼 텍스트 변경
 
   const listEl = document.getElementById("ability-list");
-  listEl.innerHTML = ""; // 목록 초기화
+  listEl.innerHTML = "";
 
-  // 3. 필터링된 명제로 선택 목록을 채웁니다.
+  // 3. 필터링된 명제로 선택 목록을 만듭니다.
   availablePropositions.forEach((propData, index) => {
     const li = document.createElement("li");
     const radio = document.createElement("input");
     radio.type = "radio";
     radio.name = "ability-selection";
-    radio.value = propData.propId; // propId를 값으로 저장
+    radio.value = propData.propId;
     if (index === 0) radio.checked = true;
 
     const label = document.createElement("label");
@@ -1132,10 +1136,10 @@ function activateHumeAbility(player) {
     listEl.appendChild(li);
   });
 
-  // 4. 모달의 버튼에 흄 전용 확인 함수를 연결하고 모달을 엽니다.
+  // 4. 확인/취소 버튼에 흄 전용 함수를 연결하고 모달을 엽니다.
   document.getElementById("close-ability-modal-btn").onclick = () =>
     modal.classList.remove("visible");
-  document.getElementById("ability-confirm-btn").onclick = confirmHumeAbility;
+  document.getElementById("ability-confirm-btn").onclick = confirmHumeAbility; // 👈 흄 전용 확인 함수로 연결
 
   modal.classList.add("visible");
 }
@@ -1144,68 +1148,86 @@ function activateHumeAbility(player) {
  * 흄 능력 실행: 선택한 명제를 교체하고 게임 상태를 업데이트합니다.
  */
 function confirmHumeAbility() {
+  // 함수 이름을 confirmHumeAbility로 변경
   const selectedRadio = document.querySelector(
     'input[name="ability-selection"]:checked'
   );
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const propIndex = truePropositions.findIndex(
+  const selectedPropData = truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
-  if (propIndex === -1) {
-    console.error("Hume Ability Error: Proposition ID not found.");
+  if (!selectedPropData) {
+    console.error("Hume Ability Error: Selected proposition not found."); // 에러 메시지 변경
     return;
   }
 
-  const originalProp = truePropositions[propIndex].proposition;
+  const { left, right } = selectedPropData.proposition;
 
-  // 1. 선택된 전칭 명제를 존재 명제로 변환합니다.
-  const newExistentialProp = {
-    type: "existential",
-    entity: originalProp.entity,
-    predicate: originalProp.predicate,
-  };
-
-  // 2. 기존 '모든' 명제를 새로 만든 '어떤' 명제로 교체합니다.
-  truePropositions[propIndex].proposition = newExistentialProp;
-
-  // 💡 [버그 수정] 렌더링 문제를 해결하기 위해 기존 카드 정보를 제거합니다.
-  // 이렇게 하면 render() 함수가 새로운 proposition 객체를 기반으로 텍스트를 그리게 됩니다.
-  truePropositions[propIndex].original_cards = null;
-  truePropositions[propIndex].type = "theorem";
-  truePropositions[propIndex].source = "hume_ability";
-
-  // 3. 데카르트 능력처럼, 강력한 전제가 약화되었으므로 전체 진리 집합을 재구성하여 논리적 일관성을 보장합니다.
-  let newTruthSet = parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = truePropositions
+  // --- 핵심 로직: 데리다와 동일한 안전성 검증 로직 사용 ---
+  const propositionsWithoutOriginal = truePropositions.filter(
+    (p) => p.propId !== selectedPropId
+  );
+  let baseTruthSetForTest = parsedAxioms.map((a) => a.proposition);
+  const propsToReverify = propositionsWithoutOriginal
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
-
-  for (const prop of propositionsToReverify) {
-    const verificationResult = verifyAndExpandTruths(prop, newTruthSet);
-    if (verificationResult.success) {
-      newTruthSet = verificationResult.expandedSet;
+  for (const prop of propsToReverify) {
+    const verification = verifyAndExpandTruths(prop, baseTruthSetForTest);
+    if (verification.success) {
+      baseTruthSetForTest = verification.expandedSet;
     } else {
       console.error(
-        "Critical error after Hume's ability: Inconsistency found."
+        "Hume Pre-check Error: Inconsistency found when creating base set." // 에러 메시지 변경
       );
+      showAlert(currentLang.alerts.criticalErrorUndo);
+      return;
     }
   }
-  internalTruthSet = newTruthSet;
+  const verification1 = verifyAndExpandTruths(left, baseTruthSetForTest);
+  if (!verification1.success) {
+    showAlert(currentLang.alerts.contradictionFound);
+    return;
+  }
+  const verification2 = verifyAndExpandTruths(right, verification1.expandedSet);
+  if (!verification2.success) {
+    showAlert(currentLang.alerts.contradictionFound);
+    return;
+  }
 
-  // 4. 능력 사용 횟수를 1 증가시킵니다.
+  // 5. 능력 사용을 '1회용'으로 확정합니다.
   const philosopherId =
     thinkingTimeTurn === "A" ? playerA_Data.id : playerB_Data.id;
-  abilityUsedState[thinkingTimeTurn].usedCount++;
+  abilityUsedState[thinkingTimeTurn].used = true; // 👈 '게임당 1회' 규칙으로 변경
 
-  // 5. 모달을 닫고, 결과를 알리고, 화면을 새로고침합니다.
+  // 6. 실제 게임 상태를 변경합니다.
+  truePropositions = propositionsWithoutOriginal;
+  const newProps = [
+    {
+      propId: `prop_${Date.now()}_${Math.random()}`,
+      type: "theorem",
+      source: "hume_ability", // 👈 출처를 'hume_ability'로 변경
+      proposition: left,
+    },
+    {
+      propId: `prop_${Date.now()}_${Math.random()}`,
+      type: "theorem",
+      source: "hume_ability", // 👈 출처를 'hume_ability'로 변경
+      proposition: right,
+    },
+  ];
+  truePropositions.push(...newProps);
+
+  // 7. 최종 진리 집합으로 업데이트합니다.
+  internalTruthSet = verification2.expandedSet;
+
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
     currentLang.langCode === "ko"
-      ? "선택한 명제가 존재 양화문으로 교체되었습니다."
-      : "The selected proposition has been replaced with an existential one."
+      ? "명제가 성공적으로 분해되었습니다."
+      : "The proposition has been successfully decomposed."
   );
   render();
 }

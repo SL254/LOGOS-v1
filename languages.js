@@ -93,7 +93,7 @@ const TEXTS = {
       descartesAbilityDescription:
         "[방법적 회의] 능력으로 '{proposition}' 명제를 참 목록에서 삭제했습니다.",
       humeAbilityDescription:
-        "[귀납의 문제] 능력으로 '{proposition}' 명제를 약화시켰습니다.",
+        "[인과 비판] 능력으로 '{proposition}' 명제를 분해했습니다.",
       wittgensteinAbilityDescription:
         "[사다리 걷어차기] 능력으로 '{newTheorem}' 정리를 도출하고, 사용된 전제들을 삭제했습니다.",
       kuhnAbilityDescription:
@@ -296,7 +296,7 @@ const TEXTS = {
       nietzsche_ability_source: "{text} (영원 회귀)",
       wittgenstein_ability_source: "{text} (사다리 걷어차기)",
       derrida_ability_source: "{text} (해체)",
-      hume_ability_source: "{text} (귀납의 문제)",
+      hume_ability_source: "{text} (인과 비판)",
       kuhn_ability_source: "{text} (패러다임 전환)",
       kant_ability_source: "{text} (선험적 종합판단)",
     },
@@ -395,7 +395,7 @@ const TEXTS = {
       descartesAbilityDescription:
         "[Methodic Doubt] ability was used to delete '{proposition}' from the list of true propositions.",
       humeAbilityDescription:
-        "[Problem of Induction] ability was used to weaken '{proposition}'.",
+        "[Critique of Causality] ability was used to decompose the proposition '{proposition}'.",
       wittgensteinAbilityDescription:
         "[Kicking Away the Ladder] ability was used to derive the theorem '{newTheorem}' and delete its premises.",
       kuhnAbilityDescription:
@@ -608,7 +608,7 @@ const TEXTS = {
       nietzsche_ability_source: "{text} (Eternal Recurrence)",
       wittgenstein_ability_source: "{text} (Kicking Away the Ladder)",
       derrida_ability_source: "{text} (Deconstruction)",
-      hume_ability_source: "{text} (Problem of Induction)",
+      hume_ability_source: "{text} (Critique of Causality)",
       kuhn_ability_source: "{text} (Paradigm Shift)",
       kant_ability_source: "{text} (Synthetic A Priori Judgment)",
     },
