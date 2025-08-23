@@ -129,13 +129,16 @@ function aiThinkingTimeTurn() {
 
   // --- 2단계: 능력 사용 로직 (수정된 부분) ---
 
-  // 플라톤 능력 체크 (단일 사용)
+  // 플라톤 능력 체크 (최대 2회, 한 턴에 여러 번 사용 가능)
   if (philosopherId === "plato") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
-      // 👈 수정
+    // 사용 가능한 횟수만큼 반복 시도
+    while (abilityUsedState[thinkingTimeTurn].usedCount < abilityUsedState[thinkingTimeTurn].maxUses) {
       const abilityAction = executePlatoAbilityCheck(thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
+      } else {
+        // 더 이상 사용할 수 없으면 반복 중단
+        break;
       }
     }
   }
@@ -2095,6 +2098,11 @@ function isPlanTooRisky(path, perspectivePlayer) {
 }
 
 function executePlatoAbilityCheck(player) {
+  // 0. 사용 횟수 체크
+  if (abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses) {
+    return null; // 이미 최대 사용 횟수에 도달
+  }
+
   // 1. 사용 가능한 '어떤' 명제 찾기
   const availableExistentials = truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
@@ -2229,7 +2237,7 @@ function executePlatoAbilityCheck(player) {
 
   // 능력 사용 실행
   const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
-  abilityUsedState[player].used = true;
+  abilityUsedState[player].usedCount++;
 
   const newTheorem = {
     propId: `prop_${Date.now()}_${Math.random()}`,

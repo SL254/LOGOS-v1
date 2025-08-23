@@ -1548,6 +1548,8 @@ function setupGame(selectedCharacters, testConfig = null) {
     abilityUsedState["A"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p1_id === "socrates") {
     abilityUsedState["A"] = { usedCount: 0, maxUses: 1 };
+  } else if (p1_id === "plato") {
+    abilityUsedState["A"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {
     abilityUsedState["A"] = { used: false };
   }
@@ -1557,6 +1559,8 @@ function setupGame(selectedCharacters, testConfig = null) {
     abilityUsedState["B"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p2_id === "socrates") {
     abilityUsedState["B"] = { usedCount: 0, maxUses: 1 };
+  } else if (p2_id === "plato") {
+    abilityUsedState["B"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {
     abilityUsedState["B"] = { used: false };
   }
@@ -1850,15 +1854,26 @@ function getAbilityButtonStateFor(player) {
   const philosopherId = philosopherData.id;
 
   // 해당 철학자의 능력이 이미 사용되었다면 기본 상태 반환
-  if (abilityUsedState[player] && abilityUsedState[player].used) {
-    return defaultState;
+  if (abilityUsedState[player]) {
+    // usedCount 기반 철학자 (소크라테스, 플라톤)
+    if (abilityUsedState[player].usedCount !== undefined && 
+        abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses) {
+      return defaultState;
+    }
+    // used 기반 철학자 (기타)
+    if (abilityUsedState[player].used) {
+      return defaultState;
+    }
   }
 
   // ⭐ 앞으로 모든 능력의 조건은 이 switch 문 안에 추가됩니다.
   switch (philosopherId) {
     case "plato":
-      // 능력 사용 조건: '사유 시간'일 때 항상 버튼을 표시
-      if (isThinkingTime) {
+      // 사유 시간이고, 사용 횟수가 남아있을 때 버튼 표시
+      if (
+        isThinkingTime &&
+        abilityUsedState[player].usedCount < abilityUsedState[player].maxUses
+      ) {
         return {
           visible: true,
           // 자기 턴이 아닐 때(!==) 비활성화(disabled: true)

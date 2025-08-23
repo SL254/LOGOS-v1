@@ -37,8 +37,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/pl_icon.png",
     skill: {
-      ko: "이데아 회상: 게임당 한 번, 사유 시간에 모순이 발생하지 않는 선에서 '어떤 A는 B다'에서 '모든 A는 B다'를 도출할 수 있습니다.",
-      en: "Recollection of Forms: Once per game, during Thinking Time, you can derive 'Every A is B' from 'Some A is B' as long as no contradiction arises.",
+      ko: "이데아 회상: 게임당 두 번, 사유 시간에 모순이 발생하지 않는 선에서 '어떤 A는 B다'에서 '모든 A는 B다'를 도출할 수 있습니다.",
+      en: "Recollection of Forms: Twice per game, during Thinking Time, you can derive 'Every A is B' from 'Some A is B' as long as no contradiction arises.",
     },
   },
   descartes: {
@@ -244,7 +244,13 @@ function confirmPlatoAbility() {
     // 4. 검증 성공 시, 능력 사용 상태를 기록하고 새 명제를 추가합니다.
     const philosopherId =
       thinkingTimeTurn === "A" ? playerA_Data.id : playerB_Data.id;
-    abilityUsedState[thinkingTimeTurn].used = true;
+    
+    // 플라톤 능력 사용 횟수 증가
+    if (abilityUsedState[thinkingTimeTurn].usedCount !== undefined) {
+      abilityUsedState[thinkingTimeTurn].usedCount++;
+    } else {
+      abilityUsedState[thinkingTimeTurn].used = true;
+    }
 
     truePropositions.push({
       propId: `prop_${Date.now()}_${Math.random()}`,
