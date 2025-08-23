@@ -1547,7 +1547,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   if (p1_id === "hume") {
     abilityUsedState["A"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p1_id === "socrates") {
-    abilityUsedState["A"] = { usedCount: 0, maxUses: 1 };
+    abilityUsedState["A"] = { used: false };
   } else if (p1_id === "plato") {
     abilityUsedState["A"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {
@@ -1558,7 +1558,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   if (p2_id === "hume") {
     abilityUsedState["B"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p2_id === "socrates") {
-    abilityUsedState["B"] = { usedCount: 0, maxUses: 1 };
+    abilityUsedState["B"] = { used: false };
   } else if (p2_id === "plato") {
     abilityUsedState["B"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {

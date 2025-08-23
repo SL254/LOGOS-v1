@@ -278,11 +278,11 @@ function activateSocratesAbility(player) {
   const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
   const state = abilityUsedState[player];
 
-  if (state && state.usedCount >= state.maxUses) {
+  if (state && state.used) {
     showAlert(
       currentLang.langCode === "ko"
-        ? "이미 능력을 모두 사용했습니다."
-        : "Ability has already been used up."
+        ? "이미 능력을 사용했습니다."
+        : "Ability has already been used."
     );
     return;
   }
@@ -361,7 +361,7 @@ function confirmSocratesAbility() {
   // 능력 사용 처리
   const philosopherId =
     thinkingTimeTurn === "A" ? playerA_Data.id : playerB_Data.id;
-  abilityUsedState[thinkingTimeTurn].usedCount++;
+  abilityUsedState[thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
