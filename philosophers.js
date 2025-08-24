@@ -1438,6 +1438,7 @@ function renderKantModal(player) {
       }));
 
       if (isValidPlay(card, tempPropositionForValidation)) {
+        audioManager.playSfx("playCard");
         const cardIndex = hand.findIndex(
           (c) => c.text === card.text && c.type === card.type
         );
@@ -1462,9 +1463,15 @@ function renderKantModal(player) {
     propDisplay.appendChild(cardEl);
   });
 
-  // 3. 되돌리기 버튼 활성화/비활성화
+  // 3. 버튼들 활성화/비활성화 상태 업데이트
+  // 되돌리기 버튼: 카드가 없으면 비활성화
   document.getElementById("kant-undo-btn").disabled =
     kantProposition.length === 0;
+    
+  // 완성 버튼: 카드가 없거나 문법적으로 완성되지 않았으면 비활성화
+  const isGrammaticallyComplete = kantProposition.length > 0 && 
+    parsePropositionFromCards(kantProposition.map((c) => ({ card: c }))) !== null;
+  document.getElementById("kant-confirm-btn").disabled = !isGrammaticallyComplete;
 }
 
 function confirmKantAbility(player) {
@@ -1538,9 +1545,11 @@ function activateKantAbility(player) {
     currentLang.ui.completeButton;
 
   // 되돌리기 버튼 기능 연결
-  document.getElementById("kant-undo-btn").onclick = () => {
-    audioManager.playSfx("hover");
+  document.getElementById("kant-undo-btn").onclick = (event) => {
     if (kantProposition.length > 0) {
+      // 글로벌 click 이벤트 전파를 막아 중복 hover 효과음 방지
+      event.stopPropagation();
+      audioManager.playSfx("undo");
       const cardToReturn = kantProposition.pop();
       const hand = player === "A" ? playerA_Hand : playerB_Hand;
       hand.push(cardToReturn);
@@ -1550,6 +1559,7 @@ function activateKantAbility(player) {
       );
       renderKantModal(player);
     }
+    // 카드가 없을 때는 글로벌 hover 효과음이 재생되도록 놔둠
   };
 
   // 닫기 버튼 기능 연결 (중요: 취소 시 카드를 모두 손패로 되돌림)
@@ -1567,9 +1577,13 @@ function activateKantAbility(player) {
     render(); // 메인 게임 화면도 갱신
   };
 
-  document.getElementById("kant-confirm-btn").onclick = () => {
-    audioManager.playSfx("hover");
-    confirmKantAbility(player);
+  document.getElementById("kant-confirm-btn").onclick = (event) => {
+    if (!document.getElementById("kant-confirm-btn").disabled) {
+      // 글로벌 click 이벤트 전파를 막아 중복 hover 효과음 방지
+      event.stopPropagation();
+      audioManager.playSfx("complete");
+      confirmKantAbility(player);
+    }
   };
 
   // 초기 모달 렌더링 및 표시

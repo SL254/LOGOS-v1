@@ -2371,8 +2371,13 @@ button,
   border-image-repeat: stretch;
   background-color: transparent;
 }
-#kant-undo-btn:hover {
+#kant-undo-btn:hover:not(:disabled) {
   border-image-source: url("assets/images/undo_hover.png");
+}
+#kant-undo-btn:disabled {
+  cursor: not-allowed;
+  color: #464646;
+  border-image-source: url("assets/images/disabled.png");
 }
 #kant-confirm-btn {
   color: white;
@@ -2384,8 +2389,13 @@ button,
   border-image-repeat: stretch;
   background-color: transparent;
 }
-#kant-confirm-btn:hover {
+#kant-confirm-btn:hover:not(:disabled) {
   border-image-source: url("assets/images/complete_hover.png");
+}
+#kant-confirm-btn:disabled {
+  cursor: not-allowed;
+  color: #464646;
+  border-image-source: url("assets/images/disabled.png");
 }
 
 #ai-summary-ok-btn {
