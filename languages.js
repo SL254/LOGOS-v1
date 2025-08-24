@@ -437,7 +437,7 @@ const TEXTS = {
         "Hypothetical Syllogism (P then Q, Q then R ∴ P then R)",
       disjunctiveSyllogism: "Disjunctive Syllogism (P or Q, P is false ∴ Q)",
       universalApplication:
-        "Universal Application (A is P, Every P are Q ∴ A is Q)",
+        "Universal Application (A is P, Every P is Q ∴ A is Q)",
       existentialInstantiation:
         "Existential Instantiation (Every P is Q ∴ Some P is Q)",
       conjunctionElimination: "Simplification (P and Q ∴ P, Q)",
