@@ -264,7 +264,7 @@ function getRuleNameInLanguage(ruleKey) {
     modusPonens: currentLang.inferenceRules.modusPonens || "전건 긍정",
     modusTollens: currentLang.inferenceRules.modusTollens || "후건 부정",
     hypotheticalSyllogism:
-      currentLang.inferenceRules.hypotheticalSyllogism || "가설적 삼단논법",
+      currentLang.inferenceRules.hypotheticalSyllogism || "가언적 삼단논법",
     disjunctiveSyllogism:
       currentLang.inferenceRules.disjunctiveSyllogism || "선언적 삼단논법",
     conjunctionElimination:
@@ -1839,7 +1839,11 @@ function updateAbilityButtonsState() {
 
 function getAbilityButtonStateFor(player) {
   // 기본값: 버튼은 보이되 비활성화 상태
-  const defaultState = { visible: true, disabled: true, text: currentLang.ui.useAbilityButton };
+  const defaultState = {
+    visible: true,
+    disabled: true,
+    text: currentLang.ui.useAbilityButton,
+  };
 
   // 현재 게임이 진행 중이 아니거나, 해당 플레이어의 철학자 정보가 없으면 기본 상태 반환
   if (
@@ -1867,7 +1871,8 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses ||
+            abilityUsedState[player].usedCount >=
+              abilityUsedState[player].maxUses ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
           text: currentLang.ui.useAbilityButton,
@@ -1895,12 +1900,12 @@ function getAbilityButtonStateFor(player) {
       // 아리스토텔레스는 특별한 능력이 없습니다.
       return { visible: false, disabled: true, text: "" };
       break;
-      
+
     case "nietzsche":
       // 니체의 능력은 패시브이므로, 활성화 버튼이 필요 없습니다.
       return { visible: false, disabled: true, text: "" };
       break;
-      
+
     case "marx":
       // 마르크스의 능력은 게임 시작 시 효과이므로, 활성화 버튼이 필요 없습니다.
       return { visible: false, disabled: true, text: "" };
@@ -1971,7 +1976,7 @@ function getAbilityButtonStateFor(player) {
         const userMadePropsCount = truePropositions.filter(
           (p) => p.type === "user-made"
         ).length;
-        
+
         return {
           visible: true,
           // 사용 완료, 조건 미달(15개 미만), 자기 턴 아님, AI 턴일 때 비활성화

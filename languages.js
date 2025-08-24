@@ -131,7 +131,7 @@ const TEXTS = {
       basic: "기본 규칙",
       modusPonens: "전건 긍정 (P, P 라면 Q ∴ Q)",
       modusTollens: "후건 부정 (Q 는 거짓이다, P 라면 Q ∴ P 는 거짓이다)",
-      hypotheticalSyllogism: "가설적 삼단논법 (P 라면 Q, Q 라면 R ∴ P 라면 R)",
+      hypotheticalSyllogism: "가언적 삼단논법 (P 라면 Q, Q 라면 R ∴ P 라면 R)",
       disjunctiveSyllogism: "선언적 삼단논법 (P 또는 Q, P 는 거짓이다 ∴ Q)",
       universalApplication: "보편 적용 (A는 P다, 모든 P는 Q다 ∴ A는 Q다)",
       existentialInstantiation: "존재화 (모든 P는 Q다 ∴ 어떤 P는 Q다)",

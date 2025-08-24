@@ -68,9 +68,9 @@ const TUTORIAL_TEXTS = {
       "전제 목록에서 <strong>어떤 새는 물고기이다 또는 어떤 새는 새이다</strong>와 <strong>어떤 새는 물고기이다 는 거짓이다</strong>를 선택하세요.",
       "규칙 목록에서 <strong>선언적 삼단논법</strong>을 선택하고 <strong>규칙 적용</strong> 버튼을 누르세요.",
       // 4. Hypothetical Syllogism
-      "<strong>어떤 새는 새이다</strong>가 도출되었습니다.<br><br>이번엔 <strong>가설적 삼단논법</strong>입니다. 꼬리물기처럼 이어지는 두 명제를 하나로 합쳐봅시다.",
+      "<strong>어떤 새는 새이다</strong>가 도출되었습니다.<br><br>이번엔 <strong>가언적 삼단논법</strong>입니다. 꼬리물기처럼 이어지는 두 명제를 하나로 합쳐봅시다.",
       "전제 목록에서 <strong>플라톤은 개이다 라면 플라톤은 선하다</strong>와 <strong>플라톤은 선하다 라면 플라톤은 승리한다</strong>를 선택하세요.",
-      "규칙 목록에서 <strong>가설적 삼단논법</strong>을 선택하고 <strong>규칙 적용</strong> 버튼을 누르세요.",
+      "규칙 목록에서 <strong>가언적 삼단논법</strong>을 선택하고 <strong>규칙 적용</strong> 버튼을 누르세요.",
       // 5. Conjunction Elimination (Simplification)
       "<strong>플라톤은 개이다 라면 플라톤은 승리한다</strong>라는 더 간결한 명제가 만들어졌습니다. 다음은 <strong>단순화</strong> 규칙입니다.",
       "<strong>그리고</strong>로 연결된 명제는 각각이 참입니다. 전제 목록에서 <strong>소크라테스는 지혜롭다 그리고 플라톤은 어리석다</strong>를 선택하세요.",
