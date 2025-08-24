@@ -337,7 +337,9 @@
           <span id="sfx-volume-value">100%</span>
         </div>
         <div class="settings-group">
-          <label for="language-select" id="language-label">언어 / Language</label>
+          <label for="language-select" id="language-label"
+            >언어 / Language</label
+          >
           <select id="language-select">
             <option value="ko">한국어</option>
             <option value="en">English</option>
@@ -489,6 +491,26 @@
     <script src="settings.js"></script>
 
     <script src="events.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+      // 이 함수는 이제 game.html 내부에서 실행됩니다.
+      // 부모 창(index.html)에서 이 함수를 호출할 것입니다.
+      async function captureMyself() {
+        try {
+          // snapdom 라이브러리는 부모 창에 있으므로, 'parent.snapdom'으로 접근합니다.
+          if (parent.snapdom) {
+            // game.html의 body, 즉 자기 자신을 캡처합니다.
+            const canvas = await parent.snapdom.toCanvas(document.body);
+            return canvas;
+          }
+        } catch (error) {
+          // 에러를 부모 창으로 전달하여 디버깅을 돕습니다.
+          console.error("[game.html] Capture failed:", error);
+          return null;
+        }
+      }
+    </script>
     <script src="script.js"></script>
   </body>
 </html>
