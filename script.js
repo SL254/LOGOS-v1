@@ -1559,6 +1559,11 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
   victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
+  
+  // 승리 스타일 초기화
+  document.querySelectorAll(".player-title-box").forEach(titleBox => {
+    titleBox.classList.remove("winner");
+  });
 
   playerA_Hand = [];
   playerB_Hand = [];
@@ -2249,6 +2254,15 @@ function endGame(winner, winningProposition) {
   }
   const victoryText = `${winnerName} ${currentLang.ui.victoryMessage}<br>${currentLang.ui.victorySubMessage}`;
   statusEl.innerHTML = `<span class="turn-indicator">${victoryText}</span>`;
+  
+  // 승리한 플레이어의 타이틀 박스에 승리 스타일 적용
+  const winnerTitleBox = winner === "A" 
+    ? document.querySelector("#player-a-area .player-title-box")
+    : document.querySelector("#player-b-area .player-title-box");
+  if (winnerTitleBox) {
+    winnerTitleBox.classList.add("winner");
+  }
+  
   render();
 
   // 1. 모든 오버레이 이미지를 일단 숨깁니다.

@@ -863,6 +863,9 @@ summary {
 .player-title-box.active-turn {
   background-image: url("assets/images/player_active.png"); /* 턴이 활성화됐을 때의 이미지 */
 }
+.player-title-box.winner {
+  background-image: url("assets/images/player_win.png"); /* 승리했을 때의 이미지 */
+}
 .eureka-btn {
   margin-top: auto;
   padding: 10px 15px;
