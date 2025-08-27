@@ -252,29 +252,61 @@ function openEurekaModal() {
         }
       }
 
-      // 마르크스 공리가 있으면 추가
-      const remainingAxioms = axioms.slice(axiomIndex);
-      const marxAxioms = remainingAxioms.filter((a) => {
-        const text = propositionToNaturalText(a.proposition);
-        return text.includes("자본가") || text.includes("capitalist");
-      });
-
-      if (marxAxioms.length > 0) {
-        // 서브그룹 구분선
-        addPremiseToWorkbench({
-          type: "separator",
-          label: "",
-          proposition: null,
-          isSeparator: true,
+      // 자본가 공리가 있으면 템플릿 기반으로 추가
+      if (templates.capitalist_good_evil_forward && templates.capitalist_good_evil_forward.length > 0) {
+        const remainingAxioms = axioms.slice(axiomIndex);
+        const capitalistAxioms = remainingAxioms.filter((a) => {
+          const text = propositionToNaturalText(a.proposition);
+          return text.includes("자본가") || text.includes("capitalist");
         });
 
-        marxAxioms.forEach((axiomData) => {
+        if (capitalistAxioms.length > 0) {
+          // 서브그룹 구분선
           addPremiseToWorkbench({
-            ...axiomData,
-            label: currentLang.labels.axiom,
+            type: "separator",
+            label: "",
+            proposition: null,
+            isSeparator: true,
           });
-          axiomIndex++;
-        });
+
+          // 자본가 집단 순방향
+          for (let i = 0; i < templates.capitalist_good_evil_forward.length; i++) {
+            if (axiomIndex < axioms.length) {
+              const axiomData = axioms[axiomIndex];
+              const text = propositionToNaturalText(axiomData.proposition);
+              if (text.includes("자본가") || text.includes("capitalist")) {
+                addPremiseToWorkbench({
+                  ...axiomData,
+                  label: currentLang.labels.axiom,
+                });
+                axiomIndex++;
+              }
+            }
+          }
+
+          // 서브그룹 구분선
+          addPremiseToWorkbench({
+            type: "separator",
+            label: "",
+            proposition: null,
+            isSeparator: true,
+          });
+
+          // 자본가 집단 역방향
+          for (let i = 0; i < templates.capitalist_good_evil_reverse.length; i++) {
+            if (axiomIndex < axioms.length) {
+              const axiomData = axioms[axiomIndex];
+              const text = propositionToNaturalText(axiomData.proposition);
+              if (text.includes("자본가") || text.includes("capitalist")) {
+                addPremiseToWorkbench({
+                  ...axiomData,
+                  label: currentLang.labels.axiom,
+                });
+                axiomIndex++;
+              }
+            }
+          }
+        }
       }
 
       // 집단별 속성 대립 그룹 마지막 구분선 추가

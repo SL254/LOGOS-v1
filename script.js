@@ -1175,17 +1175,6 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
     quantifierOpposition: [],
   };
 
-  // 마르크스 정체성 공리 추가
-  if (isMarxInGame) {
-    if (langData.langCode === "ko") {
-      axiomGroups.identity.push("어떤 자본가는 자본가이다");
-      axiomGroups.identity.push("모든 자본가는 자본가이다");
-    } else {
-      axiomGroups.identity.push("Some capitalist is a capitalist");
-      axiomGroups.identity.push("Every capitalist is a capitalist");
-    }
-  }
-
   // 개체별 속성 대립 공리들
   templates.subject_good_evil.forEach((template) => {
     axiomGroups.subjectOpposition.push(template.replaceAll("{S}", subjectA));
@@ -1207,38 +1196,18 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
   axiomGroups.quantifierOpposition.push(...templates.fish_good_evil_reverse);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_forward);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_reverse);
-
+  
+  // 마르크스가 게임에 있을 때만 자본가 공리들 추가
   if (isMarxInGame) {
-    let marxcapitalistAxioms = [];
-    if (langData.langCode === "ko") {
-      marxcapitalistAxioms = [
-        // 속성의 대립 (선/악)
-        "모든 자본가는 선하다 라면 어떤 자본가는 악하다 는 거짓이다",
-        "모든 자본가는 악하다 라면 어떤 자본가는 선하다 는 거짓이다",
-        "어떤 자본가는 선하다 는 거짓이다 라면 모든 자본가는 악하다",
-        "어떤 자본가는 악하다 는 거짓이다 라면 모든 자본가는 선하다",
-        // 속성의 대립 (지혜/어리석음)
-        "모든 자본가는 지혜롭다 라면 어떤 자본가는 어리석다 는 거짓이다",
-        "모든 자본가는 어리석다 라면 어떤 자본가는 지혜롭다 는 거짓이다",
-        "어떤 자본가는 지혜롭다 는 거짓이다 라면 모든 자본가는 어리석다",
-        "어떤 자본가는 어리석다 는 거짓이다 라면 모든 자본가는 지혜롭다",
-      ];
-    } else {
-      // langCode === 'en'
-      marxcapitalistAxioms = [
-        // Opposition of Predicates (good/evil)
-        "Every capitalist is good then Some capitalist is evil is false",
-        "Every capitalist is evil then Some capitalist is good is false",
-        "Some capitalist is good is false then Every capitalist is evil",
-        "Some capitalist is evil is false then Every capitalist is good",
-        // Opposition of Predicates (wise/foolish)
-        "Every capitalist is wise then Some capitalist is foolish is false",
-        "Every capitalist is foolish then Some capitalist is wise is false",
-        "Some capitalist is wise is false then Every capitalist is foolish",
-        "Some capitalist is foolish is false then Every capitalist is wise",
-      ];
-    }
-    axiomGroups.quantifierOpposition.push(...marxcapitalistAxioms);
+    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_forward);
+    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_reverse);
+  }
+
+  // 마르크스가 게임에 없으면 identity 그룹에서 자본가 공리만 제거
+  if (!isMarxInGame) {
+    axiomGroups.identity = axiomGroups.identity.filter(axiom => 
+      !axiom.includes("자본가") && !axiom.includes("capitalist")
+    );
   }
 
   // 하위 호환성을 위해 평면적인 배열로 반환
@@ -1361,7 +1330,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins"];
+    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
     playerA_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -1372,7 +1341,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins"];
+    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
     playerB_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -2443,7 +2412,10 @@ function endThinkingTime() {
   eurekaUsedInRound = { A: false, B: false }; // 기존 코드
 
   // 손패를 새로 분배하는 부분 (기존 코드)
-  const nonPlayerCards = [currentLang.keywords.wins]; // 기존 코드
+  const nonPlayerCards = [
+    currentLang.keywords.wins, 
+    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist"
+  ]; // 기존 코드
   playerA_Hand = JSON.parse(
     JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
   ); // 기존 코드
@@ -2775,27 +2747,39 @@ function render() {
         axiomContainer.appendChild(p);
       });
 
-      // 마르크스 공리가 있으면 추가
-      if (
-        currentAxioms.some(
+      // 자본가 공리가 있으면 추가 (템플릿 기반)
+      if (templates.capitalist_good_evil_forward && templates.capitalist_good_evil_forward.length > 0) {
+        const hasCapitalistAxioms = currentAxioms.some(
           (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
-        )
-      ) {
-        const sep9 = document.createElement("hr");
-        sep9.style.margin = "4px 0";
-        sep9.style.border = "none";
-        sep9.style.borderTop = "1px solid #ccc";
-        axiomContainer.appendChild(sep9);
+        );
+        
+        if (hasCapitalistAxioms) {
+          const sep9 = document.createElement("hr");
+          sep9.style.margin = "4px 0";
+          sep9.style.border = "none";
+          sep9.style.borderTop = "1px solid #ccc";
+          axiomContainer.appendChild(sep9);
 
-        currentAxioms
-          .filter(
-            (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
-          )
-          .forEach((axiomText) => {
+          // 자본가 집단 순방향
+          templates.capitalist_good_evil_forward.forEach((axiomText) => {
             const p = document.createElement("p");
             p.textContent = `• ${axiomText}`;
             axiomContainer.appendChild(p);
           });
+
+          const sep10 = document.createElement("hr");
+          sep10.style.margin = "4px 0";
+          sep10.style.border = "none";
+          sep10.style.borderTop = "1px solid #ccc";
+          axiomContainer.appendChild(sep10);
+
+          // 자본가 집단 역방향
+          templates.capitalist_good_evil_reverse.forEach((axiomText) => {
+            const p = document.createElement("p");
+            p.textContent = `• ${axiomText}`;
+            axiomContainer.appendChild(p);
+          });
+        }
       }
     }
   } else {
