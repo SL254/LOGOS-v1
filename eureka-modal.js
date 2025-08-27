@@ -429,6 +429,12 @@ function addAssumption() {
 
         // 가정 추가 성공 시 pop 사운드 재생
         audioManager.playSfx("pop");
+        
+        // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
+        if (inPuzzleMode) {
+          inferenceStepCount++;
+        }
+        
         renderModal();
         updateConclusionPreview();
 
@@ -809,6 +815,11 @@ function applyRule() {
     });
     // 추론 규칙 적용 성공 시 사운드 재생
     audioManager.playSfx("pop");
+    
+    // 퍼즐 모드에서 추론 규칙 사용 횟수 증가
+    if (inPuzzleMode) {
+      inferenceStepCount++;
+    }
   } else if (
     rule !== "reductioAdAbsurdum" &&
     rule !== "conditionalIntroduction" &&
@@ -958,7 +969,7 @@ function proveVictory() {
         console.error("퍼즐 클리어 데이터 저장 실패:", e);
       }
 
-      showAlert(currentLang.alerts.puzzleCleared, () => {
+      showAlert(currentLang.alerts.puzzleCleared.replace("{steps}", inferenceStepCount), () => {
         document.getElementById("eureka-modal").classList.remove("visible");
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;

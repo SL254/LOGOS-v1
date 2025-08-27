@@ -27,6 +27,7 @@ let lastPropositionMaker = null;
 let internalTruthSet = [];
 let derivedPropositionsInModal = [];
 let currentAssumption = null;
+let inferenceStepCount = 0;
 let lastCardPlayer = null;
 let cardsPlayedThisTurn = { A: 0, B: 0 };
 let eurekaUsedInRound = { A: false, B: false };

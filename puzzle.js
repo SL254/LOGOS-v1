@@ -264,6 +264,7 @@ function startPuzzle(levelNum, levelData) {
     .filter((a) => a.proposition);
 
   inPuzzleMode = true;
+  inferenceStepCount = 0; // 퍼즐 시작 시 추론 규칙 사용 횟수 초기화
   document
     .getElementById("puzzle-level-select-modal")
     .classList.remove("visible");
