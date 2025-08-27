@@ -2493,6 +2493,18 @@ button,
   background-color: #e0e0e0;
   border-color: #ccc;
 }
+
+/* 언어 변경 알림 메시지 스타일 */
+.language-notice {
+  font-size: 0.9em;
+  color: #888;
+  margin: 8px 0 0 0;
+  font-style: italic;
+  text-align: center;
+  line-height: 1.2;
+  width: 100%;
+  clear: both;
+}
 button:focus,
 select:focus {
   outline: none;

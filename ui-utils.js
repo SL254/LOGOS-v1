@@ -166,6 +166,7 @@ function setupUI() {
     currentLang.ui.settingsTitle;
   document.getElementById("bgm-label").textContent = currentLang.ui.bgmLabel;
   document.getElementById("sfx-label").textContent = currentLang.ui.sfxLabel;
+  document.getElementById("language-change-notice").textContent = currentLang.ui.languageChangeNotice;
 
   const select = document.getElementById("inference-rule-select");
   select.innerHTML = `
