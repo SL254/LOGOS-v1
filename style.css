@@ -2,6 +2,33 @@
   font-family: "font"; /* CSS에서 사용할 폰트 이름을 지정 */
   src: url("assets/font.ttf") format("truetype"); /* 폰트 파일의 경로와 형식 */
 }
+/* 드래그 방지 전역 설정 */
+* {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  -webkit-user-drag: none; /* Safari 이미지 드래그 방지 */
+  -khtml-user-drag: none; /* KHTML */
+  -moz-user-drag: none; /* Firefox */
+  -o-user-drag: none; /* Opera */
+  user-drag: none; /* Standard */
+  -webkit-touch-callout: none; /* iOS Safari 길게 누르기 방지 */
+  -webkit-tap-highlight-color: transparent; /* 터치 시 하이라이트 제거 */
+}
+
+/* 입력 필드는 선택 가능하도록 예외 처리 */
+input[type="text"], 
+input[type="number"], 
+input[type="email"], 
+input[type="password"], 
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 body {
   font-family: "font", "Malgun Gothic", "Segoe UI", sans-serif;
   background-color: #f4f7f9;
@@ -154,10 +181,6 @@ header h1 {
   color: transparent;
   margin: 0;
   font-size: 42px;
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
 }
 
 #info-box {
