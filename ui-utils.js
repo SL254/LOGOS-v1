@@ -121,8 +121,7 @@ function setupUI() {
     currentLang.ui.thinkingTimeTitle;
   document.getElementById("thinking-time-desc").innerHTML =
     currentLang.ui.thinkingTimeDesc;
-  document.getElementById("fullscreen-btn").textContent =
-    currentLang.ui.fullscreenButton;
+  updateFullscreenButtonText();
   document.getElementById("settings-btn").textContent =
     currentLang.ui.settingsButton;
   document.getElementById("tutorial-btn").textContent =
@@ -301,6 +300,24 @@ if (eurekaPremiseList) {
   function toggleFullScreen() {
     // 부모 창(index.html)에 'toggle-fullscreen' 메시지를 보냄
     window.parent.postMessage("toggle-fullscreen", "*");
+  }
+
+  // 전체화면 버튼 텍스트 업데이트 함수
+  function updateFullscreenButtonText() {
+    // 부모 창의 전체화면 상태를 확인
+    const isFullscreen = window.parent.document.fullscreenElement !== null;
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    
+    if (isFullscreen) {
+      fullscreenBtn.textContent = currentLang.ui.exitFullscreenButton;
+    } else {
+      fullscreenBtn.textContent = currentLang.ui.fullscreenButton;
+    }
+  }
+
+  // 전체화면 상태 변경 감지
+  if (window.parent.document) {
+    window.parent.document.addEventListener('fullscreenchange', updateFullscreenButtonText);
   }
 
   // --- UI 텍스트 업데이트 (다국어 지원) ---
