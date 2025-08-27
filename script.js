@@ -1146,6 +1146,11 @@ function handleFirstUserInteraction(event) {
 
   console.log("Activating main menu...");
 
+  // 전체화면이 아닌 경우에만 전체화면 활성화
+  if (!window.parent.document.fullscreenElement) {
+    window.parent.postMessage("toggle-fullscreen", "*");
+  }
+
   // 시작 효과음 재생
   audioManager.playSfx("start");
   activateMainMenu();
