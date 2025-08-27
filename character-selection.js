@@ -171,11 +171,13 @@ function updatePlayerDisplay(player, philosopherId) {
     const imageUrl = p.image[player];
     portraitEl.style.backgroundImage = `url('${imageUrl}')`;
     nameEl.textContent = p.name[currentLang.langCode];
+    nameEl.style.opacity = "1";
     skillDescEl.textContent = p.skill[currentLang.langCode];
   } else {
     portraitEl.style.backgroundImage = "none";
-    nameEl.textContent = "";
-    skillDescEl.textContent = currentLang.ui.waitingForOpponent;
+    nameEl.textContent = "철학자를 선택하세요";
+    nameEl.style.opacity = "0";
+    skillDescEl.textContent = "";
   }
 }
 
