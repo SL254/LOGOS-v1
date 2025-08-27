@@ -23,7 +23,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/socra_icon.png",
     skill: {
-      ko: "무지의 자각: 게임당 한 번, 사유 시간에 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택할 수 있습니다. 그 명제는 게임이 끝날 때까지 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
+      ko: "무지의 자각: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택하고, 게임에서 제외시킵니다. 그 명제는 게임이 끝날 때까지 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
       en: "Awareness of Ignorance: Once per game, during Thinking Time, you may choose one proposition from the list of true propositions that is not an axiom or a win condition. For the rest of the game, that proposition cannot be used as a premise by either player.",
     },
   },
@@ -37,7 +37,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/pl_icon.png",
     skill: {
-      ko: "이데아 회상: 게임당 두 번, 사유 시간에 모순이 발생하지 않는 선에서 '어떤 A는 B다'에서 '모든 A는 B다'를 도출할 수 있습니다.",
+      ko: "이데아 회상: 게임당 두 번, 사유 시간에 사용할 수 있습니다. 모순이 발생하지 않는 선에서, '어떤 A는 B다'에서 '모든 A는 B다'를 도출합니다.",
       en: "Recollection of Forms: Twice per game, during Thinking Time, you can derive 'Every A is B' from 'Some A is B' as long as no contradiction arises.",
     },
   },
@@ -51,7 +51,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/de_icon.png",
     skill: {
-      ko: "방법적 회의: 게임당 한 번, 사유 시간에 참 명제 목록에서 공리와 승리조건이 아닌 명제 하나를 삭제할 수 있습니다.",
+      ko: "방법적 회의: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 참 명제 목록에서 공리와 승리조건이 아닌 명제 하나를 삭제합니다.",
       en: "Methodic Doubt: Once per game, during Thinking Time, you may delete one proposition from the list of true propositions that is not an axiom or a win condition.",
     },
   },
@@ -65,7 +65,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/hu_icon.png",
     skill: {
-      ko: "인과성 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해할 수 있습니다.",
+      ko: "인과성 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해합니다.",
       en: "Critique of Causality: Once per game, during Thinking Time, you may choose one non-axiom, non-victory-condition proposition connected by 'then', and decompose it into two atomic propositions, as long as no contradiction arises.",
     },
   },
