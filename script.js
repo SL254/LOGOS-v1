@@ -1178,11 +1178,11 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
   // 마르크스 정체성 공리 추가
   if (isMarxInGame) {
     if (langData.langCode === "ko") {
-      axiomGroups.identity.push("어떤 브루주아는 브루주아이다");
-      axiomGroups.identity.push("모든 브루주아는 브루주아이다");
+      axiomGroups.identity.push("어떤 자본가는 자본가이다");
+      axiomGroups.identity.push("모든 자본가는 자본가이다");
     } else {
-      axiomGroups.identity.push("Some Bourgeois is a Bourgeois");
-      axiomGroups.identity.push("Every Bourgeois is a Bourgeois");
+      axiomGroups.identity.push("Some capitalist is a capitalist");
+      axiomGroups.identity.push("Every capitalist is a capitalist");
     }
   }
 
@@ -1209,36 +1209,36 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_reverse);
 
   if (isMarxInGame) {
-    let marxBourgeoisAxioms = [];
+    let marxcapitalistAxioms = [];
     if (langData.langCode === "ko") {
-      marxBourgeoisAxioms = [
+      marxcapitalistAxioms = [
         // 속성의 대립 (선/악)
-        "모든 브루주아는 선하다 라면 어떤 브루주아는 악하다 는 거짓이다",
-        "모든 브루주아는 악하다 라면 어떤 브루주아는 선하다 는 거짓이다",
-        "어떤 브루주아는 선하다 는 거짓이다 라면 모든 브루주아는 악하다",
-        "어떤 브루주아는 악하다 는 거짓이다 라면 모든 브루주아는 선하다",
+        "모든 자본가는 선하다 라면 어떤 자본가는 악하다 는 거짓이다",
+        "모든 자본가는 악하다 라면 어떤 자본가는 선하다 는 거짓이다",
+        "어떤 자본가는 선하다 는 거짓이다 라면 모든 자본가는 악하다",
+        "어떤 자본가는 악하다 는 거짓이다 라면 모든 자본가는 선하다",
         // 속성의 대립 (지혜/어리석음)
-        "모든 브루주아는 지혜롭다 라면 어떤 브루주아는 어리석다 는 거짓이다",
-        "모든 브루주아는 어리석다 라면 어떤 브루주아는 지혜롭다 는 거짓이다",
-        "어떤 브루주아는 지혜롭다 는 거짓이다 라면 모든 브루주아는 어리석다",
-        "어떤 브루주아는 어리석다 는 거짓이다 라면 모든 브루주아는 지혜롭다",
+        "모든 자본가는 지혜롭다 라면 어떤 자본가는 어리석다 는 거짓이다",
+        "모든 자본가는 어리석다 라면 어떤 자본가는 지혜롭다 는 거짓이다",
+        "어떤 자본가는 지혜롭다 는 거짓이다 라면 모든 자본가는 어리석다",
+        "어떤 자본가는 어리석다 는 거짓이다 라면 모든 자본가는 지혜롭다",
       ];
     } else {
       // langCode === 'en'
-      marxBourgeoisAxioms = [
+      marxcapitalistAxioms = [
         // Opposition of Predicates (good/evil)
-        "Every Bourgeois is good then Some Bourgeois is evil is false",
-        "Every Bourgeois is evil then Some Bourgeois is good is false",
-        "Some Bourgeois is good is false then Every Bourgeois is evil",
-        "Some Bourgeois is evil is false then Every Bourgeois is good",
+        "Every capitalist is good then Some capitalist is evil is false",
+        "Every capitalist is evil then Some capitalist is good is false",
+        "Some capitalist is good is false then Every capitalist is evil",
+        "Some capitalist is evil is false then Every capitalist is good",
         // Opposition of Predicates (wise/foolish)
-        "Every Bourgeois is wise then Some Bourgeois is foolish is false",
-        "Every Bourgeois is foolish then Some Bourgeois is wise is false",
-        "Some Bourgeois is wise is false then Every Bourgeois is foolish",
-        "Some Bourgeois is foolish is false then Every Bourgeois is wise",
+        "Every capitalist is wise then Some capitalist is foolish is false",
+        "Every capitalist is foolish then Some capitalist is wise is false",
+        "Some capitalist is wise is false then Every capitalist is foolish",
+        "Some capitalist is foolish is false then Every capitalist is wise",
       ];
     }
-    axiomGroups.quantifierOpposition.push(...marxBourgeoisAxioms);
+    axiomGroups.quantifierOpposition.push(...marxcapitalistAxioms);
   }
 
   // 하위 호환성을 위해 평면적인 배열로 반환
@@ -1331,9 +1331,9 @@ function setupGame(selectedCharacters, testConfig = null) {
   let currentGameDeck = [...baseDeck, p1_card_obj, p2_card_obj];
 
   const isMarxInGame = p1_id === "marx" || p2_id === "marx";
-  const bourgeoisCard = {
+  const capitalistCard = {
     type: currentLang.langCode === "ko" ? "개체" : "Entity",
-    text: currentLang.langCode === "ko" ? "브루주아는" : "Bourgeois",
+    text: currentLang.langCode === "ko" ? "자본가는" : "capitalist",
   };
   const revolutionSubjectCard = {
     type: currentLang.langCode === "ko" ? "고유명사" : "Proper Noun",
@@ -1346,7 +1346,7 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   if (isMarxInGame) {
     currentGameDeck.push(
-      bourgeoisCard,
+      capitalistCard,
       revolutionSubjectCard,
       revolutionPredicateCard
     );
@@ -1457,7 +1457,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   const setupMarxVictory = (player, subject) => {
     const revolutionPropText = `${revolutionSubjectCard.text} ${revolutionPredicateCard.text}`;
     const firstClause = `(${currentLang.keywords.universal_q} ${
-      bourgeoisCard.text
+      capitalistCard.text
     } ${currentLang.langCode === "ko" ? "악하다" : "is evil"})`;
     const secondClause = `(${revolutionPropText})`;
     const thirdClause = `(${subject} ${wins})`;
@@ -2778,7 +2778,7 @@ function render() {
       // 마르크스 공리가 있으면 추가
       if (
         currentAxioms.some(
-          (axiom) => axiom.includes("브루주아") || axiom.includes("Bourgeois")
+          (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
         )
       ) {
         const sep9 = document.createElement("hr");
@@ -2789,7 +2789,7 @@ function render() {
 
         currentAxioms
           .filter(
-            (axiom) => axiom.includes("브루주아") || axiom.includes("Bourgeois")
+            (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
           )
           .forEach((axiomText) => {
             const p = document.createElement("p");

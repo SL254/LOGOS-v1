@@ -107,8 +107,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/ma_icon.png",
     skill: {
-      ko: "프롤레타리아 혁명: 게임 시작 시, 양 플레이어의 손에 '브루주아는' 개체 카드가 추가되며, 참 명제 목록에 '((모든 브루주아는 악하다) 라면 (혁명이 일어난다)) 그리고 ((혁명이 일어난다) 라면 (마르크스는 승리한다))'라는 승리 조건 명제와 브루주아에 관한 공리가 추가됩니다.",
-      en: "Proletarian Revolution: At the start of the game, a 'Bourgeois' entity card is added to both players' hands. A victory condition, '((Every Bourgeois is evil) then (a revolution occurs)) and ((a revolution occurs) then (Marx wins))' and axioms about Bourgeois are added to the list of true propositions.",
+      ko: "프롤레타리아 혁명: 게임 시작 시, 양 플레이어의 손에 '자본가는' 개체 카드가 추가되며, 참 명제 목록에 '((모든 자본가는 악하다) 라면 (혁명이 일어난다)) 그리고 ((혁명이 일어난다) 라면 (마르크스는 승리한다))'라는 승리 조건 명제와 자본가에 관한 공리가 추가됩니다.",
+      en: "Proletarian Revolution: At the start of the game, a 'capitalist' entity card is added to both players' hands. A victory condition, '((Every capitalist is evil) then (a revolution occurs)) and ((a revolution occurs) then (Marx wins))' and axioms about capitalist are added to the list of true propositions.",
     },
   },
   wittgenstein: {
@@ -726,7 +726,7 @@ function activateWittgensteinAbility(player) {
       const remainingAxioms = axioms.slice(axiomIndex);
       const marxAxioms = remainingAxioms.filter((a) => {
         const text = propositionToNaturalText(a.proposition);
-        return text.includes("브루주아") || text.includes("Bourgeois");
+        return text.includes("자본가") || text.includes("capitalist");
       });
 
       if (marxAxioms.length > 0) {
@@ -1467,11 +1467,14 @@ function renderKantModal(player) {
   // 되돌리기 버튼: 카드가 없으면 비활성화
   document.getElementById("kant-undo-btn").disabled =
     kantProposition.length === 0;
-    
+
   // 완성 버튼: 카드가 없거나 문법적으로 완성되지 않았으면 비활성화
-  const isGrammaticallyComplete = kantProposition.length > 0 && 
-    parsePropositionFromCards(kantProposition.map((c) => ({ card: c }))) !== null;
-  document.getElementById("kant-confirm-btn").disabled = !isGrammaticallyComplete;
+  const isGrammaticallyComplete =
+    kantProposition.length > 0 &&
+    parsePropositionFromCards(kantProposition.map((c) => ({ card: c }))) !==
+      null;
+  document.getElementById("kant-confirm-btn").disabled =
+    !isGrammaticallyComplete;
 }
 
 function confirmKantAbility(player) {

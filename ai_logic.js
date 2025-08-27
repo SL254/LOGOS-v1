@@ -1189,8 +1189,8 @@ function aiTurn() {
         currentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
       const opponentPhilosopherId =
         opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
-      const bourgeoisText =
-        currentLang.langCode === "ko" ? "브루주아는" : "Bourgeois";
+      const capitalistText =
+        currentLang.langCode === "ko" ? "자본가는" : "capitalist";
       const evilText = currentLang.langCode === "ko" ? "악하다" : "is evil";
       const goodText = currentLang.langCode === "ko" ? "선하다" : "is good";
       const existentialQuantifier =
@@ -1199,11 +1199,11 @@ function aiTurn() {
       if (currentProposition.length > 0) {
         const lastCardText =
           currentProposition[currentProposition.length - 1].card.text;
-        const isQuantifiedBourgeois =
+        const isQuantifiedcapitalist =
           currentProposition.length === 2 &&
           currentProposition[0].card.text === existentialQuantifier &&
-          currentProposition[1].card.text === bourgeoisText;
-        if (lastCardText === bourgeoisText || isQuantifiedBourgeois) {
+          currentProposition[1].card.text === capitalistText;
+        if (lastCardText === capitalistText || isQuantifiedcapitalist) {
           if (aiPhilosopherId === "marx") {
             if (move.text === evilText) score += 15000;
             else if (move.text === goodText) score -= 15000;
@@ -1219,12 +1219,12 @@ function aiTurn() {
           if (aiPhilosopherId === "marx") {
             const antiGoalUniversal = {
               type: "universal",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: goodText,
             };
             const antiGoalExistential = {
               type: "existential",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: goodText,
             };
             if (
@@ -1236,12 +1236,12 @@ function aiTurn() {
           } else if (opponentPhilosopherId === "marx") {
             const opponentGoalUniversal = {
               type: "universal",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: evilText,
             };
             const opponentGoalExistential = {
               type: "existential",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: evilText,
             };
             if (
@@ -1523,26 +1523,26 @@ function aiTurn() {
           }
           const opponentPhilosopherId =
             opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
-          const bourgeoisText =
-            currentLang.langCode === "ko" ? "브루주아는" : "Bourgeois";
+          const capitalistText =
+            currentLang.langCode === "ko" ? "자본가는" : "capitalist";
           const evilText = currentLang.langCode === "ko" ? "악하다" : "is evil";
           const goodText = currentLang.langCode === "ko" ? "선하다" : "is good";
           const notText = currentLang.keywords.not;
           const marxGoalProp = {
             type: "universal",
-            entity: bourgeoisText,
+            entity: capitalistText,
             predicate: evilText,
           };
           const marxExistentialGoalProp = {
             type: "existential",
-            entity: bourgeoisText,
+            entity: capitalistText,
             predicate: evilText,
           };
           const marxHelpfulNegationProp = {
             type: "negation",
             proposition: {
               type: "universal",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: goodText,
             },
           };
@@ -1550,25 +1550,25 @@ function aiTurn() {
             type: "negation",
             proposition: {
               type: "existential",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: goodText,
             },
           };
           const marxAntiGoalProp = {
             type: "universal",
-            entity: bourgeoisText,
+            entity: capitalistText,
             predicate: goodText,
           };
           const marxExistentialAntiGoalProp = {
             type: "existential",
-            entity: bourgeoisText,
+            entity: capitalistText,
             predicate: goodText,
           };
           const marxHarmfulNegationProp = {
             type: "negation",
             proposition: {
               type: "universal",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: evilText,
             },
           };
@@ -1576,7 +1576,7 @@ function aiTurn() {
             type: "negation",
             proposition: {
               type: "existential",
-              entity: bourgeoisText,
+              entity: capitalistText,
               predicate: evilText,
             },
           };

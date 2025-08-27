@@ -1425,7 +1425,7 @@ function openEurekaModalTutorial() {
       const remainingAxioms = axioms.slice(axiomIndex);
       const marxAxioms = remainingAxioms.filter((a) => {
         const text = propositionToNaturalText(a.proposition);
-        return text.includes("브루주아") || text.includes("Bourgeois");
+        return text.includes("자본가") || text.includes("capitalist");
       });
 
       if (marxAxioms.length > 0) {
