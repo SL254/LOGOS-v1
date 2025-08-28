@@ -1,3 +1,36 @@
+// Star rating thresholds for each puzzle level
+const STAR_THRESHOLDS = {
+  1: { threeStar: 8, twoStar: 12 }, // 8 steps = 3 stars, 9-12 steps = 2 stars, 13+ steps = 1 star
+  2: { threeStar: 8, twoStar: 12 }, // Same as level 1
+  3: { threeStar: 7, twoStar: 11 }, // 7 or less = 3 stars, 8-11 = 2 stars, 12+ = 1 star
+  4: { threeStar: 7, twoStar: 11 }, // Same as level 3
+  5: { threeStar: 6, twoStar: 10 }, // 6 or less = 3 stars, 7-10 = 2 stars, 11+ = 1 star
+  6: { threeStar: 9, twoStar: 13 }, // 9 or less = 3 stars, 10-13 = 2 stars, 14+ = 1 star
+  7: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
+};
+
+/**
+ * Calculate star rating based on proof steps
+ * @param {number} level - Puzzle level number
+ * @param {number} steps - Number of proof steps taken
+ * @returns {number} Star rating (1-3)
+ */
+function calculateStarRating(level, steps) {
+  const threshold = STAR_THRESHOLDS[level];
+  if (!threshold) {
+    // Default thresholds for levels not explicitly defined
+    const defaultThreeStar = 8 + (level - 1) * 2;
+    const defaultTwoStar = defaultThreeStar + 4;
+    if (steps <= defaultThreeStar) return 3;
+    if (steps <= defaultTwoStar) return 2;
+    return 1;
+  }
+  
+  if (steps <= threshold.threeStar) return 3;
+  if (steps <= threshold.twoStar) return 2;
+  return 1;
+}
+
 const PUZZLES = {
   1: {
     goalDescription: {
@@ -205,20 +238,72 @@ const PUZZLES = {
   },
 };
 
+/**
+ * Get puzzle completion data from localStorage
+ * @returns {object} Puzzle completion data with star ratings
+ */
+function getPuzzleData() {
+  const data = JSON.parse(localStorage.getItem("logos_puzzle_data")) || {};
+  return data;
+}
+
+/**
+ * Save puzzle completion data to localStorage
+ * @param {object} data - Puzzle completion data
+ */
+function savePuzzleData(data) {
+  try {
+    localStorage.setItem("logos_puzzle_data", JSON.stringify(data));
+  } catch (e) {
+    console.error("퍼즐 데이터 저장 실패:", e);
+  }
+}
+
+/**
+ * Record puzzle completion with star rating
+ * @param {string|number} levelNum - Puzzle level number
+ * @param {number} steps - Number of proof steps taken
+ * @param {number} stars - Star rating achieved
+ */
+function recordPuzzleCompletion(levelNum, steps, stars) {
+  const puzzleData = getPuzzleData();
+  const levelKey = levelNum.toString();
+  
+  // Update only if this is a better score (more stars) or first completion
+  if (!puzzleData[levelKey] || puzzleData[levelKey].stars < stars) {
+    puzzleData[levelKey] = {
+      cleared: true,
+      stars: stars,
+      bestSteps: steps,
+      completedAt: Date.now()
+    };
+    savePuzzleData(puzzleData);
+  }
+}
+
 function populatePuzzleLevels() {
   const grid = document.getElementById("puzzle-level-grid");
   grid.innerHTML = ""; // 기존 레벨 버튼들 초기화
 
-  const clearedPuzzles =
+  const puzzleData = getPuzzleData();
+  // Keep backward compatibility with old cleared puzzles data
+  const oldClearedPuzzles =
     JSON.parse(localStorage.getItem("logos_cleared_puzzles")) || {};
 
   Object.keys(PUZZLES).forEach((levelNum) => {
     const levelBtn = document.createElement("div");
     levelBtn.className = "puzzle-level-btn";
     levelBtn.textContent = levelNum;
-    if (clearedPuzzles[levelNum]) {
+    
+    const levelData = puzzleData[levelNum];
+    const isCleared = levelData?.cleared || oldClearedPuzzles[levelNum];
+    
+    if (isCleared) {
+      const stars = levelData?.stars || 1; // Default to 1 star for old completed puzzles
       levelBtn.classList.add("cleared");
+      levelBtn.classList.add(`stars-${stars}`);
     }
+    
     levelBtn.addEventListener("click", () => {
       audioManager.playSfx("hover");
       startPuzzle(levelNum, PUZZLES[levelNum]);

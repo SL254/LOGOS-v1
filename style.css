@@ -1820,6 +1820,9 @@ body::after {
     url("assets/images/tuto_hover.png") url("assets/images/level_hover.png")
     url("assets/images/level.png") url("assets/images/level_cleared_hover.png")
     url("assets/images/level_cleared.png")
+    url("assets/images/level_cleared_1star.png") url("assets/images/level_cleared_1star_hover.png")
+    url("assets/images/level_cleared_2star.png") url("assets/images/level_cleared_2star_hover.png")
+    url("assets/images/level_cleared_3star.png") url("assets/images/level_cleared_3star_hover.png")
     url("assets/images/complete_hover.png") url("assets/images/undo_hover.png")
     url("assets/images/end_hover.png") url("assets/images/eureka_1.png")
     url("assets/images/close_hover.png") url("assets/images/pre_li_hover.png")
@@ -2730,7 +2733,6 @@ select:focus {
   background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
   background-position: center; /* 👈 이미지를 중앙에 배치 */
   image-rendering: pixelated;
-  image-rendering: pixelated;
 
   /* 레벨 번호를 표시하기 위한 Flexbox 설정 */
   display: flex;
@@ -2740,11 +2742,33 @@ select:focus {
   font-weight: bold;
   background-color: transparent;
 }
+
+/* Star-based cleared button styles */
+.puzzle-level-btn.cleared.stars-1 {
+  background-image: url("assets/images/level_cleared_1star.png");
+}
+.puzzle-level-btn.cleared.stars-1:hover {
+  background-image: url("assets/images/level_cleared_1star_hover.png");
+}
+
+.puzzle-level-btn.cleared.stars-2 {
+  background-image: url("assets/images/level_cleared_2star.png");
+}
+.puzzle-level-btn.cleared.stars-2:hover {
+  background-image: url("assets/images/level_cleared_2star_hover.png");
+}
+
+.puzzle-level-btn.cleared.stars-3 {
+  background-image: url("assets/images/level_cleared_3star.png");
+}
+.puzzle-level-btn.cleared.stars-3:hover {
+  background-image: url("assets/images/level_cleared_3star_hover.png");
+}
+
 .puzzle-level-btn.cleared:hover {
-  background-image: url("assets/images/level_cleared_hover.png"); /* 👈 사용할 단일 이미지 경로 */
-  background-repeat: no-repeat; /* 👈 이미지 반복 안 함 */
-  background-size: cover; /* 👈 박스를 덮도록 크기 조절 (또는 contain) */
-  background-position: center; /* 👈 이미지를 중앙에 배치 */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   image-rendering: pixelated;
 }
 #puzzle-level-select-modal .shared-selection-area {

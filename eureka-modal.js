@@ -954,13 +954,17 @@ function proveVictory() {
     );
 
     if (isMyVictoryProven || isOpponentLossProven) {
+      // Calculate star rating based on proof steps
+      const stars = calculateStarRating(currentPuzzleLevel, inferenceStepCount);
+      
       try {
-        // 1. 기존 클리어 데이터 불러오기 (없으면 빈 객체)
+        // Record puzzle completion with star rating
+        recordPuzzleCompletion(currentPuzzleLevel, inferenceStepCount, stars);
+        
+        // Keep backward compatibility - also save to old format
         const clearedPuzzles =
           JSON.parse(localStorage.getItem("logos_cleared_puzzles")) || {};
-        // 2. 현재 클리어한 퍼즐 번호 기록
         clearedPuzzles[currentPuzzleLevel] = true;
-        // 3. 다시 로컬 스토리지에 저장
         localStorage.setItem(
           "logos_cleared_puzzles",
           JSON.stringify(clearedPuzzles)
@@ -969,7 +973,13 @@ function proveVictory() {
         console.error("퍼즐 클리어 데이터 저장 실패:", e);
       }
 
-      showAlert(currentLang.alerts.puzzleCleared.replace("{steps}", inferenceStepCount), () => {
+      // Create star display for the alert message
+      const starDisplay = "★".repeat(stars) + "☆".repeat(3 - stars);
+      const alertMessage = currentLang.alerts.puzzleCleared
+        .replace("{steps}", inferenceStepCount)
+        .replace("{stars}", `${starDisplay} (${stars}/3)`);
+
+      showAlert(alertMessage, () => {
         document.getElementById("eureka-modal").classList.remove("visible");
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
