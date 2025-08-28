@@ -36,6 +36,14 @@ function startCharacterSelection(mode) {
 
     turnModal.classList.add("visible");
 
+    // 닫기 버튼 기능 추가
+    document.getElementById("close-turn-order-modal-btn").onclick = () => {
+      turnModal.classList.remove("visible");
+      // 캐릭터 선택을 취소하고 메인 메뉴로 돌아감
+      audioManager.fadeOut("character-select");
+      audioManager.play("main-menu");
+    };
+
     document.getElementById("select-first-player").onclick = () => {
       humanPlayerId = "P1";
       aiPlayer = "B"; // 기존 호환성을 위해 유지

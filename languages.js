@@ -13,7 +13,7 @@ const TEXTS = {
       vsPlayerButton: "2인 대전",
       puzzleButton: "퍼즐",
       fullscreenButton: "전체화면",
-      exitFullscreenButton: "전체화면 취소",
+      exitFullscreenButton: "전체화면 종료",
       settingsButton: "환경설정",
       settingsTitle: "환경설정",
       bgmLabel: "배경음악",
@@ -158,7 +158,7 @@ const TEXTS = {
       undoLastProposition: "마지막으로 완성된 명제를 되돌렸습니다.",
       nothingToUndo: "되돌릴 수 있는 완성된 명제가 없습니다.",
       roundEndNoMoves:
-        "'{player}' 플레이어가 더 이상 낼 수 있는 카드가 없어 사유 시간으로 전환합니다.",
+        "'{player}' 플레이어가 더 이상 낼 수 있는 카드가 없어<br>사유 시간으로 전환합니다.",
       criticalErrorUndo:
         "진리 체계를 재구성하는 중 심각한 오류가 발생했습니다. 게임을 새로 시작해야 할 수 있습니다.",
       oneAssumptionOnly: "가정은 한 번에 하나만 할 수 있습니다.",
