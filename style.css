@@ -2853,6 +2853,10 @@ input[type="checkbox"]:disabled {
   border-bottom: 2px solid #b15139;
 }
 
+.proof-group:last-child {
+  border-bottom: none;
+}
+
 .proof-step {
   margin-bottom: 8px;
   padding: 8px 12px;
