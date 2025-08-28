@@ -191,7 +191,7 @@ const TEXTS = {
       tutorialVictory:
         "잘 하셨습니다.<br>이제 논리 대결에 참여하여 당신의 지혜를 증명해 보세요!",
       puzzleCleared:
-        "축하합니다! 클리어하셨습니다!<br><br>거쳐 간 논증 단계 수: {steps}<br>별점: {stars}",
+        "축하합니다! 클리어하셨습니다!<br><br>거쳐 간 논증 단계 수: {steps}<br>{stars}",
       confirmDeclareEureka:
         "유레카! 선언은 한 라운드에 한 번만 가능합니다.<br>선언하시겠습니까?",
     },
@@ -518,7 +518,7 @@ const TEXTS = {
       tutorialVictory:
         "Well done!<br>Now, engage in a battle of wits and prove your wisdom!",
       puzzleCleared:
-        "Congratulations! You cleared the puzzle!<br><br>Inference steps taken: {steps}<br>Rating: {stars}",
+        "Congratulations! You cleared the puzzle!<br><br>Inference steps taken: {steps}<br>{stars}",
       confirmDeclareEureka:
         "Eureka! can only be declared once per round.<br>Do you want to proceed?",
     },

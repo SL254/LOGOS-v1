@@ -5,7 +5,7 @@ const STAR_THRESHOLDS = {
   3: { threeStar: 7, twoStar: 11 }, // 7 or less = 3 stars, 8-11 = 2 stars, 12+ = 1 star
   4: { threeStar: 7, twoStar: 11 }, // Same as level 3
   5: { threeStar: 6, twoStar: 10 }, // 6 or less = 3 stars, 7-10 = 2 stars, 11+ = 1 star
-  6: { threeStar: 9, twoStar: 13 }, // 9 or less = 3 stars, 10-13 = 2 stars, 14+ = 1 star
+  6: { threeStar: 8, twoStar: 12 }, // 8 or less = 3 stars, 9-12 = 2 stars, 14+ = 1 star
   7: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
 };
 
@@ -25,7 +25,7 @@ function calculateStarRating(level, steps) {
     if (steps <= defaultTwoStar) return 2;
     return 1;
   }
-  
+
   if (steps <= threshold.threeStar) return 3;
   if (steps <= threshold.twoStar) return 2;
   return 1;
@@ -268,14 +268,14 @@ function savePuzzleData(data) {
 function recordPuzzleCompletion(levelNum, steps, stars) {
   const puzzleData = getPuzzleData();
   const levelKey = levelNum.toString();
-  
+
   // Update only if this is a better score (more stars) or first completion
   if (!puzzleData[levelKey] || puzzleData[levelKey].stars < stars) {
     puzzleData[levelKey] = {
       cleared: true,
       stars: stars,
       bestSteps: steps,
-      completedAt: Date.now()
+      completedAt: Date.now(),
     };
     savePuzzleData(puzzleData);
   }
@@ -294,16 +294,16 @@ function populatePuzzleLevels() {
     const levelBtn = document.createElement("div");
     levelBtn.className = "puzzle-level-btn";
     levelBtn.textContent = levelNum;
-    
+
     const levelData = puzzleData[levelNum];
     const isCleared = levelData?.cleared || oldClearedPuzzles[levelNum];
-    
+
     if (isCleared) {
       const stars = levelData?.stars || 1; // Default to 1 star for old completed puzzles
       levelBtn.classList.add("cleared");
       levelBtn.classList.add(`stars-${stars}`);
     }
-    
+
     levelBtn.addEventListener("click", () => {
       audioManager.playSfx("hover");
       startPuzzle(levelNum, PUZZLES[levelNum]);
