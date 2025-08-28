@@ -177,4 +177,10 @@ function setupEventListeners() {
     .addEventListener("click", () => {
       hideProofReviewModal();
     });
+
+  // Custom Modal Events
+  document.getElementById("custom-btn").addEventListener("click", () => {
+    if (inTutorialMode) return;
+    openCustomModal();
+  });
 }

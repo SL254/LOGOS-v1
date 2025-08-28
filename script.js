@@ -1037,6 +1037,7 @@ function initializeGame(lang) {
   setupUI();
   setupModeDescriptionHovers();
   loadSettings();
+  initializeCustomSystem();
   showMainMenu();
   showPressAnyKeyScreen(); // 메인 메뉴 위에 Press any key 화면 표시
   addGlobalSoundEvents();

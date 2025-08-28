@@ -129,6 +129,7 @@
             <button id="puzzle-mode-btn"></button>
             <button id="tutorial-btn"></button>
             <button id="tutorial-puzzle-btn"></button>
+            <button id="custom-btn"></button>
             <button id="exit-game-btn"></button>
             <div id="mode-description"></div>
           </div>
@@ -491,6 +492,29 @@
       </div>
     </div>
 
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="modal">
+      <div class="modal-content">
+        <button class="close-button" id="close-custom-modal-btn"></button>
+        <h2 id="custom-modal-title">Entity Customization</h2>
+        <div id="custom-content">
+          <p id="custom-description">Choose individual entities for logical propositions:</p>
+
+          <div class="custom-preview">
+            <h3 id="custom-preview-label">Entity Mapping</h3>
+            <div class="custom-mapping" id="theme-preview">
+              <!-- Entity selectors will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div class="custom-actions">
+            <button id="reset-custom-btn">Reset to Default</button>
+            <button id="apply-custom-btn">Apply Theme</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="languages.js"></script>
     <script src="philosophers.js"></script>
     <script src="audio.js"></script>
@@ -501,6 +525,7 @@
     <script src="ai_logic.js"></script>
     <script src="tutorial.js"></script>
     <script src="puzzle.js"></script>
+    <script src="custom.js"></script>
     <script src="character-selection.js"></script>
 
     <script src="ui-utils.js"></script>

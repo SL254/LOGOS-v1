@@ -134,6 +134,9 @@ function setupUI() {
   document.getElementById("puzzle-modal-title").textContent =
     currentLang.modals.puzzleTitle;
 
+  document.getElementById("custom-btn").textContent =
+    currentLang.ui.customButton;
+
   document.getElementById("tutorial-modal-title").textContent =
     currentLang.modals.tutorialTitle;
   document.getElementById("alert-ok-btn").textContent = currentLang.ui.okButton;
