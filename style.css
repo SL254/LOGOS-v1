@@ -1817,7 +1817,8 @@ body::after {
     url("assets/images/eureka.png") url("assets/images/disabled.png")
     url("assets/images/eureka_disabled.png") /* 버튼 호버(Hover) 이미지 */
     url("assets/images/new_hover.png") url("assets/images/full_hover.png")
-    url("assets/images/tuto_hover.png") url("assets/images/level_hover.png")
+    url("assets/images/tuto_hover.png") url("assets/images/tuto_highlight.png")
+    url("assets/images/tuto_highlight_hover.png") url("assets/images/level_hover.png")
     url("assets/images/level.png") url("assets/images/level_cleared_hover.png")
     url("assets/images/level_cleared.png")
     url("assets/images/level_cleared_1star.png")
@@ -2175,6 +2176,14 @@ body::after {
   image-rendering: pixelated;
   background-color: transparent;
   cursor: not-allowed;
+}
+
+#tutorial-btn.highlight {
+  border-image-source: url("assets/images/tuto_highlight.png");
+}
+
+#tutorial-btn.highlight:hover {
+  border-image-source: url("assets/images/tuto_highlight_hover.png");
 }
 
 #turn-order-modal .modal-content-small h2 {

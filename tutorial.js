@@ -1788,6 +1788,9 @@ function endTutorial() {
 
   document.getElementById("tutorial-guide").classList.add("hidden");
   clearHighlights();
+  
+  // 튜토리얼 완료 표시
+  markTutorialCompleted();
 
   const tutorialBtn = document.getElementById("tutorial-btn");
   tutorialBtn.textContent = currentLang.ui.tutorialButton;

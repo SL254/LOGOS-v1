@@ -48,6 +48,25 @@ let aiTimeoutId = null;
 let victorySoundPlayed = false; // 승리 효과음 재생 여부 플래그
 let hasUserInteracted = false; // 사용자 상호작용 여부 플래그
 
+// --- TUTORIAL STATUS FUNCTIONS ---
+
+function checkTutorialStatus() {
+  const tutorialCompleted = localStorage.getItem("logos_tutorial_completed");
+  const tutorialBtn = document.getElementById("tutorial-btn");
+  
+  if (!tutorialCompleted && tutorialBtn) {
+    tutorialBtn.classList.add("highlight");
+  }
+}
+
+function markTutorialCompleted() {
+  localStorage.setItem("logos_tutorial_completed", "true");
+  const tutorialBtn = document.getElementById("tutorial-btn");
+  if (tutorialBtn) {
+    tutorialBtn.classList.remove("highlight");
+  }
+}
+
 // --- LANGUAGE DETECTION FUNCTIONS ---
 
 function detectBrowserLanguage() {
@@ -62,6 +81,9 @@ function detectBrowserLanguage() {
 function autoInitializeGame() {
   const preferredLang = getPreferredLanguage();
   initializeGame(preferredLang);
+  
+  // 초기화 후 튜토리얼 상태 확인
+  setTimeout(checkTutorialStatus, 100);
 }
 
 // --- PROOF RECORDING FUNCTIONS ---
