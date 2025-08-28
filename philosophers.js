@@ -1430,7 +1430,7 @@ function renderKantModal(player) {
     const cardEl = document.createElement("div");
 
     cardEl.className = `card ${colorClass}`;
-    cardEl.textContent = card.text;
+    cardEl.textContent = applyCustomEntityMappings(card.text);
     cardEl.onclick = () => {
       const tempPropositionForValidation = kantProposition.map((c) => ({
         card: c,
@@ -1459,7 +1459,7 @@ function renderKantModal(player) {
     const cardEl = document.createElement("div");
 
     cardEl.className = `card ${colorClass}`;
-    cardEl.textContent = card.text;
+    cardEl.textContent = applyCustomEntityMappings(card.text);
     propDisplay.appendChild(cardEl);
   });
 

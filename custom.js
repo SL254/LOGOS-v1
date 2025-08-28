@@ -370,6 +370,10 @@ function getCustomEntityName(originalEntity) {
 function applyCustomEntityMappings(text) {
   if (!text) return text;
   
+  // Don't apply custom mappings in tutorial or puzzle modes
+  if (typeof inTutorialMode !== 'undefined' && inTutorialMode) return text;
+  if (typeof inPuzzleMode !== 'undefined' && inPuzzleMode) return text;
+  
   const currentLangCode = currentLang.langCode;
   const currentMapping = customEntityMappings[currentLangCode];
   

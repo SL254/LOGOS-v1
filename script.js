@@ -850,13 +850,18 @@ function propositionToText(prop) {
 
 function propositionToNaturalText(prop) {
   if (!prop) return "";
+  let resultText = "";
+  
   switch (prop.type) {
     case "atomic":
-      return `${prop.subject} ${prop.predicate}`;
+      resultText = `${prop.subject} ${prop.predicate}`;
+      break;
     case "universal":
-      return `${currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
+      resultText = `${currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
+      break;
     case "existential":
-      return `${currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
+      resultText = `${currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
+      break;
     case "negation": {
       const innerProp = prop.proposition;
       const innerText = propositionToNaturalText(innerProp);
@@ -868,11 +873,12 @@ function propositionToNaturalText(prop) {
         innerProp.type === "universal" ||
         innerProp.type === "existential"
       ) {
-        return `(${innerText}) ${notKeyword}`;
+        resultText = `(${innerText}) ${notKeyword}`;
+      } else {
+        // 그 외 (이미 괄호가 있는 복합 명제나 또 다른 부정문)는 그대로 텍스트를 이어붙입니다.
+        resultText = `${innerText} ${notKeyword}`;
       }
-
-      // 그 외 (이미 괄호가 있는 복합 명제나 또 다른 부정문)는 그대로 텍스트를 이어붙입니다.
-      return `${innerText} ${notKeyword}`;
+      break;
     }
     case "conjunction": {
       const leftProp = prop.left;
@@ -889,7 +895,8 @@ function propositionToNaturalText(prop) {
       }
 
       const andKeyword = `<span class="op-and">${currentLang.keywords.and}</span>`;
-      return `${leftText} ${andKeyword} ${rightText}`;
+      resultText = `${leftText} ${andKeyword} ${rightText}`;
+      break;
     }
     case "disjunction": {
       const leftProp = prop.left;
@@ -906,7 +913,8 @@ function propositionToNaturalText(prop) {
       }
 
       const orKeyword = `<span class="op-or">${currentLang.keywords.or}</span>`;
-      return `${leftText} ${orKeyword} ${rightText}`;
+      resultText = `${leftText} ${orKeyword} ${rightText}`;
+      break;
     }
     case "conditional": {
       const leftProp = prop.left;
@@ -923,11 +931,16 @@ function propositionToNaturalText(prop) {
       }
 
       const ifKeyword = `<span class="op-if">${currentLang.keywords.if}</span>`;
-      return `${leftText} ${ifKeyword} ${rightText}`;
+      resultText = `${leftText} ${ifKeyword} ${rightText}`;
+      break;
     }
     default:
-      return "Unknown Proposition";
+      resultText = "Unknown Proposition";
+      break;
   }
+  
+  // Apply custom entity mappings before returning
+  return applyCustomEntityMappings(resultText);
 }
 
 function propositionToPlainText(prop) {
@@ -2546,7 +2559,7 @@ function render() {
     }
     const cardEl = document.createElement("div");
     cardEl.className = "card card-white";
-    cardEl.textContent = card.text;
+    cardEl.textContent = applyCustomEntityMappings(card.text);
     // 사유 시간에는 모든 카드를 비활성화
     if (isThinkingTime) {
       cardEl.classList.add("unplayable");
@@ -2585,7 +2598,7 @@ function render() {
     }
     const cardEl = document.createElement("div");
     cardEl.className = "card card-black";
-    cardEl.textContent = card.text;
+    cardEl.textContent = applyCustomEntityMappings(card.text);
     // 사유 시간에는 모든 카드를 비활성화
     if (isThinkingTime) {
       cardEl.classList.add("unplayable");
@@ -2877,7 +2890,7 @@ function render() {
       if (propData.original_cards && propData.original_cards.length > 0) {
         propData.original_cards.forEach((info) => {
           const wordSpan = document.createElement("span");
-          wordSpan.textContent = info.card.text + " ";
+          wordSpan.textContent = applyCustomEntityMappings(info.card.text) + " ";
           wordSpan.className = info.player === "A" ? "word-a" : "word-b";
           li.appendChild(wordSpan);
         });
