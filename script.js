@@ -415,7 +415,7 @@ function showProofReviewModal() {
     assumptionSteps.forEach((assumptionStep) => {
       const assumptionGroupDiv = document.createElement("div");
       assumptionGroupDiv.className = "proof-group";
-      assumptionGroupDiv.style.marginBottom = "25px";
+      // CSS에서 처리
 
       const assumptionDiv = document.createElement("div");
       assumptionDiv.className = `proof-step assumption`;
@@ -465,7 +465,7 @@ function showProofReviewModal() {
       // 추론 그룹 생성
       const groupDiv = document.createElement("div");
       groupDiv.className = "proof-group";
-      groupDiv.style.marginBottom = "25px";
+      // CSS에서 처리
 
       // 이 추론에 사용된 전제들 찾기
       const usedPremises = step.premises
@@ -553,7 +553,7 @@ function showProofReviewModal() {
       // 승리 추론 그룹 생성 (다른 추론과 동일한 형식)
       const groupDiv = document.createElement("div");
       groupDiv.className = "proof-group";
-      groupDiv.style.marginBottom = "25px";
+      // CSS에서 처리
 
       // 승리로 이어진 전제들 찾기
       const usedPremises = step.premises

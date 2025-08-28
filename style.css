@@ -2843,12 +2843,12 @@ input[type="checkbox"]:disabled {
   overflow-y: auto;
   padding: 30px;
   background-color: tramsparent; /* 배경을 투명하게 설정 */
-  margin-top: 8px;
+  margin-top: 0px;
 }
 
 .proof-group {
-  margin-bottom: 25px;
-  padding: 15px;
+  margin: 0;
+  padding: 25px;
   background-color: transparent;
   border-bottom: 2px solid #b15139;
 }
