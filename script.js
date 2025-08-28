@@ -1548,6 +1548,9 @@ function resetGame(selectedCharacters, testConfig = null) {
   audioManager.stop("main-menu");
   audioManager.play("game-play");
 
+  // 게임 시작 시점에 메인 센터 숨기기
+  document.querySelector(".main-center-bg").classList.add("hidden");
+
   // 만약 선택된 캐릭터 정보가 없다면, 기본값으로 소크라테스와 플라톤을 설정
   if (!selectedCharacters) {
     selectedCharacters = { p1: "socrates", p2: "plato" };
@@ -3069,29 +3072,14 @@ function render() {
   }
 }
 
-document.getElementById("vs-player-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
-  // ✅ 1인 대전과 마찬가지로 새로운 캐릭터 선택 함수를 호출합니다.
-  startCharacterSelection("2P");
-});
 document.getElementById("vs-ai-btn").addEventListener("click", () => {
-  if (inTutorialMode || gameMode === "AI") return;
-  document.querySelector(".main-center-bg").classList.add("hidden"); // 메인 센터 숨김
-  document.getElementById("credits-btn").classList.add("hidden");
-  document.getElementById("character-select-modal").classList.add("visible");
+  if (inTutorialMode) return;
+  startCharacterSelection("AI");
 });
 
 document.getElementById("vs-player-btn").addEventListener("click", () => {
   if (inTutorialMode) return;
-  // ✅ 1인 대전과 마찬가지로 새로운 캐릭터 선택 함수를 호출합니다.
   startCharacterSelection("2P");
-});
-document.getElementById("vs-ai-btn").addEventListener("click", () => {
-  if (inTutorialMode || gameMode === "AI") return;
-  document.querySelector(".main-center-bg").classList.add("hidden");
-  document.getElementById("credits-btn").classList.add("hidden");
-  updateMainMenuBtnVisibility();
-  document.getElementById("character-select-modal").classList.add("visible");
 });
 
 document.getElementById("main-menu-btn").addEventListener("click", () => {
@@ -3116,14 +3104,6 @@ document.getElementById("vs-player-btn").addEventListener("click", () => {
   if (inTutorialMode) return;
   // ✅ 1인 대전과 마찬가지로 새로운 캐릭터 선택 함수를 호출합니다.
   startCharacterSelection("2P");
-});
-document.getElementById("vs-ai-btn").addEventListener("click", () => {
-  if (inTutorialMode || gameMode === "AI") return;
-  document.querySelector(".main-center-bg").classList.add("hidden");
-  document.getElementById("credits-btn").classList.add("hidden");
-  updateMainMenuBtnVisibility();
-  updateMainCenterVisibility();
-  document.getElementById("character-select-modal").classList.add("visible");
 });
 
 // 초기화 시에도 호출

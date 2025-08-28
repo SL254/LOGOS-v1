@@ -18,10 +18,10 @@
 }
 
 /* 입력 필드는 선택 가능하도록 예외 처리 */
-input[type="text"], 
-input[type="number"], 
-input[type="email"], 
-input[type="password"], 
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
 textarea {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -1820,9 +1820,12 @@ body::after {
     url("assets/images/tuto_hover.png") url("assets/images/level_hover.png")
     url("assets/images/level.png") url("assets/images/level_cleared_hover.png")
     url("assets/images/level_cleared.png")
-    url("assets/images/level_cleared_1star.png") url("assets/images/level_cleared_1star_hover.png")
-    url("assets/images/level_cleared_2star.png") url("assets/images/level_cleared_2star_hover.png")
-    url("assets/images/level_cleared_3star.png") url("assets/images/level_cleared_3star_hover.png")
+    url("assets/images/level_cleared_1star.png")
+    url("assets/images/level_cleared_1star_hover.png")
+    url("assets/images/level_cleared_2star.png")
+    url("assets/images/level_cleared_2star_hover.png")
+    url("assets/images/level_cleared_3star.png")
+    url("assets/images/level_cleared_3star_hover.png")
     url("assets/images/complete_hover.png") url("assets/images/undo_hover.png")
     url("assets/images/end_hover.png") url("assets/images/eureka_1.png")
     url("assets/images/close_hover.png") url("assets/images/pre_li_hover.png")

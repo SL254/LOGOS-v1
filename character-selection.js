@@ -13,7 +13,6 @@ function startCharacterSelection(mode) {
   tempSelections = { p1: null, p2: null };
   isPlayerAI = { A: false, B: false }; // 상태 초기화
 
-  document.querySelector(".main-center-bg").classList.add("hidden");
   document.getElementById("credits-btn").classList.add("hidden");
   updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
 
@@ -208,16 +207,13 @@ function finalizeSelection() {
       .getElementById("character-selection-screen")
       .classList.add("hidden");
     document.getElementById("turn-order-modal").classList.remove("visible");
+    resetGame(tempSelections);
     updateMainMenuBtnVisibility();
     updateMainCenterVisibility();
-    resetGame(tempSelections);
 
     if (isTestMode) {
       // 테스트 모드일 경우, 데이터 입력 및 테스트 게임 시작
       promptAndSetupTestGame(tempSelections);
-    } else {
-      // 일반 모드일 경우, 기존 게임 시작
-      resetGame(tempSelections);
     }
   }, 2000);
 }
