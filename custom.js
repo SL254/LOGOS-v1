@@ -147,6 +147,9 @@ function setupCustomModal() {
  * Open custom modal
  */
 function openCustomModal() {
+  // Reset to defaults every time modal opens
+  initializeDefaultMappings();
+  
   const modal = document.getElementById("custom-modal");
   populateCustomModal();
   modal.classList.add("visible");
@@ -178,15 +181,20 @@ function createEntitySelectors() {
   const currentLangCode = currentLang.langCode;
   const originals = ORIGINAL_ENTITIES[currentLangCode] || [];
   
+  const entityLabels = {
+    ko: ["개체 1", "개체 2", "개체 3"],
+    en: ["Entity 1", "Entity 2", "Entity 3"]
+  };
+  
   mappingContainer.innerHTML = "";
   
-  originals.forEach(originalEntity => {
+  originals.forEach((originalEntity, index) => {
     const mappingDiv = document.createElement("div");
     mappingDiv.className = "mapping-item";
     
-    const originalSpan = document.createElement("span");
-    originalSpan.className = "original";
-    originalSpan.textContent = originalEntity;
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "original";
+    labelSpan.textContent = entityLabels[currentLangCode][index] || `Entity ${index + 1}`;
     
     const arrow = document.createElement("span");
     arrow.className = "arrow";
@@ -205,7 +213,7 @@ function createEntitySelectors() {
       refreshAllSelectors(); // Refresh other selectors to update available options
     });
     
-    mappingDiv.appendChild(originalSpan);
+    mappingDiv.appendChild(labelSpan);
     mappingDiv.appendChild(arrow);
     mappingDiv.appendChild(selector);
     
@@ -300,14 +308,14 @@ function updateCustomModalText() {
 
   if (currentLang.langCode === "ko") {
     title.textContent = "개체 커스터마이징";
-    description.textContent = "논리 명제에서 사용할 개체를 개별적으로 선택하세요:";
-    previewLabel.textContent = "개체 매핑";
+    description.textContent = "논리 명제에서 사용할 3가지 개체를 선택하세요:";
+    previewLabel.textContent = "개체 선택";
     resetBtn.textContent = "기본값으로 되돌리기";
     applyBtn.textContent = "변경사항 저장";
   } else {
     title.textContent = "Entity Customization";
-    description.textContent = "Choose individual entities for logical propositions:";
-    previewLabel.textContent = "Entity Mapping";
+    description.textContent = "Select 3 entities to use in logical propositions:";
+    previewLabel.textContent = "Entity Selection";
     resetBtn.textContent = "Reset to Default";
     applyBtn.textContent = "Save Changes";
   }
