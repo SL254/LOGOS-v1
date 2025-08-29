@@ -130,6 +130,17 @@ function setupEventListeners() {
   document
     .getElementById("cancel-assumption-btn")
     .addEventListener("click", cancelAssumption);
+  
+  // 가정 모달 이벤트 핸들러들
+  document
+    .getElementById("close-assumption-modal-btn")
+    .addEventListener("click", closeAssumptionModal);
+  document
+    .getElementById("assumption-undo-btn")
+    .addEventListener("click", undoAssumptionCard);
+  document
+    .getElementById("assumption-confirm-btn")
+    .addEventListener("click", confirmAssumption);
   document
     .getElementById("alert-ok-btn")
     .addEventListener("click", () =>

@@ -15,6 +15,8 @@ let isPlayerAI = { A: false, B: false };
 let fullDeck, cardTypeOrder;
 let playerA_Hand = [],
   playerB_Hand = [];
+let initialPlayerA_Hand = [], // 초기 손패 저장용
+  initialPlayerB_Hand = [];
 let truePropositions = [];
 let parsedAxioms = [];
 let currentProposition = [];
@@ -1388,6 +1390,10 @@ function setupGame(selectedCharacters, testConfig = null) {
     );
   }
 
+  // 초기 손패 저장 (가정하기에서 사용)
+  initialPlayerA_Hand = JSON.parse(JSON.stringify(playerA_Hand));
+  initialPlayerB_Hand = JSON.parse(JSON.stringify(playerB_Hand));
+
   // 4. 공리 및 승리 조건 설정
   currentAxioms = generateAxioms(subjectA, subjectB, currentLang, isMarxInGame);
   parsedAxioms = currentAxioms
@@ -1631,8 +1637,8 @@ function addGlobalSoundEvents() {
   });
 }
 
-function isValidPlay(cardToPlay, proposition) {
-  if (inTutorialMode) {
+function isValidPlay(cardToPlay, proposition, isAssumptionMode = false) {
+  if (inTutorialMode && !isAssumptionMode) {
     const highlightedCard = document.querySelector(".tutorial-highlight");
     return highlightedCard && highlightedCard.textContent === cardToPlay.text;
   }

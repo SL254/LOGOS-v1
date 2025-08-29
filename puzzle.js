@@ -337,6 +337,12 @@ function startPuzzle(levelNum, levelData) {
   // 기본 카드 목록에 소크라테스와 플라톤 카드만 추가하여 fullDeck을 재설정합니다.
   fullDeck = [...baseDeck, socratesCard, platoCard];
 
+  // 퍼즐 모드에서 가정하기용 초기 손패 설정 (소크라테스/플라톤 덱)
+  const nonPlayerCards = ["승리한다", "wins"];
+  const puzzleHand = fullDeck.filter((c) => !nonPlayerCards.includes(c.text));
+  initialPlayerA_Hand = JSON.parse(JSON.stringify(puzzleHand));
+  initialPlayerB_Hand = JSON.parse(JSON.stringify(puzzleHand));
+
   // 1. 퍼즐에 필요한 공리를 먼저 생성합니다. (튜토리얼 로직 재활용)
   const socratesSubject = currentLang.keywords.socrates;
   const platoSubject = currentLang.keywords.plato;

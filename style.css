@@ -2334,7 +2334,8 @@ button,
   margin-bottom: 20px;
 }
 
-#kant-ability-modal .modal-content {
+#kant-ability-modal .modal-content,
+#assumption-modal .modal-content {
   display: flex;
   flex-direction: column;
   height: 80vh;
@@ -2342,7 +2343,9 @@ button,
 
 /* 1. 테두리와 배경 제거, flex-grow를 통해 상하 공간 분할 */
 #kant-proposition-area,
-#kant-hand-area {
+#kant-hand-area,
+#assumption-proposition-area,
+#assumption-hand-area {
   padding: 10px;
   margin-bottom: 15px;
   display: flex; /* 내부 요소(제목, 카드 컨테이너)를 정렬하기 위해 flex로 설정 */
@@ -2361,7 +2364,8 @@ button,
   flex-shrink: 0; /* 제목의 크기가 줄어들지 않도록 고정 */
 }
 
-#kant-proposition-display {
+#kant-proposition-display,
+#assumption-proposition-display {
   min-height: 80px;
   display: flex;
   flex-wrap: wrap;
@@ -2369,7 +2373,8 @@ button,
   align-items: center;
 }
 
-#kant-hand-display {
+#kant-hand-display,
+#assumption-hand-display {
   flex-grow: 1; /* 남은 공간을 모두 차지 */
   display: flex;
   flex-wrap: wrap;
@@ -2380,7 +2385,8 @@ button,
 
 /* 2. 호버 효과 삭제됨 (해당 선택자 제거) */
 
-#kant-controls {
+#kant-controls,
+#assumption-controls {
   display: flex;
   justify-content: center;
   gap: 15px;
@@ -2593,6 +2599,7 @@ select:focus {
 #true-propositions,
 .premise-selection,
 #kant-hand-display,
+#assumption-hand-display,
 #credits-content,
 #proof-review-content {
   /* 핸들 색상, 트랙 색상 */

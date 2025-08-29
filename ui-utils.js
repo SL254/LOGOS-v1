@@ -162,6 +162,18 @@ function setupUI() {
   document.getElementById("cancel-assumption-btn").textContent =
     currentLang.ui.cancelAssumptionButton;
 
+  // 가정 모달 텍스트 업데이트
+  document.getElementById("assumption-modal-title").textContent =
+    currentLang.modals.assumptionModalTitle;
+  document.getElementById("assumption-current-proposition-title").textContent =
+    currentLang.modals.assumptionCurrentPropositionTitle;
+  document.getElementById("assumption-hand-title").textContent =
+    currentLang.modals.assumptionHandTitle;
+  document.getElementById("assumption-undo-btn").textContent =
+    currentLang.modals.assumptionUndoButton;
+  document.getElementById("assumption-confirm-btn").textContent =
+    currentLang.modals.assumptionConfirmButton;
+
   document.getElementById("settings-title").textContent =
     currentLang.ui.settingsTitle;
   document.getElementById("bgm-label").textContent = currentLang.ui.bgmLabel;

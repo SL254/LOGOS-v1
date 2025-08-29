@@ -395,72 +395,166 @@ function openEurekaModal() {
   }, 0);
 }
 
+// 가정 모달 관련 전역 변수
+let assumptionProposition = []; // 가정 모달에서 구성중인 명제
+
 function addAssumption() {
   if (currentAssumption) {
     showAlert(currentLang.alerts.oneAssumptionOnly);
     return;
   }
-  showPrompt(currentLang.modals.promptInputPlaceholder, (propositionText) => {
-    if (propositionText) {
-      const parsedProp = parsePropositionFromString(propositionText);
-      if (parsedProp) {
-        currentAssumption = parsedProp;
+  openAssumptionModal();
+}
 
-        // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
-        if (isRecordingProof) {
-          const stepId = recordProofStep(
-            "assumption",
-            [],
-            parsedProp,
-            null,
-            null
-          );
-          parsedProp.proofStepId = stepId;
-        }
+function openAssumptionModal() {
+  assumptionProposition = [];
+  renderAssumptionModal();
+  const modal = document.getElementById("assumption-modal");
+  modal.classList.add("visible");
+}
 
-        addPremiseToWorkbench({
-          proposition: parsedProp,
-          type: "assumption",
-          dependsOnAssumption: true,
-          isAssumption: true,
-          label: currentLang.labels.assumption,
-          proofStepId: parsedProp.proofStepId, // proofStepId 명시적으로 전달
-        });
+function renderAssumptionModal() {
+  // 가정하기에서는 초기 손패의 카드를 사용
+  const initialHand = currentPlayer === "A" ? initialPlayerA_Hand : initialPlayerB_Hand;
+  const handDisplay = document.getElementById("assumption-hand-display");
+  const propDisplay = document.getElementById("assumption-proposition-display");
 
-        // 가정 추가 성공 시 pop 사운드 재생
-        audioManager.playSfx("pop");
-        
-        // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
-        if (inPuzzleMode) {
-          inferenceStepCount++;
-        }
-        
-        renderModal();
-        updateConclusionPreview();
+  const colorClass = currentPlayer === "A" ? "card-white" : "card-black";
 
-        // 가정 추가 성공 시 스크롤을 맨 아래로 부드럽게 이동
-        setTimeout(() => {
-          const premiseList = document.getElementById("premise-list");
-          if (premiseList) {
-            const lastChild = premiseList.lastElementChild;
-            if (lastChild) {
-              lastChild.scrollIntoView({
-                behavior: "smooth",
-                block: "end",
-              });
-            } else {
-              premiseList.scrollTo({
-                top: premiseList.scrollHeight,
-                behavior: "smooth",
-              });
-            }
-          }
-        }, 100);
+  handDisplay.innerHTML = "";
+  propDisplay.innerHTML = "";
+
+  // 초기 손패를 카드 타입 순서대로 정렬
+  const sortedInitialHand = [...initialHand].sort(
+    (a, b) => cardTypeOrder.indexOf(a.type) - cardTypeOrder.indexOf(b.type)
+  );
+
+  // 1. 초기 손패 카드 영역 렌더링 (정렬된 순서로)
+  sortedInitialHand.forEach((card) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = `card ${colorClass}`;
+    cardEl.textContent = card.text;
+    
+    cardEl.onclick = () => {
+      // 가정하기에서는 카드 제한 없이 모든 카드 사용 가능
+      const tempPropositionForValidation = assumptionProposition.map((c) => ({
+        card: c,
+        player: currentPlayer,
+      }));
+
+      if (isValidPlay(card, tempPropositionForValidation, true)) {
+        audioManager.playSfx("playCard");
+        // 초기 손패에서 카드를 복사해서 사용 (원본은 변경하지 않음)
+        const cardCopy = { ...card };
+        assumptionProposition.push(cardCopy);
+        renderAssumptionModal();
       } else {
-        showAlert(currentLang.alerts.parsingFailed);
+        showAlert(currentLang.alerts.invalidCard);
       }
-    }
+    };
+    handDisplay.appendChild(cardEl);
   });
+
+  // 2. 명제 구성 영역 렌더링
+  assumptionProposition.forEach((card) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = `card ${colorClass}`;
+    cardEl.textContent = card.text;
+    propDisplay.appendChild(cardEl);
+  });
+
+  // 3. 버튼들 활성화/비활성화 상태 업데이트
+  document.getElementById("assumption-undo-btn").disabled = assumptionProposition.length === 0;
+  document.getElementById("assumption-confirm-btn").disabled = assumptionProposition.length === 0;
+}
+
+function closeAssumptionModal() {
+  // 가정 모달 취소 시 구성 중인 가정만 초기화 (손패는 건드리지 않음)
+  assumptionProposition = [];
+  const modal = document.getElementById("assumption-modal");
+  modal.classList.remove("visible");
+  render(); // 메인 게임 화면도 갱신
+}
+
+function undoAssumptionCard() {
+  if (assumptionProposition.length > 0) {
+    // 구성 중인 가정에서 마지막 카드만 제거 (손패에는 영향 없음)
+    assumptionProposition.pop();
+    renderAssumptionModal();
+  }
+}
+
+function confirmAssumption() {
+  if (assumptionProposition.length === 0) {
+    showAlert(currentLang.alerts.noCardsPlayed);
+    return;
+  }
+
+  // 가정 명제 파싱
+  const propositionText = assumptionProposition.map(card => card.text).join(" ");
+  const parsedProp = parsePropositionFromString(propositionText);
+  
+  if (parsedProp) {
+    currentAssumption = parsedProp;
+
+    // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
+    if (isRecordingProof) {
+      const stepId = recordProofStep(
+        "assumption",
+        [],
+        parsedProp,
+        null,
+        null
+      );
+      parsedProp.proofStepId = stepId;
+    }
+
+    addPremiseToWorkbench({
+      proposition: parsedProp,
+      type: "assumption",
+      dependsOnAssumption: true,
+      isAssumption: true,
+      label: currentLang.labels.assumption,
+      proofStepId: parsedProp.proofStepId,
+    });
+
+    // 가정 추가 성공 시 pop 사운드 재생
+    audioManager.playSfx("pop");
+    
+    // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
+    if (inPuzzleMode) {
+      inferenceStepCount++;
+    }
+    
+    renderModal();
+    updateConclusionPreview();
+
+    // 가정 모달 닫기
+    assumptionProposition = [];
+    const modal = document.getElementById("assumption-modal");
+    modal.classList.remove("visible");
+
+    // 가정 추가 성공 시 스크롤을 맨 아래로 부드럽게 이동
+    setTimeout(() => {
+      const premiseList = document.getElementById("premise-list");
+      if (premiseList) {
+        const lastChild = premiseList.lastElementChild;
+        if (lastChild) {
+          lastChild.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+        } else {
+          premiseList.scrollTo({
+            top: premiseList.scrollHeight,
+            behavior: "smooth",
+          });
+        }
+      }
+    }, 100);
+  } else {
+    showAlert(currentLang.alerts.parsingFailed);
+  }
 }
 
 function cancelAssumption() {

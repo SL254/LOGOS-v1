@@ -1945,6 +1945,12 @@ function setupTutorialScenario(step) {
         )
         .slice(0, 2)
     );
+    
+    // 튜토리얼 모드에서 가정하기용 초기 손패 설정 (전체 카드 사용)
+    const nonPlayerCards = ["승리한다", "wins"];
+    const tutorialFullHand = fullDeck.filter((c) => !nonPlayerCards.includes(c.text));
+    initialPlayerA_Hand = JSON.parse(JSON.stringify(tutorialFullHand));
+    initialPlayerB_Hand = JSON.parse(JSON.stringify(tutorialFullHand));
   } else if (step === 2) {
     const socratesCardInfo = currentProposition.find(
       (info) => info.card.text === currentLang.keywords.socrates
@@ -1972,6 +1978,12 @@ function setupTutorialScenario(step) {
         c.type === (currentLang.langCode === "ko" ? "서술어" : "Predicate") &&
         c.text !== (currentLang.langCode === "ko" ? "개이다" : "is a dog")
     );
+
+    // 튜토리얼 모드에서 가정하기용 초기 손패 설정 (전체 카드 사용)
+    const nonPlayerCards = ["승리한다", "wins"];
+    const tutorialFullHand = fullDeck.filter((c) => !nonPlayerCards.includes(c.text));
+    initialPlayerA_Hand = JSON.parse(JSON.stringify(tutorialFullHand));
+    initialPlayerB_Hand = JSON.parse(JSON.stringify(tutorialFullHand));
 
     truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
