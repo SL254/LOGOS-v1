@@ -276,6 +276,7 @@ function startTutorial(startStep = 0) {
   fullDeck = currentLang.cards;
 
   inTutorialMode = true;
+  window.inTutorialMode = true;  // 명시적으로 전역 설정
   tutorialStep = startStep;
   tutorialSubStep = 0;
 
@@ -1772,6 +1773,7 @@ function endTutorial() {
 
   // 1. 튜토리얼 진행 단계를 완전히 초기화합니다.
   inTutorialMode = false;
+  window.inTutorialMode = false;  // 명시적으로 전역 설정
   tutorialStep = 0;
   tutorialSubStep = 0;
 

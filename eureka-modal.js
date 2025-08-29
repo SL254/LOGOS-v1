@@ -983,6 +983,7 @@ function proveVictory() {
         document.getElementById("eureka-modal").classList.remove("visible");
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
+        window.inPuzzleMode = false;  // 명시적으로 전역 설정
         populatePuzzleLevels();
         document
           .getElementById("puzzle-level-select-modal")

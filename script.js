@@ -53,7 +53,7 @@ let hasUserInteracted = false; // 사용자 상호작용 여부 플래그
 function checkTutorialStatus() {
   const tutorialCompleted = localStorage.getItem("logos_tutorial_completed");
   const tutorialBtn = document.getElementById("tutorial-btn");
-  
+
   if (!tutorialCompleted && tutorialBtn) {
     tutorialBtn.classList.add("highlight");
   }
@@ -81,7 +81,7 @@ function detectBrowserLanguage() {
 function autoInitializeGame() {
   const preferredLang = getPreferredLanguage();
   initializeGame(preferredLang);
-  
+
   // 초기화 후 튜토리얼 상태 확인
   setTimeout(checkTutorialStatus, 100);
 }
@@ -851,7 +851,7 @@ function propositionToText(prop) {
 function propositionToNaturalText(prop) {
   if (!prop) return "";
   let resultText = "";
-  
+
   switch (prop.type) {
     case "atomic":
       resultText = `${prop.subject} ${prop.predicate}`;
@@ -938,7 +938,7 @@ function propositionToNaturalText(prop) {
       resultText = "Unknown Proposition";
       break;
   }
-  
+
   // Apply custom entity mappings before returning
   return applyCustomEntityMappings(resultText);
 }
@@ -1238,17 +1238,21 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
   axiomGroups.quantifierOpposition.push(...templates.fish_good_evil_reverse);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_forward);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_reverse);
-  
+
   // 마르크스가 게임에 있을 때만 자본가 공리들 추가
   if (isMarxInGame) {
-    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_forward);
-    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_reverse);
+    axiomGroups.quantifierOpposition.push(
+      ...templates.capitalist_good_evil_forward
+    );
+    axiomGroups.quantifierOpposition.push(
+      ...templates.capitalist_good_evil_reverse
+    );
   }
 
   // 마르크스가 게임에 없으면 identity 그룹에서 자본가 공리만 제거
   if (!isMarxInGame) {
-    axiomGroups.identity = axiomGroups.identity.filter(axiom => 
-      !axiom.includes("자본가") && !axiom.includes("capitalist")
+    axiomGroups.identity = axiomGroups.identity.filter(
+      (axiom) => !axiom.includes("자본가") && !axiom.includes("capitalist")
     );
   }
 
@@ -1372,7 +1376,12 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
+    const nonPlayerCards = [
+      "승리한다",
+      "wins",
+      "자본가이다",
+      "is a capitalist",
+    ];
     playerA_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -1383,7 +1392,12 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
+    const nonPlayerCards = [
+      "승리한다",
+      "wins",
+      "자본가이다",
+      "is a capitalist",
+    ];
     playerB_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -1599,9 +1613,9 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
   victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
-  
+
   // 승리 스타일 초기화
-  document.querySelectorAll(".player-title-box").forEach(titleBox => {
+  document.querySelectorAll(".player-title-box").forEach((titleBox) => {
     titleBox.classList.remove("winner");
   });
 
@@ -2294,15 +2308,16 @@ function endGame(winner, winningProposition) {
   }
   const victoryText = `${winnerName} ${currentLang.ui.victoryMessage}<br>${currentLang.ui.victorySubMessage}`;
   statusEl.innerHTML = `<span class="turn-indicator">${victoryText}</span>`;
-  
+
   // 승리한 플레이어의 타이틀 박스에 승리 스타일 적용
-  const winnerTitleBox = winner === "A" 
-    ? document.querySelector("#player-a-area .player-title-box")
-    : document.querySelector("#player-b-area .player-title-box");
+  const winnerTitleBox =
+    winner === "A"
+      ? document.querySelector("#player-a-area .player-title-box")
+      : document.querySelector("#player-b-area .player-title-box");
   if (winnerTitleBox) {
     winnerTitleBox.classList.add("winner");
   }
-  
+
   render();
 
   // 1. 모든 오버레이 이미지를 일단 숨깁니다.
@@ -2472,8 +2487,8 @@ function endThinkingTime() {
 
   // 손패를 새로 분배하는 부분 (기존 코드)
   const nonPlayerCards = [
-    currentLang.keywords.wins, 
-    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist"
+    currentLang.keywords.wins,
+    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
   ]; // 기존 코드
   playerA_Hand = JSON.parse(
     JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
@@ -2630,7 +2645,7 @@ function render() {
     const cardEl = document.createElement("div");
     const colorClass = info.player === "A" ? "card-white" : "card-black";
     cardEl.className = `card ${colorClass}`;
-    cardEl.textContent = info.card.text;
+    cardEl.textContent = applyCustomEntityMappings(info.card.text);
     propositionEl.appendChild(cardEl);
   });
   const trueList_El = document.getElementById("true-list");
@@ -2652,7 +2667,7 @@ function render() {
     if (groups.identity.length > 0) {
       groups.identity.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2677,7 +2692,7 @@ function render() {
       templates.subject_good_evil.forEach((template) => {
         const axiomText = template.replaceAll("{S}", subjectA);
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2691,7 +2706,7 @@ function render() {
       templates.subject_wise_foolish.forEach((template) => {
         const axiomText = template.replaceAll("{S}", subjectA);
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2705,7 +2720,7 @@ function render() {
       templates.subject_good_evil.forEach((template) => {
         const axiomText = template.replaceAll("{S}", subjectB);
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2719,7 +2734,7 @@ function render() {
       templates.subject_wise_foolish.forEach((template) => {
         const axiomText = template.replaceAll("{S}", subjectB);
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2737,7 +2752,7 @@ function render() {
       // 새 집단 순방향
       templates.bird_good_evil_forward.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2750,7 +2765,7 @@ function render() {
       // 새 집단 역방향
       templates.bird_good_evil_reverse.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2763,7 +2778,7 @@ function render() {
       // 물고기 집단 순방향
       templates.fish_good_evil_forward.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2776,7 +2791,7 @@ function render() {
       // 물고기 집단 역방향
       templates.fish_good_evil_reverse.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2789,7 +2804,7 @@ function render() {
       // 개 집단 순방향
       templates.dog_good_evil_forward.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
@@ -2802,16 +2817,19 @@ function render() {
       // 개 집단 역방향
       templates.dog_good_evil_reverse.forEach((axiomText) => {
         const p = document.createElement("p");
-        p.textContent = `• ${axiomText}`;
+        p.textContent = `• ${applyCustomEntityMappings(axiomText)}`;
         axiomContainer.appendChild(p);
       });
 
       // 자본가 공리가 있으면 추가 (템플릿 기반)
-      if (templates.capitalist_good_evil_forward && templates.capitalist_good_evil_forward.length > 0) {
+      if (
+        templates.capitalist_good_evil_forward &&
+        templates.capitalist_good_evil_forward.length > 0
+      ) {
         const hasCapitalistAxioms = currentAxioms.some(
           (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
         );
-        
+
         if (hasCapitalistAxioms) {
           const sep9 = document.createElement("hr");
           sep9.style.margin = "4px 0";
@@ -2890,7 +2908,8 @@ function render() {
       if (propData.original_cards && propData.original_cards.length > 0) {
         propData.original_cards.forEach((info) => {
           const wordSpan = document.createElement("span");
-          wordSpan.textContent = applyCustomEntityMappings(info.card.text) + " ";
+          wordSpan.textContent =
+            applyCustomEntityMappings(info.card.text) + " ";
           wordSpan.className = info.player === "A" ? "word-a" : "word-b";
           li.appendChild(wordSpan);
         });

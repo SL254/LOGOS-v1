@@ -147,8 +147,8 @@ function setupCustomModal() {
  * Open custom modal
  */
 function openCustomModal() {
-  // Reset to defaults every time modal opens
-  initializeDefaultMappings();
+  // Load current mappings (don't reset to defaults)
+  loadCustomMappings();
   
   const modal = document.getElementById("custom-modal");
   populateCustomModal();
@@ -368,28 +368,111 @@ function getCustomEntityName(originalEntity) {
  * @returns {string} Text with custom entities applied
  */
 function applyCustomEntityMappings(text) {
+  console.log("[DEBUG] applyCustomEntityMappings called with:", text);
+  
   if (!text) return text;
   
+  // Debug mode checks
+  console.log("[DEBUG] inTutorialMode:", typeof window.inTutorialMode, window.inTutorialMode);
+  console.log("[DEBUG] inPuzzleMode:", typeof window.inPuzzleMode, window.inPuzzleMode);
+  console.log("[DEBUG] Global inTutorialMode:", typeof inTutorialMode, typeof window.inTutorialMode !== 'undefined' ? window.inTutorialMode : 'undefined');
+  console.log("[DEBUG] Global inPuzzleMode:", typeof inPuzzleMode, typeof window.inPuzzleMode !== 'undefined' ? window.inPuzzleMode : 'undefined');
+  
   // Don't apply custom mappings in tutorial or puzzle modes
-  if (typeof inTutorialMode !== 'undefined' && inTutorialMode) return text;
-  if (typeof inPuzzleMode !== 'undefined' && inPuzzleMode) return text;
+  // Try multiple ways to access the variables
+  const tutorialModeCheck = window.inTutorialMode === true || 
+                           (typeof inTutorialMode !== 'undefined' && inTutorialMode === true);
+  const puzzleModeCheck = window.inPuzzleMode === true || 
+                         (typeof inPuzzleMode !== 'undefined' && inPuzzleMode === true);
   
-  const currentLangCode = currentLang.langCode;
+  if (tutorialModeCheck) {
+    console.log("[DEBUG] Skipping custom mapping - tutorial mode");
+    return text;
+  }
+  if (puzzleModeCheck) {
+    console.log("[DEBUG] Skipping custom mapping - puzzle mode");
+    return text;
+  }
+  
+  const currentLangCode = currentLang?.langCode;
+  console.log("[DEBUG] Current language:", currentLangCode);
+  
   const currentMapping = customEntityMappings[currentLangCode];
+  console.log("[DEBUG] Current mapping:", currentMapping);
   
-  if (!currentMapping) return text;
+  if (!currentMapping) {
+    console.log("[DEBUG] No mapping found for language:", currentLangCode);
+    return text;
+  }
   
   let result = text;
   
-  // Replace each entity mapping
-  Object.keys(currentMapping).forEach(original => {
-    const custom = currentMapping[original];
-    if (custom !== original) {
-      // Use word boundaries to avoid partial replacements
-      const regex = new RegExp(`\\b${original}\\b`, 'g');
-      result = result.replace(regex, custom);
-    }
-  });
+  // Replace each entity mapping (single pass to avoid chained replacements)
+  const mappingEntries = Object.entries(currentMapping).filter(([original, custom]) => custom !== original);
   
+  // Create a single regex that matches all original entities at once
+  if (mappingEntries.length > 0) {
+    const koreanParticles = '(은|는|이|가|을|를|과|와|에|의|로|으로|에서|까지|부터|보다|처럼|같이|도|만|조차|마저|이다|다)?';
+    const allOriginals = mappingEntries.map(([original]) => original).join('|');
+    const regex = new RegExp(`(${allOriginals})${koreanParticles}`, 'g');
+    
+    const beforeReplace = result;
+    result = result.replace(regex, (match, entity, particle) => {
+      const custom = currentMapping[entity];
+      
+      if (!particle) {
+        console.log(`[DEBUG] Simple replacement: "${match}" → "${custom}"`);
+        return custom;
+      }
+      
+      // Apply Korean particle rules based on final consonant
+      const correctedParticle = applyKoreanParticleRules(custom, particle);
+      const replacement = custom + correctedParticle;
+      console.log(`[DEBUG] Korean replacement: "${match}" → "${replacement}" (entity: ${entity} → ${custom}, particle: ${particle} → ${correctedParticle})`);
+      return replacement;
+    });
+    
+    if (beforeReplace !== result) {
+      console.log(`[DEBUG] Applied mapping: "${beforeReplace}" → "${result}"`);
+    }
+  }
+  
+  console.log("[DEBUG] Final result:", result);
   return result;
+}
+
+/**
+ * Apply Korean particle rules based on final consonant
+ * @param {string} word - The word to check
+ * @param {string} particle - The original particle
+ * @returns {string} Corrected particle
+ */
+function applyKoreanParticleRules(word, particle) {
+  if (!word || !particle) return particle;
+  
+  const lastChar = word.charAt(word.length - 1);
+  const lastCharCode = lastChar.charCodeAt(0);
+  
+  // Check if it's a Korean character (Hangul)
+  if (lastCharCode >= 0xAC00 && lastCharCode <= 0xD7A3) {
+    // Calculate if there's a final consonant (받침)
+    const hasFinalConsonant = (lastCharCode - 0xAC00) % 28 !== 0;
+    
+    // Apply particle rules based on final consonant
+    switch (particle) {
+      case '은': return hasFinalConsonant ? '은' : '는';
+      case '는': return hasFinalConsonant ? '은' : '는';
+      case '을': return hasFinalConsonant ? '을' : '를';
+      case '를': return hasFinalConsonant ? '을' : '를';
+      case '과': return hasFinalConsonant ? '과' : '와';
+      case '와': return hasFinalConsonant ? '과' : '와';
+      case '으로': return hasFinalConsonant ? '으로' : '로';
+      case '로': return hasFinalConsonant ? '으로' : '로';
+      // '이다', '이', '가' 등은 변환하지 않음 (공통 사용 또는 게임에서 사용 안함)
+      default: return particle;
+    }
+  }
+  
+  // For non-Korean characters, return original particle
+  return particle;
 }
