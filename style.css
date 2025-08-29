@@ -1818,8 +1818,9 @@ body::after {
     url("assets/images/eureka_disabled.png") /* 버튼 호버(Hover) 이미지 */
     url("assets/images/new_hover.png") url("assets/images/full_hover.png")
     url("assets/images/tuto_hover.png") url("assets/images/tuto_highlight.png")
-    url("assets/images/tuto_highlight_hover.png") url("assets/images/level_hover.png")
-    url("assets/images/level.png") url("assets/images/level_cleared_hover.png")
+    url("assets/images/tuto_highlight_hover.png")
+    url("assets/images/level_hover.png") url("assets/images/level.png")
+    url("assets/images/level_cleared_hover.png")
     url("assets/images/level_cleared.png")
     url("assets/images/level_cleared_1star.png")
     url("assets/images/level_cleared_1star_hover.png")
@@ -2114,8 +2115,8 @@ body::after {
 }
 
 .char-icon.selected {
-  border-color: #e74c3c;
-  box-shadow: 0 0 15px #e74c3c;
+  border-color: #00b7c3;
+  box-shadow: 0 0 15px #00b7c3;
 }
 
 #confirm-selection-btn {
