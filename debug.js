@@ -1,1 +1,8 @@
-console.log('inTutorialMode:', inTutorialMode, 'tutorialStep:', tutorialStep, 'tutorialSubStep:', tutorialSubStep);
+devLog(
+  "inTutorialMode:",
+  inTutorialMode,
+  "tutorialStep:",
+  tutorialStep,
+  "tutorialSubStep:",
+  tutorialSubStep
+);

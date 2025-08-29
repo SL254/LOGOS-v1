@@ -253,7 +253,10 @@ function openEurekaModal() {
       }
 
       // 자본가 공리가 있으면 템플릿 기반으로 추가
-      if (templates.capitalist_good_evil_forward && templates.capitalist_good_evil_forward.length > 0) {
+      if (
+        templates.capitalist_good_evil_forward &&
+        templates.capitalist_good_evil_forward.length > 0
+      ) {
         const remainingAxioms = axioms.slice(axiomIndex);
         const capitalistAxioms = remainingAxioms.filter((a) => {
           const text = propositionToNaturalText(a.proposition);
@@ -270,7 +273,11 @@ function openEurekaModal() {
           });
 
           // 자본가 집단 순방향
-          for (let i = 0; i < templates.capitalist_good_evil_forward.length; i++) {
+          for (
+            let i = 0;
+            i < templates.capitalist_good_evil_forward.length;
+            i++
+          ) {
             if (axiomIndex < axioms.length) {
               const axiomData = axioms[axiomIndex];
               const text = propositionToNaturalText(axiomData.proposition);
@@ -293,7 +300,11 @@ function openEurekaModal() {
           });
 
           // 자본가 집단 역방향
-          for (let i = 0; i < templates.capitalist_good_evil_reverse.length; i++) {
+          for (
+            let i = 0;
+            i < templates.capitalist_good_evil_reverse.length;
+            i++
+          ) {
             if (axiomIndex < axioms.length) {
               const axiomData = axioms[axiomIndex];
               const text = propositionToNaturalText(axiomData.proposition);
@@ -415,7 +426,7 @@ function addAssumption() {
           });
           return;
         }
-        
+
         currentAssumption = parsedProp;
 
         // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
@@ -441,12 +452,12 @@ function addAssumption() {
 
         // 가정 추가 성공 시 pop 사운드 재생
         audioManager.playSfx("pop");
-        
+
         // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
         if (inPuzzleMode) {
           inferenceStepCount++;
         }
-        
+
         renderModal();
         updateConclusionPreview();
 
@@ -684,7 +695,7 @@ function applyRule() {
           })
           .filter((id) => id);
 
-        console.log(
+        devLog(
           "RAA premise IDs:",
           premiseIds,
           "from sources:",
@@ -830,7 +841,7 @@ function applyRule() {
     });
     // 추론 규칙 적용 성공 시 사운드 재생
     audioManager.playSfx("pop");
-    
+
     // 퍼즐 모드에서 추론 규칙 사용 횟수 증가
     if (inPuzzleMode) {
       inferenceStepCount++;
@@ -971,11 +982,11 @@ function proveVictory() {
     if (isMyVictoryProven || isOpponentLossProven) {
       // Calculate star rating based on proof steps
       const stars = calculateStarRating(currentPuzzleLevel, inferenceStepCount);
-      
+
       try {
         // Record puzzle completion with star rating
         recordPuzzleCompletion(currentPuzzleLevel, inferenceStepCount, stars);
-        
+
         // Keep backward compatibility - also save to old format
         const clearedPuzzles =
           JSON.parse(localStorage.getItem("logos_cleared_puzzles")) || {};

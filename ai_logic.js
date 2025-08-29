@@ -227,7 +227,7 @@ function aiThinkingTimeTurn() {
       showAITurnSummary(summaryActions);
     }
   } else {
-    console.log("AI found no valuable actions. Passing turn.");
+    devLog("AI found no valuable actions. Passing turn.");
     endTurn();
   }
 }
@@ -308,7 +308,7 @@ function generateCandidateTheorems() {
     }
   }
 
-  console.log(
+  devLog(
     "Generated Candidate Theorems:",
     Array.from(candidates.values()).map((p) => propositionToNaturalText(p))
   );
@@ -392,7 +392,7 @@ function scoreCandidateTheorems(candidates) {
   });
 
   scored.sort((a, b) => b.score - a.score);
-  console.log("Scored Theorems:", scored);
+  devLog("Scored Theorems:", scored);
   return scored;
 }
 function executeTheoremDerivation(scoredTheorems) {
@@ -474,14 +474,14 @@ function isBoardDangerous(opponentVictoryData) {
 
   // 위협 유형 1: 상대의 핵심 승리 조건과 '직접 일치'하는 경우
   if (arePropositionsEqual(parsedProp, opponentVictoryData.core_goal)) {
-    console.log("Threat Detected (Type 1: Direct Match)");
+    devLog("Threat Detected (Type 1: Direct Match)");
     return parsedProp;
   }
 
   // 위협 유형 2: 이 명제를 참으로 인정할 경우, 상대의 승리가 '추론 가능'해지는 경우
   const simulatedTruths = [...internalTruthSet, parsedProp];
   if (aiFindProof(opponentVictoryData.ultimate_target, simulatedTruths)) {
-    console.log("Threat Detected (Type 2: Inferred Defeat)");
+    devLog("Threat Detected (Type 2: Inferred Defeat)");
     return parsedProp;
   }
 
@@ -670,7 +670,7 @@ function checkForGuaranteedWinMove() {
     if (nameOnBoard === myName) {
       // 나의 승리 술어를 찾는다.
       predicateToPlay = myVictoryData.core_goal.predicate;
-      console.log(
+      devLog(
         `[AI Logic] Pattern matched with my name. Seeking predicate: ${predicateToPlay}`
       );
     }
@@ -685,7 +685,7 @@ function checkForGuaranteedWinMove() {
         Object.keys(predicatePairs).find(
           (key) => predicatePairs[key] === opponentWinPredicate
         );
-      console.log(
+      devLog(
         `[AI Logic] Pattern matched with opponent's name. Seeking contradictory predicate: ${predicateToPlay}`
       );
     }
@@ -695,7 +695,7 @@ function checkForGuaranteedWinMove() {
       const winningMove = aiHand.find((card) => card.text === predicateToPlay);
 
       if (winningMove && isValidPlay(winningMove, currentProposition)) {
-        console.log("확정 승리 패턴 발견! 승리 수를 둡니다.");
+        devLog("확정 승리 패턴 발견! 승리 수를 둡니다.");
         return winningMove;
       }
     }
@@ -944,7 +944,7 @@ function aiTurn() {
   // --- 1. 새로운 갬빗 계획 수립 및 기존 계획 유효성 검사 ---
   activeGambitPlan = findBestGambitPlan(currentPlayer);
   if (activeGambitPlan) {
-    console.log(
+    devLog(
       `%c[AI GAMBIT] New Plan Adopted: ${
         activeGambitPlan.gambitName
       }. Goal: Prove '${propositionToNaturalText(activeGambitPlan.subGoal)}'`,
@@ -952,20 +952,20 @@ function aiTurn() {
     );
   }
 
-  console.log(
+  devLog(
     `%c--- AI TURN DEBUG START (Round ${currentRound}, Player: ${currentPlayer}) ---`,
     "color: blue; font-weight: bold; font-size: 1.2em;"
   );
-  console.log(
+  devLog(
     "%c1. AI's Knowledge Base (internalTruthSet):",
     "color: green; font-weight: bold;"
   );
-  console.log(internalTruthSet.map((p) => propositionToNaturalText(p)));
-  console.log(
+  devLog(internalTruthSet.map((p) => propositionToNaturalText(p)));
+  devLog(
     "%c2. Proposition on Board to be Evaluated:",
     "color: green; font-weight: bold;"
   );
-  console.log(currentProposition.map((c) => c.card.text).join(" "));
+  devLog(currentProposition.map((c) => c.card.text).join(" "));
 
   const myVictoryData = truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
@@ -984,7 +984,7 @@ function aiTurn() {
       ];
       const myUltimateTarget = myVictoryData.ultimate_target;
       if (aiFindProof(myUltimateTarget, hypotheticalTruths)) {
-        console.log(
+        devLog(
           `%c[AI OVERRIDE] Derived Win via Double Negation DETECTED! Playing '${notKeyword}'`,
           "background: #ff0000; color: #ffffff; font-size: 1.3em;"
         );
@@ -1012,7 +1012,7 @@ function aiTurn() {
   const canActuallyComplete = aiCanActuallyComplete();
 
   if (!hasValidCardMove && !canActuallyComplete) {
-    console.log("🔒 FORCED BY RULES: Round end (no actions available for AI)");
+    devLog("🔒 FORCED BY RULES: Round end (no actions available for AI)");
     checkRoundEndConditions();
     return;
   }
@@ -1063,7 +1063,7 @@ function aiTurn() {
           move.text,
         ].join(" ");
         if (cardsNeededForStep.join(" ").startsWith(expectedNextStep)) {
-          console.log(
+          devLog(
             `%c[AI GAMBIT] Move '${move.text}' follows the plan. BIG BONUS!`,
             "color: #8A2BE2;"
           );
@@ -1101,7 +1101,7 @@ function aiTurn() {
             score += benefitScore;
 
             if (benefitScore > 0) {
-              console.log(
+              devLog(
                 `%c[Double Negation Gambit] Countering with 'not' creates a beneficial prop '${propositionToNaturalText(
                   normalizedResultingProp
                 )}'. Bonus: +${benefitScore}`,
@@ -1177,7 +1177,7 @@ function aiTurn() {
             }
           }
           if (isTrap) {
-            console.log(
+            devLog(
               `방어 로직 발동: 상대에게 필승 기회를 줄 수 있는 '${move.text}' 카드의 점수를 삭감합니다.`
             );
             score -= 50000;
@@ -1248,7 +1248,7 @@ function aiTurn() {
               arePropositionsEqual(propOnBoard, opponentGoalUniversal) ||
               arePropositionsEqual(propOnBoard, opponentGoalExistential)
             ) {
-              console.log(
+              devLog(
                 "AI vs Marx: Preventing adding 'and' after a pro-revolution proposition. Massive Penalty!"
               );
               score -= 200000;
@@ -1353,7 +1353,7 @@ function aiTurn() {
           myVictoryData
         );
         if (disadvantagePenalty > 0) {
-          console.log(
+          devLog(
             `Evaluation: Move creates self-disadvantage. Applying penalty: -${disadvantagePenalty}`
           );
           score -= disadvantagePenalty;
@@ -1430,12 +1430,12 @@ function aiTurn() {
 
   let completeAction = null;
   if (isBoardCompletable()) {
-    console.log(
+    devLog(
       "%c3. Evaluating 'Complete Proposition' Action:",
       "color: orange; font-weight: bold;"
     );
     if (!aiCanActuallyComplete()) {
-      console.log(
+      devLog(
         "❌ AI cannot actually complete this proposition (duplicate/contradiction)"
       );
       completeAction = null;
@@ -1452,14 +1452,14 @@ function aiTurn() {
               arePropositionsEqual(p.proposition, propToComplete)
           );
           if (isAlreadyProven) {
-            console.log("니체 능력 활성화: 중복 명제 완성에 보너스 점수 부여!");
+            devLog("니체 능력 활성화: 중복 명제 완성에 보너스 점수 부여!");
             completeScore += 5000;
           }
         }
       }
 
       if (isRiskyToComplete) {
-        console.log(
+        devLog(
           "Evaluation: Completing is too risky. Assigning massive penalty."
         );
         completeScore = -999999;
@@ -1472,7 +1472,7 @@ function aiTurn() {
               opponentVictoryData
             );
             if (opponentAdvantagePenalty > 0) {
-              console.log(
+              devLog(
                 `Evaluation: Completing helps opponent. Applying penalty: -${opponentAdvantagePenalty}`
               );
               completeScore -= opponentAdvantagePenalty;
@@ -1484,7 +1484,7 @@ function aiTurn() {
               myVictoryData
             );
             if (selfDisadvantagePenalty > 0) {
-              console.log(
+              devLog(
                 `Evaluation: Completing is self-disadvantageous. Applying penalty: -${selfDisadvantagePenalty}`
               );
               completeScore -= selfDisadvantagePenalty;
@@ -1495,7 +1495,7 @@ function aiTurn() {
               propToComplete.proposition.type === "existential" &&
               propToComplete.proposition.predicate === myWinPredicate
             ) {
-              console.log(
+              devLog(
                 `Evaluation: Completing contradicts own win condition path. Applying penalty: -3000`
               );
               completeScore -= 3000;
@@ -1515,7 +1515,7 @@ function aiTurn() {
               propToComplete.proposition.type === "existential" &&
               propToComplete.proposition.predicate === oppositePredicate
             ) {
-              console.log(
+              devLog(
                 `Evaluation: Completing implies a universal proposition that helps opponent. Applying penalty: -3000`
               );
               completeScore -= 3000;
@@ -1586,7 +1586,7 @@ function aiTurn() {
               arePropositionsEqual(propToComplete, marxGoalProp) ||
               arePropositionsEqual(propToComplete, marxExistentialGoalProp)
             ) {
-              console.log(
+              devLog(
                 "AI Marx is completing a pro-revolution proposition. Bonus!"
               );
               completeScore += 200000;
@@ -1597,7 +1597,7 @@ function aiTurn() {
                 marxHelpfulExistentialNegationProp
               )
             ) {
-              console.log(
+              devLog(
                 "AI Marx is completing a helpful negated proposition. Bonus!"
               );
               completeScore += 200000;
@@ -1605,7 +1605,7 @@ function aiTurn() {
               arePropositionsEqual(propToComplete, marxAntiGoalProp) ||
               arePropositionsEqual(propToComplete, marxExistentialAntiGoalProp)
             ) {
-              console.log(
+              devLog(
                 "AI Marx is completing an anti-revolution proposition. Penalty!"
               );
               completeScore -= 20000;
@@ -1616,7 +1616,7 @@ function aiTurn() {
                 marxHarmfulExistentialNegationProp
               )
             ) {
-              console.log(
+              devLog(
                 "AI Marx is completing a harmful negated proposition. Penalty!"
               );
               completeScore -= 20000;
@@ -1626,7 +1626,7 @@ function aiTurn() {
               arePropositionsEqual(propToComplete, marxGoalProp) ||
               arePropositionsEqual(propToComplete, marxExistentialGoalProp)
             ) {
-              console.log(
+              devLog(
                 "AI vs Marx: Completing a pro-revolution proposition helps the opponent. Penalty!"
               );
               completeScore -= 200000;
@@ -1646,7 +1646,7 @@ function aiTurn() {
         }
       }
       completeAction = { action: "complete", score: completeScore };
-      console.log(
+      devLog(
         `%c>>> Calculated Score for COMPLETING: ${completeScore}`,
         "color: red; font-weight: bold;"
       );
@@ -1657,14 +1657,14 @@ function aiTurn() {
     bestCardAction &&
     (!completeAction || bestCardAction.score >= completeAction.score)
   ) {
-    console.log(
+    devLog(
       `%c--- AI FINAL DECISION: PLAY CARD '${bestCardAction.move.text}' (Score: ${bestCardAction.score}) ---`,
       "background: #222; color: #bada55; font-size: 1.2em;"
     );
     playCard(currentPlayer, bestCardAction.move);
     setTimeout(endTurn, 500);
   } else if (completeAction) {
-    console.log(
+    devLog(
       `%c--- AI FINAL DECISION: COMPLETE PROPOSITION (Score: ${completeAction.score}) ---`,
       "background: #222; color: #bada55; font-size: 1.2em;"
     );
@@ -1736,13 +1736,11 @@ function aiDeclareEureka() {
   if (aiFindProof(myGoal, expandedTruthSetForAI)) {
     victoryFound = true;
     goalToProve = myGoal;
-    console.log("AI Eureka! Proved own victory. Generating proof path...");
+    devLog("AI Eureka! Proved own victory. Generating proof path...");
   } else if (aiFindProof(opponentGoal, expandedTruthSetForAI)) {
     victoryFound = true;
     goalToProve = opponentGoal;
-    console.log(
-      "AI Eureka! Proved opponent's defeat. Generating proof path..."
-    );
+    devLog("AI Eureka! Proved opponent's defeat. Generating proof path...");
   }
 
   if (victoryFound) {
@@ -2401,7 +2399,7 @@ function executeSocratesAbilityCheck(player) {
           arePropositionsEqual(dsResult, dangerousUniv)
         );
         if (isDangerous) {
-          console.log(
+          devLog(
             `%c[Socrates AI] DS threat detected! Keeping '${propositionToNaturalText(
               candidateProp
             )}' would allow proving a dangerous universal with another proposition. Threat score +7500.`,
@@ -2418,7 +2416,7 @@ function executeSocratesAbilityCheck(player) {
           arePropositionsEqual(mpResult, dangerousUniv)
         );
         if (isDangerous) {
-          console.log(
+          devLog(
             `%c[Socrates AI] MP threat detected! Keeping '${propositionToNaturalText(
               candidateProp
             )}' would allow proving a dangerous universal with another proposition. Threat score +7500.`,
@@ -2440,7 +2438,7 @@ function executeSocratesAbilityCheck(player) {
   scoredCandidates.sort((a, b) => b.score - a.score);
 
   if (scoredCandidates.length > 0 && scoredCandidates[0].score > 0) {
-    console.log(
+    devLog(
       "Socrates AI Top Candidates for Removal:",
       scoredCandidates.slice(0, 3).map((c) => ({
         prop: propositionToNaturalText(c.propData.proposition),
@@ -2461,7 +2459,7 @@ function executeSocratesAbilityCheck(player) {
     propId: bestCandidate.propData.propId,
   });
 
-  console.log(
+  devLog(
     `%cAI Socrates used Awareness of Ignorance on: ${propositionToNaturalText(
       bestCandidate.propData.proposition
     )} (Threat Score: ${bestCandidate.score})`,
@@ -2559,7 +2557,7 @@ function executeDescartesAbilityCheck(player) {
     return null;
   }
 
-  console.log(
+  devLog(
     `%cAI Descartes used Methodic Doubt on: ${propositionToNaturalText(
       bestCandidate.propData.proposition
     )} (Threat Score: ${bestCandidate.score})`,
@@ -2726,7 +2724,7 @@ function executeHumeAbilityCheck(player) {
   }
 
   // --- 능력 실행 ---
-  console.log(
+  devLog(
     `%c[AI Hume] Target Acquired: ${propositionToNaturalText(
       // 👈 로그 메시지 변경
       bestCandidate.propData.proposition
@@ -2954,13 +2952,13 @@ function executeWittgensteinAbilityCheck(player) {
         }
 
         // --- 4단계: 모든 검사를 통과한 첫 번째 계획을 즉시 실행 ---
-        console.log(
+        devLog(
           `%c[AI Wittgenstein] Target Acquired: ${propositionToNaturalText(
             targetProp
           )} (Threat: ${candidate.score})`,
           "color: #2ecc71; font-weight: bold;"
         );
-        console.log(
+        devLog(
           `%c[AI Wittgenstein] Justification Found: Using partner '${propositionToNaturalText(
             partnerProp
           )}' to derive '${propositionToNaturalText(newTheorem)}'`,
@@ -3124,7 +3122,7 @@ function executeKuhnAbilityCheck(player) {
     const simResult = simulateKuhnsAbility(propData.propId);
     if (simResult && simResult.success) {
       if (aiFindProof(myUltimateGoal, simResult.finalTruthSet)) {
-        console.log(
+        devLog(
           `%c[AI Kuhn] PRIORITY 1 WIN DETECTED! Shifting paradigm on: ${propositionToNaturalText(
             propData.proposition
           )}`,
@@ -3175,7 +3173,7 @@ function executeKuhnAbilityCheck(player) {
   scoredCandidates.sort((a, b) => b.score - a.score);
   const bestCandidate = scoredCandidates[0];
 
-  console.log(
+  devLog(
     `%c[AI Kuhn] Strategic move selected. Shifting paradigm on: ${propositionToNaturalText(
       bestCandidate.propData.proposition
     )} (Score: ${bestCandidate.score})`,
@@ -3324,7 +3322,7 @@ function executeDerridaAbilityCheck(player) {
   }
 
   // --- 능력 실행 ---
-  console.log(
+  devLog(
     `%c[AI Derrida] Target Acquired: ${propositionToNaturalText(
       bestCandidate.propData.proposition
     )} (Score: ${bestCandidate.score})`,
@@ -3507,7 +3505,7 @@ function executeKantAbilityCheck(player) {
   const bestCandidate =
     bestOptions[Math.floor(Math.random() * bestOptions.length)];
 
-  console.log(
+  devLog(
     `%c[AI Kant] Priority ${
       bestCandidate.priority
     } Action Selected: ${propositionToNaturalText(bestCandidate.proposition)}`,
@@ -3678,7 +3676,7 @@ function expandAndRecordTruths(initialTruths) {
       }
     }
   }
-  console.log(
+  devLog(
     `[expandAndRecordTruths] Total ${fullProofLog.length} steps recorded.`
   );
   return fullProofLog;
@@ -3709,7 +3707,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
   );
   if (finalVictoryStep) {
     finalVictoryStep.type = "victory";
-    console.log(
+    devLog(
       `Victory step (ID: ${finalVictoryStep.id}) has been explicitly tagged.`
     );
   } else {

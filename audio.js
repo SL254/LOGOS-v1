@@ -69,7 +69,7 @@ const audioManager = {
       loadPromises.push(this._loadTrack(key, this.tracks.sfx[key]));
     }
     await Promise.all(loadPromises); // 모든 로딩이 끝날 때까지 기다림
-    console.log("모든 오디오 트랙이 준비되었습니다.");
+    devLog("모든 오디오 트랙이 준비되었습니다.");
   },
   async _loadTrack(key, url) {
     // key 인자 추가
@@ -205,7 +205,7 @@ const audioManager = {
     await audioManager.init();
     // 오디오 로딩이 성공적으로 완료된 후, 언어 선택 버튼을 활성화하거나
     // 다음 로직을 진행할 수 있습니다. 여기서는 특별한 추가 동작은 필요 없습니다.
-    console.log("Audio assets successfully preloaded.");
+    devLog("Audio assets successfully preloaded.");
   } catch (error) {
     console.error("Failed to preload audio assets:", error);
     // 오디오 로딩 실패 시 사용자에게 알림을 띄우는 등의 예외 처리를 할 수 있습니다.

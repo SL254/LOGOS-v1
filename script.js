@@ -1,3 +1,18 @@
+// 배포 시 이 값을 false로 바꾸면 모든 로그가 사라집니다.
+const IS_DEV_MODE = false;
+
+/**
+ * 개발 모드일 때만 콘솔에 로그를 출력하는 함수.
+ * 기존의 console.log와 똑같이 사용할 수 있습니다.
+ * @param {...any} args - 출력할 모든 인자.
+ */
+function devLog(...args) {
+  if (IS_DEV_MODE) {
+    console.log(...args);
+  }
+}
+// ===============================================
+
 // --- GLOBAL STATE ---
 
 document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
@@ -53,7 +68,7 @@ let hasUserInteracted = false; // 사용자 상호작용 여부 플래그
 function checkTutorialStatus() {
   const tutorialCompleted = localStorage.getItem("logos_tutorial_completed");
   const tutorialBtn = document.getElementById("tutorial-btn");
-  
+
   if (!tutorialCompleted && tutorialBtn) {
     tutorialBtn.classList.add("highlight");
   }
@@ -86,19 +101,19 @@ function detectBrowserLanguage() {
  * @returns {boolean} 복합 명제이면 true, 단일 명제이면 false
  */
 function isCompoundProposition(proposition) {
-  if (!proposition || typeof proposition !== 'object') {
+  if (!proposition || typeof proposition !== "object") {
     return false;
   }
-  
+
   // 연결사가 포함된 타입들을 확인
-  const compoundTypes = ['conjunction', 'disjunction', 'conditional'];
+  const compoundTypes = ["conjunction", "disjunction", "conditional"];
   return compoundTypes.includes(proposition.type);
 }
 
 function autoInitializeGame() {
   const preferredLang = getPreferredLanguage();
   initializeGame(preferredLang);
-  
+
   // 초기화 후 튜토리얼 상태 확인
   setTimeout(checkTutorialStatus, 100);
 }
@@ -244,7 +259,7 @@ function traceVictoryProof() {
   }
 
   // 추적이 제대로 안됐다면 디버깅용 로그 출력
-  console.log(
+  devLog(
     "Traced steps:",
     Array.from(relevantSteps).map((s) => ({
       id: s.id,
@@ -252,7 +267,7 @@ function traceVictoryProof() {
       premises: s.premises,
     }))
   );
-  console.log(
+  devLog(
     "All proof steps:",
     proofSteps.map((s) => ({
       id: s.id,
@@ -265,7 +280,7 @@ function traceVictoryProof() {
 
   // 가정 단계들 확인
   const assumptionSteps = proofSteps.filter((s) => s.type === "assumption");
-  console.log(
+  devLog(
     "Assumption steps:",
     assumptionSteps.map((s) => ({
       id: s.id,
@@ -278,7 +293,7 @@ function traceVictoryProof() {
 
   // 중요한 추론 단계들의 premise 내용 확인
   const inferenceSteps = proofSteps.filter((s) => s.type === "inference");
-  console.log(
+  devLog(
     "Inference steps details:",
     inferenceSteps.map((s) => ({
       id: s.id,
@@ -608,7 +623,7 @@ function showProofReviewModal() {
 
         // 가정 의존성 확인 및 스타일 적용
         const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
-        console.log(
+        devLog(
           "Premise dependency check:",
           premise.type,
           premise.id,
@@ -1147,7 +1162,7 @@ function addUserInteractionListeners() {
   document.body.tabIndex = 0;
   document.body.focus();
 
-  console.log("User interaction listeners added");
+  devLog("User interaction listeners added");
 }
 
 function removeUserInteractionListeners() {
@@ -1162,11 +1177,11 @@ function removeUserInteractionListeners() {
   document.removeEventListener("mousedown", handleFirstUserInteraction, true);
   document.removeEventListener("touchstart", handleFirstUserInteraction, true);
 
-  console.log("User interaction listeners removed");
+  devLog("User interaction listeners removed");
 }
 
 function handleFirstUserInteraction(event) {
-  console.log(
+  devLog(
     "User interaction detected:",
     event?.type,
     event?.key || event?.button
@@ -1174,7 +1189,7 @@ function handleFirstUserInteraction(event) {
 
   // 이미 처리되었다면 중복 실행 방지
   if (hasUserInteracted) {
-    console.log("Already interacted, skipping");
+    devLog("Already interacted, skipping");
     return;
   }
 
@@ -1184,7 +1199,7 @@ function handleFirstUserInteraction(event) {
     event.stopPropagation();
   }
 
-  console.log("Activating main menu...");
+  devLog("Activating main menu...");
 
   // 전체화면이 아닌 경우에만 전체화면 활성화
   if (!window.parent.document.fullscreenElement) {
@@ -1241,17 +1256,21 @@ function generateAxioms(subjectA, subjectB, langData, isMarxInGame = false) {
   axiomGroups.quantifierOpposition.push(...templates.fish_good_evil_reverse);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_forward);
   axiomGroups.quantifierOpposition.push(...templates.dog_good_evil_reverse);
-  
+
   // 마르크스가 게임에 있을 때만 자본가 공리들 추가
   if (isMarxInGame) {
-    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_forward);
-    axiomGroups.quantifierOpposition.push(...templates.capitalist_good_evil_reverse);
+    axiomGroups.quantifierOpposition.push(
+      ...templates.capitalist_good_evil_forward
+    );
+    axiomGroups.quantifierOpposition.push(
+      ...templates.capitalist_good_evil_reverse
+    );
   }
 
   // 마르크스가 게임에 없으면 identity 그룹에서 자본가 공리만 제거
   if (!isMarxInGame) {
-    axiomGroups.identity = axiomGroups.identity.filter(axiom => 
-      !axiom.includes("자본가") && !axiom.includes("capitalist")
+    axiomGroups.identity = axiomGroups.identity.filter(
+      (axiom) => !axiom.includes("자본가") && !axiom.includes("capitalist")
     );
   }
 
@@ -1375,7 +1394,12 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
+    const nonPlayerCards = [
+      "승리한다",
+      "wins",
+      "자본가이다",
+      "is a capitalist",
+    ];
     playerA_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -1386,7 +1410,12 @@ function setupGame(selectedCharacters, testConfig = null) {
       .map((text) => fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
-    const nonPlayerCards = ["승리한다", "wins", "자본가이다", "is a capitalist"];
+    const nonPlayerCards = [
+      "승리한다",
+      "wins",
+      "자본가이다",
+      "is a capitalist",
+    ];
     playerB_Hand = JSON.parse(
       JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
     );
@@ -1602,9 +1631,9 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
   victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
-  
+
   // 승리 스타일 초기화
-  document.querySelectorAll(".player-title-box").forEach(titleBox => {
+  document.querySelectorAll(".player-title-box").forEach((titleBox) => {
     titleBox.classList.remove("winner");
   });
 
@@ -1806,7 +1835,7 @@ function activateAbility(player) {
     }
   }
 
-  console.log(`Activating ability for ${philosopherId}`);
+  devLog(`Activating ability for ${philosopherId}`);
   switch (philosopherId) {
     case "plato":
       activatePlatoAbility(player); // 이 부분을 수정합니다.
@@ -2127,7 +2156,7 @@ function completeProposition() {
       propToAdd.source = "nietzsche_ability";
     }
 
-    console.log("니체 명제 생성 시점: ", propToAdd);
+    devLog("니체 명제 생성 시점: ", propToAdd);
 
     truePropositions.push(propToAdd);
 
@@ -2297,15 +2326,16 @@ function endGame(winner, winningProposition) {
   }
   const victoryText = `${winnerName} ${currentLang.ui.victoryMessage}<br>${currentLang.ui.victorySubMessage}`;
   statusEl.innerHTML = `<span class="turn-indicator">${victoryText}</span>`;
-  
+
   // 승리한 플레이어의 타이틀 박스에 승리 스타일 적용
-  const winnerTitleBox = winner === "A" 
-    ? document.querySelector("#player-a-area .player-title-box")
-    : document.querySelector("#player-b-area .player-title-box");
+  const winnerTitleBox =
+    winner === "A"
+      ? document.querySelector("#player-a-area .player-title-box")
+      : document.querySelector("#player-b-area .player-title-box");
   if (winnerTitleBox) {
     winnerTitleBox.classList.add("winner");
   }
-  
+
   render();
 
   // 1. 모든 오버레이 이미지를 일단 숨깁니다.
@@ -2417,7 +2447,7 @@ function checkRoundEndConditions() {
 
     // 'AI vs AI' 모드일 경우에만 경고창을 건너뜁니다.
     if (gameMode === "AI_VS_AI") {
-      console.log(
+      devLog(
         `AI (${currentPlayer}) has no moves. Starting Thinking Time automatically in AI_VS_AI mode.`
       );
       startThinkingTime();
@@ -2475,8 +2505,8 @@ function endThinkingTime() {
 
   // 손패를 새로 분배하는 부분 (기존 코드)
   const nonPlayerCards = [
-    currentLang.keywords.wins, 
-    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist"
+    currentLang.keywords.wins,
+    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
   ]; // 기존 코드
   playerA_Hand = JSON.parse(
     JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
@@ -2810,11 +2840,14 @@ function render() {
       });
 
       // 자본가 공리가 있으면 추가 (템플릿 기반)
-      if (templates.capitalist_good_evil_forward && templates.capitalist_good_evil_forward.length > 0) {
+      if (
+        templates.capitalist_good_evil_forward &&
+        templates.capitalist_good_evil_forward.length > 0
+      ) {
         const hasCapitalistAxioms = currentAxioms.some(
           (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
         );
-        
+
         if (hasCapitalistAxioms) {
           const sep9 = document.createElement("hr");
           sep9.style.margin = "4px 0";
@@ -2859,7 +2892,7 @@ function render() {
 
   truePropositions.forEach((propData) => {
     if (propData.source === "nietzsche_ability") {
-      console.log("니체 명제 렌더링 시점: ", propData);
+      devLog("니체 명제 렌더링 시점: ", propData);
     }
     const li = document.createElement("li");
 
