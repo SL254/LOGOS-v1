@@ -78,6 +78,23 @@ function detectBrowserLanguage() {
   return "en";
 }
 
+// --- PROPOSITION VALIDATION FUNCTIONS ---
+
+/**
+ * 명제가 복합 명제인지 확인하는 함수 (연결사가 포함된 명제)
+ * @param {object} proposition - 검증할 명제 객체
+ * @returns {boolean} 복합 명제이면 true, 단일 명제이면 false
+ */
+function isCompoundProposition(proposition) {
+  if (!proposition || typeof proposition !== 'object') {
+    return false;
+  }
+  
+  // 연결사가 포함된 타입들을 확인
+  const compoundTypes = ['conjunction', 'disjunction', 'conditional'];
+  return compoundTypes.includes(proposition.type);
+}
+
 function autoInitializeGame() {
   const preferredLang = getPreferredLanguage();
   initializeGame(preferredLang);

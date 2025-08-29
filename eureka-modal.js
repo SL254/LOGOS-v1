@@ -397,13 +397,25 @@ function openEurekaModal() {
 
 function addAssumption() {
   if (currentAssumption) {
-    showAlert(currentLang.alerts.oneAssumptionOnly);
+    showAlert(currentLang.alerts.oneAssumptionOnly, () => {
+      // 경고창을 닫은 후 다시 가정 입력창 열기
+      addAssumption();
+    });
     return;
   }
   showPrompt(currentLang.modals.promptInputPlaceholder, (propositionText) => {
     if (propositionText) {
       const parsedProp = parsePropositionFromString(propositionText);
       if (parsedProp) {
+        // 복합 명제 (연결사가 포함된 명제) 검증
+        if (isCompoundProposition(parsedProp)) {
+          showAlert(currentLang.alerts.onlyAtomicAssumptions, () => {
+            // 경고창을 닫은 후 다시 가정 입력창 열기
+            addAssumption();
+          });
+          return;
+        }
+        
         currentAssumption = parsedProp;
 
         // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
@@ -457,7 +469,10 @@ function addAssumption() {
           }
         }, 100);
       } else {
-        showAlert(currentLang.alerts.parsingFailed);
+        showAlert(currentLang.alerts.parsingFailed, () => {
+          // 경고창을 닫은 후 다시 가정 입력창 열기
+          addAssumption();
+        });
       }
     }
   });

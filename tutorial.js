@@ -721,7 +721,7 @@ function handleTutorialStepLogic() {
             ? "소크라테스는 지혜롭다"
             : "Socrates is wise";
         const originalShowPrompt = window.showPrompt;
-        window.showPrompt = (message, callback) => {
+        const tutorialShowPrompt = (message, callback) => {
           originalShowPrompt(message, (value) => {
             if (value === correctAssumptionCI) {
               window.showPrompt = originalShowPrompt;
@@ -731,12 +731,16 @@ function handleTutorialStepLogic() {
               showAlert(
                 currentLang.langCode === "ko"
                   ? "올바른 명제를 입력해 주십시오."
-                  : "Please enter a valid proposition."
+                  : "Please enter a valid proposition.",
+                () => {
+                  // 경고창을 닫은 후 다시 가정 입력창 열기
+                  tutorialShowPrompt(message, callback);
+                }
               );
-              callback(null);
             }
           });
         };
+        window.showPrompt = tutorialShowPrompt;
         break;
       case 2: // Select premises for 1st MP
         const premisesCI_1 =
@@ -811,7 +815,7 @@ function handleTutorialStepLogic() {
             ? "소크라테스는 악하다 는 거짓이다"
             : "Socrates is evil is false";
         const originalShowPrompt = window.showPrompt;
-        window.showPrompt = (message, callback) => {
+        const tutorialShowPrompt = (message, callback) => {
           originalShowPrompt(message, (value) => {
             if (value === correctAssumptionRAA) {
               window.showPrompt = originalShowPrompt;
@@ -821,12 +825,16 @@ function handleTutorialStepLogic() {
               showAlert(
                 currentLang.langCode === "ko"
                   ? "올바른 명제를 입력해 주십시오."
-                  : "Please enter a valid proposition."
+                  : "Please enter a valid proposition.",
+                () => {
+                  // 경고창을 닫은 후 다시 가정 입력창 열기
+                  tutorialShowPrompt(message, callback);
+                }
               );
-              callback(null);
             }
           });
         };
+        window.showPrompt = tutorialShowPrompt;
         break;
       case 2:
         const premisesRAA_texts =

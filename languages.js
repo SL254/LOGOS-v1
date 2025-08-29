@@ -194,6 +194,8 @@ const TEXTS = {
         "축하합니다! 클리어하셨습니다!<br><br>거쳐 간 논증 단계 수: {steps}<br>{stars}",
       confirmDeclareEureka:
         "유레카! 선언은 한 라운드에 한 번만 가능합니다.<br>선언하시겠습니까?",
+      onlyAtomicAssumptions:
+        "최소 단위 명제만 가정할 수 있습니다.<br>'그리고', '또는', '라면' 등 연결사가 포함된 복합 명제는 가정할 수 없습니다.",
     },
     keywords: {
       if: "라면",
@@ -521,6 +523,8 @@ const TEXTS = {
         "Congratulations! You cleared the puzzle!<br><br>Inference steps taken: {steps}<br>{stars}",
       confirmDeclareEureka:
         "Eureka! can only be declared once per round.<br>Do you want to proceed?",
+      onlyAtomicAssumptions:
+        "Only atomic propositions can be assumed.<br>Compound propositions containing connectives like 'and', 'or', 'then' cannot be assumed.",
     },
     keywords: {
       if: "then",
