@@ -12,7 +12,6 @@
   -khtml-user-drag: none; /* KHTML */
   -moz-user-drag: none; /* Firefox */
   -o-user-drag: none; /* Opera */
-  user-drag: none; /* Standard */
   -webkit-touch-callout: none; /* iOS Safari 길게 누르기 방지 */
   -webkit-tap-highlight-color: transparent; /* 터치 시 하이라이트 제거 */
 }
@@ -1825,7 +1824,7 @@ body::after {
     url("assets/images/bottom.png") url("assets/images/paper.png")
     url("assets/images/paper_1.png") url("assets/images/player.png")
     url("assets/images/player_active.png") url("assets/images/papiru.png")
-    url("assets/images/rendom_hover.png") url("assets/images/papiru_1.png")
+    url("assets/images/random_hover.png") url("assets/images/papiru_1.png")
     url("assets/images/sel.png") url("assets/images/por.png")
     url("assets/images/por_small.png") url("assets/images/pre_li.png")
     url("assets/images/pre_li_assu.png")
@@ -1886,7 +1885,11 @@ body::after {
     url("assets/images/full_night.png")
     url("assets/images/full_hover_night.png")
     url("assets/images/eureka_night.png")
-    url("assets/images/eureka_1_night.png");
+    url("assets/images/eureka_1_night.png")
+    /* 추가 누락된 이미지들 */
+    url("assets/images/cloud.png") url("assets/images/player_win.png")
+    url("assets/images/modal_confirm.png") url("assets/images/modal_confirm_hover.png")
+    url("assets/images/next_icon.png") url("assets/images/por_long.png");
 }
 
 /* ...existing code... */
