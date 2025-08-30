@@ -1195,6 +1195,13 @@ function handleFirstUserInteraction(event) {
     event?.key || event?.button
   );
 
+  // 로딩 화면이 표시 중이면 무시
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen && loadingScreen.style.display !== 'none') {
+    devLog("Loading screen active, ignoring interaction");
+    return;
+  }
+
   // 이미 처리되었다면 중복 실행 방지
   if (hasUserInteracted) {
     devLog("Already interacted, skipping");
