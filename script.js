@@ -114,6 +114,14 @@ function autoInitializeGame() {
   const preferredLang = getPreferredLanguage();
   initializeGame(preferredLang);
 
+  // 로딩 화면을 2초 후에 숨기기
+  setTimeout(() => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      loadingScreen.style.display = 'none';
+    }
+  }, 2000);
+
   // 초기화 후 튜토리얼 상태 확인
   setTimeout(checkTutorialStatus, 100);
 }

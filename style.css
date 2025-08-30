@@ -47,6 +47,27 @@ body {
   transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
 }
 
+/* Loading Screen Styles */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
 /* 사유 시간용 밤 테마 */
 body.thinking-time-night {
   background-image: url("assets/images/sky_night.png");
