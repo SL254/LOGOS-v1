@@ -615,21 +615,6 @@ body.thinking-time-night #proof-review-btn:hover {
   flex-direction: column;
 }
 
-#background-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 300px; /* 👈 높이를 고정값으로 직접 지정 */
-  z-index: -1;
-  /* 1. 이미지 파일 불러오기 */
-  background-image: url("assets/images/cloud.png"); /* 👈 여기에 파일 경로를 입력하세요 */
-  background-size: 340px 340px; /* 👈 64px에서 128px로 2배 확대 */
-  image-rendering: pixelated; /* 👈 이미지를 선명하게 유지하는 핵심 속성 */
-  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
-
-  background-repeat: repeat; /* 배경 이미지를 바둑판식으로 반복 */
-}
 #proposition-display {
   display: flex;
   flex-wrap: wrap;
@@ -1885,10 +1870,9 @@ body::after {
     url("assets/images/full_night.png")
     url("assets/images/full_hover_night.png")
     url("assets/images/eureka_night.png")
-    url("assets/images/eureka_1_night.png")
-    /* 추가 누락된 이미지들 */
-    url("assets/images/cloud.png") url("assets/images/player_win.png")
-    url("assets/images/modal_confirm.png") url("assets/images/modal_confirm_hover.png")
+    url("assets/images/eureka_1_night.png") /* 추가 누락된 이미지들 */
+    url("assets/images/player_win.png") url("assets/images/modal_confirm.png")
+    url("assets/images/modal_confirm_hover.png")
     url("assets/images/next_icon.png") url("assets/images/por_long.png");
 }
 
