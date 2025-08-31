@@ -1,5 +1,5 @@
 // 배포 시 이 값을 false로 바꾸면 모든 로그가 사라집니다.
-const IS_DEV_MODE = false;
+const IS_DEV_MODE = true;
 
 /**
  * 개발 모드일 때만 콘솔에 로그를 출력하는 함수.
@@ -116,9 +116,9 @@ function autoInitializeGame() {
 
   // 로딩 화면을 2초 후에 숨기기
   setTimeout(() => {
-    const loadingScreen = document.getElementById('loading-screen');
+    const loadingScreen = document.getElementById("loading-screen");
     if (loadingScreen) {
-      loadingScreen.style.display = 'none';
+      loadingScreen.style.display = "none";
     }
   }, 2000);
 
@@ -1196,8 +1196,8 @@ function handleFirstUserInteraction(event) {
   );
 
   // 로딩 화면이 표시 중이면 무시
-  const loadingScreen = document.getElementById('loading-screen');
-  if (loadingScreen && loadingScreen.style.display !== 'none') {
+  const loadingScreen = document.getElementById("loading-screen");
+  if (loadingScreen && loadingScreen.style.display !== "none") {
     devLog("Loading screen active, ignoring interaction");
     return;
   }

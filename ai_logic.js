@@ -1134,6 +1134,84 @@ function aiTurn() {
         }
       }
 
+      // 흄 대응 로직: 상대가 흄이고 능력을 아직 사용하지 않은 경우, 
+      // 상대가 즉시 승리하거나 자기가 즉시 패배하는 명제 뒤에 '라면' 카드를 내는 것에 감점
+      if (move.text === currentLang.keywords.if) {
+        const opponentPlayer = currentPlayer === "A" ? "B" : "A";
+        const opponentPhilosopherId = opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
+        
+        console.log(`[HUME DEBUG] AI is considering '라면' card. Current player: ${currentPlayer}, Opponent: ${opponentPlayer}, Opponent philosopher: ${opponentPhilosopherId}`);
+        
+        // 상대가 흄인지 확인
+        if (opponentPhilosopherId === "hume") {
+          console.log(`[HUME DEBUG] Opponent is Hume! Checking ability usage...`);
+          // 흄의 능력 사용 여부 확인
+          const opponentAbilityState = abilityUsedState[opponentPlayer] || { used: false };
+          console.log(`[HUME DEBUG] Hume ability used status:`, opponentAbilityState);
+          
+          if (!opponentAbilityState.used) {
+            console.log(`[HUME DEBUG] Hume ability not used yet. Checking proposition danger...`);
+            // 현재 명제판의 명제를 파싱
+            const propOnBoard = parsePropositionFromCards(currentProposition);
+            console.log(`[HUME DEBUG] Proposition on board:`, propOnBoard);
+            
+            if (propOnBoard) {
+              // 이 명제가 상대방의 즉시 승리로 이어지는지 확인
+              const opponentVictoryData = truePropositions.find(p => p.type === "victory" && p.owner !== currentPlayer);
+              console.log(`[HUME DEBUG] Opponent victory data:`, opponentVictoryData);
+              
+              const opponentVictoryAfterThis = opponentVictoryData && aiFindProof(opponentVictoryData.ultimate_target, [...internalTruthSet, { proposition: propOnBoard }]);
+              console.log(`[HUME DEBUG] Opponent victory after this proposition:`, opponentVictoryAfterThis);
+              
+              // AI의 패배 조건 확인 (자기 승리 조건의 반대)
+              let aiDefeatAfterThis = false;
+              if (myVictoryData && myVictoryData.core_goal) {
+                const myGoalPredicate = myVictoryData.core_goal.predicate;
+                const contradictoryPredicate = currentLang.contradictoryPredicates[myGoalPredicate] || 
+                  Object.keys(currentLang.contradictoryPredicates).find(key => 
+                    currentLang.contradictoryPredicates[key] === myGoalPredicate
+                  );
+                
+                console.log(`[HUME DEBUG] AI goal predicate: ${myGoalPredicate}, contradictory: ${contradictoryPredicate}`);
+                
+                if (contradictoryPredicate) {
+                  const myDefeatCondition = {
+                    type: "atomic",
+                    subject: myVictoryData.core_goal.subject,
+                    predicate: contradictoryPredicate,
+                  };
+                  console.log(`[HUME DEBUG] AI defeat condition:`, myDefeatCondition);
+                  
+                  // 직접적인 일치 확인 - 명제판의 명제가 바로 패배 조건인지 체크
+                  const directMatch = arePropositionsEqual(propOnBoard, myDefeatCondition);
+                  console.log(`[HUME DEBUG] Direct match with defeat condition:`, directMatch);
+                  
+                  // 추론을 통한 패배 조건 도달 가능성 확인
+                  const proofBasedDefeat = aiFindProof(myDefeatCondition, [...internalTruthSet, { proposition: propOnBoard }]);
+                  console.log(`[HUME DEBUG] Proof-based defeat:`, proofBasedDefeat);
+                  
+                  aiDefeatAfterThis = directMatch || proofBasedDefeat;
+                  console.log(`[HUME DEBUG] AI defeat after this proposition:`, aiDefeatAfterThis);
+                }
+              }
+              
+              // 상대 즉시 승리 또는 AI 즉시 패배로 이어지는 명제라면 감점
+              if (opponentVictoryAfterThis || aiDefeatAfterThis) {
+                const penaltyReason = opponentVictoryAfterThis ? "opponent immediate victory" : "AI immediate defeat";
+                console.warn(
+                  `AI HUME COUNTER-STRATEGY: Penalizing '라면' card after ${penaltyReason} proposition. Hume can decompose this conditional.`
+                );
+                score -= 500000; // 큰 감점이지만 자살 방지보다는 낮게
+              } else {
+                console.log(`[HUME DEBUG] Proposition is not immediately dangerous. No penalty applied.`);
+              }
+            } else {
+              console.log(`[HUME DEBUG] Could not parse proposition on board.`);
+            }
+          }
+        }
+      }
+
       if (
         move.type ===
         (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
