@@ -3,7 +3,7 @@ const IS_DEV_MODE = true;
 
 /**
  * 개발 모드일 때만 콘솔에 로그를 출력하는 함수.
- * 기존의 console.log와 똑같이 사용할 수 있습니다.
+ * 기존의 devLog와 똑같이 사용할 수 있습니다.
  * @param {...any} args - 출력할 모든 인자.
  */
 function devLog(...args) {

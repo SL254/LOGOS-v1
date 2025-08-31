@@ -1072,6 +1072,115 @@ function aiTurn() {
       }
       // ★★★ 여기까지 수정 ★★★
 
+      // 🔥 새로운 추가: 중복 명제 방지 로직 - AI 시간 끌기 방지
+      // 이 카드를 놓았을 때 생성될 명제가 이미 참 명제 목록에 있는지 확인
+      devLog(
+        `[DUPLICATE DEBUG] Checking move '${move.text}' for duplicate prevention`
+      );
+      devLog(
+        `[DUPLICATE DEBUG] Current proposition:`,
+        currentProposition.map((c) => (c && c.card ? c.card.text : "undefined"))
+      );
+
+      const hypotheticalProp = [
+        ...currentProposition,
+        { card: move, player: currentPlayer },
+      ];
+      devLog(
+        `[DUPLICATE DEBUG] Hypothetical proposition after move:`,
+        hypotheticalProp.map((c) => (c && c.card ? c.card.text : "undefined"))
+      );
+
+      try {
+        const resultingProposition =
+          parsePropositionFromCards(hypotheticalProp);
+        devLog(
+          `[DUPLICATE DEBUG] Parsed resulting proposition:`,
+          resultingProposition
+        );
+
+        if (resultingProposition) {
+          devLog(
+            `[DUPLICATE DEBUG] Checking against ${truePropositions.length} true propositions`
+          );
+          devLog(
+            `[DUPLICATE DEBUG] True propositions list:`,
+            truePropositions.map((p) => ({
+              type: p.type,
+              text: p.text || "no text",
+              proposition: p.proposition
+                ? propositionToNaturalText(p.proposition)
+                : "no proposition",
+            }))
+          );
+
+          // 완성된 명제인 경우에만 중복 체크 (공리 + 참 명제 모두 확인)
+          let isDuplicate = false;
+
+          // 1. 공리와 비교
+          const axiomDuplicate = parsedAxioms.some((axiom) => {
+            if (axiom.proposition) {
+              const isEqual = arePropositionsEqual(
+                axiom.proposition,
+                resultingProposition
+              );
+              if (isEqual) {
+                devLog(
+                  `[DUPLICATE PREVENTION] Found duplicate with AXIOM! Existing: "${propositionToNaturalText(
+                    axiom.proposition
+                  )}", New: "${propositionToNaturalText(resultingProposition)}"`
+                );
+              }
+              return isEqual;
+            }
+            return false;
+          });
+
+          // 2. 참 명제와 비교
+          const truePropDuplicate = truePropositions.some((trueProp) => {
+            if (trueProp.proposition) {
+              const isEqual = arePropositionsEqual(
+                trueProp.proposition,
+                resultingProposition
+              );
+              if (isEqual) {
+                devLog(
+                  `[DUPLICATE PREVENTION] Found duplicate with TRUE PROP! Existing: "${propositionToNaturalText(
+                    trueProp.proposition
+                  )}", New: "${propositionToNaturalText(resultingProposition)}"`
+                );
+              }
+              return isEqual;
+            }
+            return false;
+          });
+
+          isDuplicate = axiomDuplicate || truePropDuplicate;
+
+          devLog(`[DUPLICATE DEBUG] Is duplicate:`, isDuplicate);
+
+          if (isDuplicate) {
+            console.warn(
+              `AI DUPLICATE PREVENTION: Penalizing move '${move.text}' - creates duplicate proposition.`
+            );
+            score -= 5; // 미세한 감점으로 무의미한 행동 억제
+            devLog(`[DUPLICATE DEBUG] Score after penalty:`, score);
+          } else {
+            devLog(`[DUPLICATE DEBUG] No duplicate found, no penalty applied.`);
+          }
+        } else {
+          devLog(
+            `[DUPLICATE DEBUG] No resulting proposition parsed (incomplete).`
+          );
+        }
+      } catch (error) {
+        // 파싱 에러 발생시 무시하고 계속 진행
+        devLog(
+          `[DUPLICATE PREVENTION] Parse error for move '${move.text}':`,
+          error.message
+        );
+      }
+
       if (move.text === notKeyword) {
         const propOnBoard = parsePropositionFromCards(currentProposition);
 
@@ -1134,145 +1243,239 @@ function aiTurn() {
         }
       }
 
-      // 흄 대응 로직: 상대가 흄이고 능력을 아직 사용하지 않은 경우, 
+      // 흄 대응 로직: 상대가 흄이고 능력을 아직 사용하지 않은 경우,
       // 상대가 즉시 승리하거나 자기가 즉시 패배하는 명제 뒤에 '라면' 카드를 내는 것에 감점
       if (move.text === currentLang.keywords.if) {
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-        const opponentPhilosopherId = opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
-        
-        console.log(`[HUME DEBUG] AI is considering '라면' card. Current player: ${currentPlayer}, Opponent: ${opponentPlayer}, Opponent philosopher: ${opponentPhilosopherId}`);
-        
+        const opponentPhilosopherId =
+          opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
+
+        devLog(
+          `[HUME DEBUG] AI is considering '라면' card. Current player: ${currentPlayer}, Opponent: ${opponentPlayer}, Opponent philosopher: ${opponentPhilosopherId}`
+        );
+
         // 상대가 흄인지 확인
         if (opponentPhilosopherId === "hume") {
-          console.log(`[HUME DEBUG] Opponent is Hume! Checking ability usage...`);
+          devLog(`[HUME DEBUG] Opponent is Hume! Checking ability usage...`);
           // 흄의 능력 사용 여부 확인
-          const opponentAbilityState = abilityUsedState[opponentPlayer] || { used: false };
-          console.log(`[HUME DEBUG] Hume ability used status:`, opponentAbilityState);
-          
+          const opponentAbilityState = abilityUsedState[opponentPlayer] || {
+            used: false,
+          };
+          devLog(
+            `[HUME DEBUG] Hume ability used status:`,
+            opponentAbilityState
+          );
+
           if (!opponentAbilityState.used) {
-            console.log(`[HUME DEBUG] Hume ability not used yet. Checking proposition danger...`);
+            devLog(
+              `[HUME DEBUG] Hume ability not used yet. Checking proposition danger...`
+            );
             // 현재 명제판의 명제를 파싱
             const propOnBoard = parsePropositionFromCards(currentProposition);
-            console.log(`[HUME DEBUG] Proposition on board:`, propOnBoard);
-            
+            devLog(`[HUME DEBUG] Proposition on board:`, propOnBoard);
+
             if (propOnBoard) {
               // 이 명제가 상대방의 즉시 승리로 이어지는지 확인
-              const opponentVictoryData = truePropositions.find(p => p.type === "victory" && p.owner !== currentPlayer);
-              console.log(`[HUME DEBUG] Opponent victory data:`, opponentVictoryData);
-              
-              const opponentVictoryAfterThis = opponentVictoryData && aiFindProof(opponentVictoryData.ultimate_target, [...internalTruthSet, { proposition: propOnBoard }]);
-              console.log(`[HUME DEBUG] Opponent victory after this proposition:`, opponentVictoryAfterThis);
-              
+              const opponentVictoryData = truePropositions.find(
+                (p) => p.type === "victory" && p.owner !== currentPlayer
+              );
+              devLog(
+                `[HUME DEBUG] Opponent victory data:`,
+                opponentVictoryData
+              );
+
+              const opponentVictoryAfterThis =
+                opponentVictoryData &&
+                aiFindProof(opponentVictoryData.ultimate_target, [
+                  ...internalTruthSet,
+                  { proposition: propOnBoard },
+                ]);
+              devLog(
+                `[HUME DEBUG] Opponent victory after this proposition:`,
+                opponentVictoryAfterThis
+              );
+
               // AI의 패배 조건 확인 (자기 승리 조건의 반대)
               let aiDefeatAfterThis = false;
               if (myVictoryData && myVictoryData.core_goal) {
                 const myGoalPredicate = myVictoryData.core_goal.predicate;
-                const contradictoryPredicate = currentLang.contradictoryPredicates[myGoalPredicate] || 
-                  Object.keys(currentLang.contradictoryPredicates).find(key => 
-                    currentLang.contradictoryPredicates[key] === myGoalPredicate
+                const contradictoryPredicate =
+                  currentLang.contradictoryPredicates[myGoalPredicate] ||
+                  Object.keys(currentLang.contradictoryPredicates).find(
+                    (key) =>
+                      currentLang.contradictoryPredicates[key] ===
+                      myGoalPredicate
                   );
-                
-                console.log(`[HUME DEBUG] AI goal predicate: ${myGoalPredicate}, contradictory: ${contradictoryPredicate}`);
-                
+
+                devLog(
+                  `[HUME DEBUG] AI goal predicate: ${myGoalPredicate}, contradictory: ${contradictoryPredicate}`
+                );
+
                 if (contradictoryPredicate) {
                   const myDefeatCondition = {
                     type: "atomic",
                     subject: myVictoryData.core_goal.subject,
                     predicate: contradictoryPredicate,
                   };
-                  console.log(`[HUME DEBUG] AI defeat condition:`, myDefeatCondition);
-                  
+                  devLog(
+                    `[HUME DEBUG] AI defeat condition:`,
+                    myDefeatCondition
+                  );
+
                   // 직접적인 일치 확인 - 명제판의 명제가 바로 패배 조건인지 체크
-                  const directMatch = arePropositionsEqual(propOnBoard, myDefeatCondition);
-                  console.log(`[HUME DEBUG] Direct match with defeat condition:`, directMatch);
-                  
+                  const directMatch = arePropositionsEqual(
+                    propOnBoard,
+                    myDefeatCondition
+                  );
+                  devLog(
+                    `[HUME DEBUG] Direct match with defeat condition:`,
+                    directMatch
+                  );
+
                   // 추론을 통한 패배 조건 도달 가능성 확인
-                  const proofBasedDefeat = aiFindProof(myDefeatCondition, [...internalTruthSet, { proposition: propOnBoard }]);
-                  console.log(`[HUME DEBUG] Proof-based defeat:`, proofBasedDefeat);
-                  
+                  const proofBasedDefeat = aiFindProof(myDefeatCondition, [
+                    ...internalTruthSet,
+                    { proposition: propOnBoard },
+                  ]);
+                  devLog(`[HUME DEBUG] Proof-based defeat:`, proofBasedDefeat);
+
                   aiDefeatAfterThis = directMatch || proofBasedDefeat;
-                  console.log(`[HUME DEBUG] AI defeat after this proposition:`, aiDefeatAfterThis);
+                  devLog(
+                    `[HUME DEBUG] AI defeat after this proposition:`,
+                    aiDefeatAfterThis
+                  );
                 }
               }
-              
+
               // 🔥 NEW SIMULATION LOGIC: 흄이 조건문을 분해했을 때의 시뮬레이션
               let humeDecomposeSimulation = false;
-              
+
               // 시뮬레이션: AI가 "라면"을 붙여서 조건문을 만들었다고 가정
               const simulatedConditional = {
                 type: "conditional",
                 left: propOnBoard,
-                right: { type: "atomic", subject: "임시", predicate: "임시" } // 임시 후건
+                right: { type: "atomic", subject: "임시", predicate: "임시" }, // 임시 후건
               };
-              
-              console.log(`[HUME DEBUG] Simulating conditional:`, simulatedConditional);
-              
+
+              devLog(
+                `[HUME DEBUG] Simulating conditional:`,
+                simulatedConditional
+              );
+
               // 흄이 이 조건문을 분해할 수 있는지 확인 (조건문이면 분해 가능)
               if (simulatedConditional.type === "conditional") {
-                console.log(`[HUME DEBUG] Hume can decompose this conditional. Checking if antecedent leads to defeat...`);
-                
+                devLog(
+                  `[HUME DEBUG] Hume can decompose this conditional. Checking if antecedent leads to defeat...`
+                );
+
                 // 분해 결과: 조건문의 전건(왼쪽 명제)이 참 명제 목록에 추가됨
                 const decomposedProposition = simulatedConditional.left; // propOnBoard
-                
+
                 // 이 분해된 명제가 상대방 승리로 이어지는지 시뮬레이션
-                const opponentVictoryAfterDecompose = opponentVictoryData && 
-                  aiFindProof(opponentVictoryData.ultimate_target, [...internalTruthSet, { proposition: decomposedProposition }]);
-                
-                console.log(`[HUME DEBUG] Opponent victory after Hume decomposes:`, opponentVictoryAfterDecompose);
-                
+                const opponentVictoryAfterDecompose =
+                  opponentVictoryData &&
+                  aiFindProof(opponentVictoryData.ultimate_target, [
+                    ...internalTruthSet,
+                    { proposition: decomposedProposition },
+                  ]);
+
+                devLog(
+                  `[HUME DEBUG] Opponent victory after Hume decomposes:`,
+                  opponentVictoryAfterDecompose
+                );
+
                 // 분해된 명제가 AI 패배로 이어지는지 시뮬레이션
                 let aiDefeatAfterDecompose = false;
                 if (myVictoryData && myVictoryData.core_goal) {
                   const myGoalPredicate = myVictoryData.core_goal.predicate;
-                  const contradictoryPredicate = currentLang.contradictoryPredicates[myGoalPredicate] || 
-                    Object.keys(currentLang.contradictoryPredicates).find(key => 
-                      currentLang.contradictoryPredicates[key] === myGoalPredicate
+                  const contradictoryPredicate =
+                    currentLang.contradictoryPredicates[myGoalPredicate] ||
+                    Object.keys(currentLang.contradictoryPredicates).find(
+                      (key) =>
+                        currentLang.contradictoryPredicates[key] ===
+                        myGoalPredicate
                     );
-                    
+
                   if (contradictoryPredicate) {
                     const myDefeatCondition = {
                       type: "atomic",
                       subject: myVictoryData.core_goal.subject,
                       predicate: contradictoryPredicate,
                     };
-                    
+
                     // 분해된 명제가 직접 패배 조건인지 또는 패배로 이어지는지 확인
-                    const directDefeatMatch = arePropositionsEqual(decomposedProposition, myDefeatCondition);
-                    const proofBasedDefeatAfterDecompose = aiFindProof(myDefeatCondition, [...internalTruthSet, { proposition: decomposedProposition }]);
-                    
-                    aiDefeatAfterDecompose = directDefeatMatch || proofBasedDefeatAfterDecompose;
-                    console.log(`[HUME DEBUG] AI defeat after decompose:`, aiDefeatAfterDecompose);
+                    const directDefeatMatch = arePropositionsEqual(
+                      decomposedProposition,
+                      myDefeatCondition
+                    );
+                    const proofBasedDefeatAfterDecompose = aiFindProof(
+                      myDefeatCondition,
+                      [
+                        ...internalTruthSet,
+                        { proposition: decomposedProposition },
+                      ]
+                    );
+
+                    aiDefeatAfterDecompose =
+                      directDefeatMatch || proofBasedDefeatAfterDecompose;
+                    devLog(
+                      `[HUME DEBUG] AI defeat after decompose:`,
+                      aiDefeatAfterDecompose
+                    );
                   }
                 }
-                
+
                 // 🎯 핵심: 분해된 명제가 상대 승리 조건의 핵심 요소인지 확인
-                const isOpponentCoreGoal = opponentVictoryData && opponentVictoryData.core_goal &&
-                  arePropositionsEqual(decomposedProposition, opponentVictoryData.core_goal);
-                
-                console.log(`[HUME DEBUG] Decomposed proposition is opponent's core goal:`, isOpponentCoreGoal);
-                
+                const isOpponentCoreGoal =
+                  opponentVictoryData &&
+                  opponentVictoryData.core_goal &&
+                  arePropositionsEqual(
+                    decomposedProposition,
+                    opponentVictoryData.core_goal
+                  );
+
+                devLog(
+                  `[HUME DEBUG] Decomposed proposition is opponent's core goal:`,
+                  isOpponentCoreGoal
+                );
+
                 // 패배 확신 조건들
-                humeDecomposeSimulation = opponentVictoryAfterDecompose || aiDefeatAfterDecompose || isOpponentCoreGoal;
-                
-                console.log(`[HUME DEBUG] Final simulation result - Will lead to defeat:`, humeDecomposeSimulation);
+                humeDecomposeSimulation =
+                  opponentVictoryAfterDecompose ||
+                  aiDefeatAfterDecompose ||
+                  isOpponentCoreGoal;
+
+                devLog(
+                  `[HUME DEBUG] Final simulation result - Will lead to defeat:`,
+                  humeDecomposeSimulation
+                );
               }
-              
+
               // 기존 즉시 위험 + 새로운 시뮬레이션 결과를 종합하여 감점 결정
-              if (opponentVictoryAfterThis || aiDefeatAfterThis || humeDecomposeSimulation) {
+              if (
+                opponentVictoryAfterThis ||
+                aiDefeatAfterThis ||
+                humeDecomposeSimulation
+              ) {
                 let penaltyReason = "";
-                if (opponentVictoryAfterThis) penaltyReason = "opponent immediate victory";
-                else if (aiDefeatAfterThis) penaltyReason = "AI immediate defeat";
-                else if (humeDecomposeSimulation) penaltyReason = "Hume decomposition will lead to defeat";
-                
+                if (opponentVictoryAfterThis)
+                  penaltyReason = "opponent immediate victory";
+                else if (aiDefeatAfterThis)
+                  penaltyReason = "AI immediate defeat";
+                else if (humeDecomposeSimulation)
+                  penaltyReason = "Hume decomposition will lead to defeat";
+
                 console.warn(
                   `AI HUME COUNTER-STRATEGY: Penalizing '라면' card after ${penaltyReason}. Hume can decompose this conditional.`
                 );
                 score -= 500000; // 큰 감점이지만 자살 방지보다는 낮게
               } else {
-                console.log(`[HUME DEBUG] No immediate danger or decomposition threat detected. No penalty applied.`);
+                devLog(
+                  `[HUME DEBUG] No immediate danger or decomposition threat detected. No penalty applied.`
+                );
               }
             } else {
-              console.log(`[HUME DEBUG] Could not parse proposition on board.`);
+              devLog(`[HUME DEBUG] Could not parse proposition on board.`);
             }
           }
         }
@@ -1284,50 +1487,96 @@ function aiTurn() {
         (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-        const opponentPhilosopherId = opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
-        
+        const opponentPhilosopherId =
+          opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
+
         // 상대가 흄이고 능력을 아직 사용하지 않았는지 확인
-        console.log(`[HUME PROPER NOUN DEBUG] AI considering proper noun '${move.text}'. Opponent: ${opponentPhilosopherId}`);
-        
+        devLog(
+          `[HUME PROPER NOUN DEBUG] AI considering proper noun '${move.text}'. Opponent: ${opponentPhilosopherId}`
+        );
+
         if (opponentPhilosopherId === "hume") {
-          console.log(`[HUME PROPER NOUN DEBUG] Opponent is Hume! Checking ability usage...`);
-          const opponentAbilityState = abilityUsedState[opponentPlayer] || { used: false };
-          console.log(`[HUME PROPER NOUN DEBUG] Hume ability used:`, opponentAbilityState);
-          
+          devLog(
+            `[HUME PROPER NOUN DEBUG] Opponent is Hume! Checking ability usage...`
+          );
+          const opponentAbilityState = abilityUsedState[opponentPlayer] || {
+            used: false,
+          };
+          devLog(
+            `[HUME PROPER NOUN DEBUG] Hume ability used:`,
+            opponentAbilityState
+          );
+
           if (!opponentAbilityState.used) {
-            console.log(`[HUME PROPER NOUN DEBUG] Hume ability not used yet. Checking for '라면' on board...`);
-            console.log(`[HUME PROPER NOUN DEBUG] Current proposition:`, currentProposition.map(c => c && c.card ? c.card.text : 'undefined'));
-            console.log(`[HUME PROPER NOUN DEBUG] Current proposition raw:`, currentProposition);
-            console.log(`[HUME PROPER NOUN DEBUG] If keyword:`, currentLang.keywords.if);
-            
-            // 현재 명제판에 '라면'이 있는지 확인 (올바른 접근 경로)
-            const hasConditionalConnector = currentProposition.some(cardWrapper => 
-              cardWrapper && cardWrapper.card && cardWrapper.card.text === currentLang.keywords.if
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Hume ability not used yet. Checking for '라면' on board...`
             );
-            
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Current proposition:`,
+              currentProposition.map((c) =>
+                c && c.card ? c.card.text : "undefined"
+              )
+            );
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Current proposition raw:`,
+              currentProposition
+            );
+            devLog(
+              `[HUME PROPER NOUN DEBUG] If keyword:`,
+              currentLang.keywords.if
+            );
+
+            // 현재 명제판에 '라면'이 있는지 확인 (올바른 접근 경로)
+            const hasConditionalConnector = currentProposition.some(
+              (cardWrapper) =>
+                cardWrapper &&
+                cardWrapper.card &&
+                cardWrapper.card.text === currentLang.keywords.if
+            );
+
             // 추가 확인: 명제판을 문자열로 변환해서 '라면' 검색
-            const propAsString = currentProposition.filter(c => c && c.card).map(c => c.card.text).join(' ');
-            const hasConditionalInString = propAsString.includes(currentLang.keywords.if);
-            
-            console.log(`[HUME PROPER NOUN DEBUG] Proposition as string: "${propAsString}"`);
-            console.log(`[HUME PROPER NOUN DEBUG] Has conditional in string:`, hasConditionalInString);
-            
-            const finalHasConditional = hasConditionalConnector || hasConditionalInString;
-            console.log(`[HUME PROPER NOUN DEBUG] Final has conditional:`, finalHasConditional);
-            
+            const propAsString = currentProposition
+              .filter((c) => c && c.card)
+              .map((c) => c.card.text)
+              .join(" ");
+            const hasConditionalInString = propAsString.includes(
+              currentLang.keywords.if
+            );
+
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Proposition as string: "${propAsString}"`
+            );
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Has conditional in string:`,
+              hasConditionalInString
+            );
+
+            const finalHasConditional =
+              hasConditionalConnector || hasConditionalInString;
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Final has conditional:`,
+              finalHasConditional
+            );
+
             if (finalHasConditional) {
               console.warn(
                 `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose the conditional and isolate dangerous propositions.`
               );
               score -= 300000; // '라면' 자체보다는 낮지만 여전히 큰 감점
             } else {
-              console.log(`[HUME PROPER NOUN DEBUG] No '라면' found on board, no penalty applied.`);
+              devLog(
+                `[HUME PROPER NOUN DEBUG] No '라면' found on board, no penalty applied.`
+              );
             }
           } else {
-            console.log(`[HUME PROPER NOUN DEBUG] Hume already used ability, no penalty needed.`);
+            devLog(
+              `[HUME PROPER NOUN DEBUG] Hume already used ability, no penalty needed.`
+            );
           }
         } else {
-          console.log(`[HUME PROPER NOUN DEBUG] Opponent is not Hume, no penalty applied.`);
+          devLog(
+            `[HUME PROPER NOUN DEBUG] Opponent is not Hume, no penalty applied.`
+          );
         }
       }
 
