@@ -1195,20 +1195,139 @@ function aiTurn() {
                 }
               }
               
-              // 상대 즉시 승리 또는 AI 즉시 패배로 이어지는 명제라면 감점
-              if (opponentVictoryAfterThis || aiDefeatAfterThis) {
-                const penaltyReason = opponentVictoryAfterThis ? "opponent immediate victory" : "AI immediate defeat";
+              // 🔥 NEW SIMULATION LOGIC: 흄이 조건문을 분해했을 때의 시뮬레이션
+              let humeDecomposeSimulation = false;
+              
+              // 시뮬레이션: AI가 "라면"을 붙여서 조건문을 만들었다고 가정
+              const simulatedConditional = {
+                type: "conditional",
+                left: propOnBoard,
+                right: { type: "atomic", subject: "임시", predicate: "임시" } // 임시 후건
+              };
+              
+              console.log(`[HUME DEBUG] Simulating conditional:`, simulatedConditional);
+              
+              // 흄이 이 조건문을 분해할 수 있는지 확인 (조건문이면 분해 가능)
+              if (simulatedConditional.type === "conditional") {
+                console.log(`[HUME DEBUG] Hume can decompose this conditional. Checking if antecedent leads to defeat...`);
+                
+                // 분해 결과: 조건문의 전건(왼쪽 명제)이 참 명제 목록에 추가됨
+                const decomposedProposition = simulatedConditional.left; // propOnBoard
+                
+                // 이 분해된 명제가 상대방 승리로 이어지는지 시뮬레이션
+                const opponentVictoryAfterDecompose = opponentVictoryData && 
+                  aiFindProof(opponentVictoryData.ultimate_target, [...internalTruthSet, { proposition: decomposedProposition }]);
+                
+                console.log(`[HUME DEBUG] Opponent victory after Hume decomposes:`, opponentVictoryAfterDecompose);
+                
+                // 분해된 명제가 AI 패배로 이어지는지 시뮬레이션
+                let aiDefeatAfterDecompose = false;
+                if (myVictoryData && myVictoryData.core_goal) {
+                  const myGoalPredicate = myVictoryData.core_goal.predicate;
+                  const contradictoryPredicate = currentLang.contradictoryPredicates[myGoalPredicate] || 
+                    Object.keys(currentLang.contradictoryPredicates).find(key => 
+                      currentLang.contradictoryPredicates[key] === myGoalPredicate
+                    );
+                    
+                  if (contradictoryPredicate) {
+                    const myDefeatCondition = {
+                      type: "atomic",
+                      subject: myVictoryData.core_goal.subject,
+                      predicate: contradictoryPredicate,
+                    };
+                    
+                    // 분해된 명제가 직접 패배 조건인지 또는 패배로 이어지는지 확인
+                    const directDefeatMatch = arePropositionsEqual(decomposedProposition, myDefeatCondition);
+                    const proofBasedDefeatAfterDecompose = aiFindProof(myDefeatCondition, [...internalTruthSet, { proposition: decomposedProposition }]);
+                    
+                    aiDefeatAfterDecompose = directDefeatMatch || proofBasedDefeatAfterDecompose;
+                    console.log(`[HUME DEBUG] AI defeat after decompose:`, aiDefeatAfterDecompose);
+                  }
+                }
+                
+                // 🎯 핵심: 분해된 명제가 상대 승리 조건의 핵심 요소인지 확인
+                const isOpponentCoreGoal = opponentVictoryData && opponentVictoryData.core_goal &&
+                  arePropositionsEqual(decomposedProposition, opponentVictoryData.core_goal);
+                
+                console.log(`[HUME DEBUG] Decomposed proposition is opponent's core goal:`, isOpponentCoreGoal);
+                
+                // 패배 확신 조건들
+                humeDecomposeSimulation = opponentVictoryAfterDecompose || aiDefeatAfterDecompose || isOpponentCoreGoal;
+                
+                console.log(`[HUME DEBUG] Final simulation result - Will lead to defeat:`, humeDecomposeSimulation);
+              }
+              
+              // 기존 즉시 위험 + 새로운 시뮬레이션 결과를 종합하여 감점 결정
+              if (opponentVictoryAfterThis || aiDefeatAfterThis || humeDecomposeSimulation) {
+                let penaltyReason = "";
+                if (opponentVictoryAfterThis) penaltyReason = "opponent immediate victory";
+                else if (aiDefeatAfterThis) penaltyReason = "AI immediate defeat";
+                else if (humeDecomposeSimulation) penaltyReason = "Hume decomposition will lead to defeat";
+                
                 console.warn(
-                  `AI HUME COUNTER-STRATEGY: Penalizing '라면' card after ${penaltyReason} proposition. Hume can decompose this conditional.`
+                  `AI HUME COUNTER-STRATEGY: Penalizing '라면' card after ${penaltyReason}. Hume can decompose this conditional.`
                 );
                 score -= 500000; // 큰 감점이지만 자살 방지보다는 낮게
               } else {
-                console.log(`[HUME DEBUG] Proposition is not immediately dangerous. No penalty applied.`);
+                console.log(`[HUME DEBUG] No immediate danger or decomposition threat detected. No penalty applied.`);
               }
             } else {
               console.log(`[HUME DEBUG] Could not parse proposition on board.`);
             }
           }
+        }
+      }
+
+      // 🔥 추가: 흄 대응 - '라면' 뒤에 고유명사 붙이는 것 감점
+      if (
+        move.type ===
+        (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
+      ) {
+        const opponentPlayer = currentPlayer === "A" ? "B" : "A";
+        const opponentPhilosopherId = opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
+        
+        // 상대가 흄이고 능력을 아직 사용하지 않았는지 확인
+        console.log(`[HUME PROPER NOUN DEBUG] AI considering proper noun '${move.text}'. Opponent: ${opponentPhilosopherId}`);
+        
+        if (opponentPhilosopherId === "hume") {
+          console.log(`[HUME PROPER NOUN DEBUG] Opponent is Hume! Checking ability usage...`);
+          const opponentAbilityState = abilityUsedState[opponentPlayer] || { used: false };
+          console.log(`[HUME PROPER NOUN DEBUG] Hume ability used:`, opponentAbilityState);
+          
+          if (!opponentAbilityState.used) {
+            console.log(`[HUME PROPER NOUN DEBUG] Hume ability not used yet. Checking for '라면' on board...`);
+            console.log(`[HUME PROPER NOUN DEBUG] Current proposition:`, currentProposition.map(c => c && c.card ? c.card.text : 'undefined'));
+            console.log(`[HUME PROPER NOUN DEBUG] Current proposition raw:`, currentProposition);
+            console.log(`[HUME PROPER NOUN DEBUG] If keyword:`, currentLang.keywords.if);
+            
+            // 현재 명제판에 '라면'이 있는지 확인 (올바른 접근 경로)
+            const hasConditionalConnector = currentProposition.some(cardWrapper => 
+              cardWrapper && cardWrapper.card && cardWrapper.card.text === currentLang.keywords.if
+            );
+            
+            // 추가 확인: 명제판을 문자열로 변환해서 '라면' 검색
+            const propAsString = currentProposition.filter(c => c && c.card).map(c => c.card.text).join(' ');
+            const hasConditionalInString = propAsString.includes(currentLang.keywords.if);
+            
+            console.log(`[HUME PROPER NOUN DEBUG] Proposition as string: "${propAsString}"`);
+            console.log(`[HUME PROPER NOUN DEBUG] Has conditional in string:`, hasConditionalInString);
+            
+            const finalHasConditional = hasConditionalConnector || hasConditionalInString;
+            console.log(`[HUME PROPER NOUN DEBUG] Final has conditional:`, finalHasConditional);
+            
+            if (finalHasConditional) {
+              console.warn(
+                `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose the conditional and isolate dangerous propositions.`
+              );
+              score -= 300000; // '라면' 자체보다는 낮지만 여전히 큰 감점
+            } else {
+              console.log(`[HUME PROPER NOUN DEBUG] No '라면' found on board, no penalty applied.`);
+            }
+          } else {
+            console.log(`[HUME PROPER NOUN DEBUG] Hume already used ability, no penalty needed.`);
+          }
+        } else {
+          console.log(`[HUME PROPER NOUN DEBUG] Opponent is not Hume, no penalty applied.`);
         }
       }
 
