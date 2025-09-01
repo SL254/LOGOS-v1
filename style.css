@@ -860,6 +860,20 @@ summary {
   margin: 4px 0;
   font-size: 14px;
 }
+#game-background-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1400px;
+  height: calc(90vh - 140px);
+  transform: translate(-50%, -50%);
+  margin-top: 35px;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #b15139;
+  transition: background-image 0.8s ease-in-out; /* 부드러운 배경 전환 */
+}
+
 .status-bar {
   height: 46px; /* 고정 높이 부여 (값은 적절히 조절) */
   display: flex; /* 내부 요소를 flexbox로 정렬 */
