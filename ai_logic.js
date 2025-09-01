@@ -3170,11 +3170,30 @@ function simulateKuhnsAbility(propIdToChange) {
   );
   if (!newPredicate) return null;
 
-  const newParadigmProposition = {
-    type: "universal",
-    entity: originalPropData.proposition.entity,
-    predicate: newPredicate,
-  };
+  // 명제 타입별로 올바른 속성 구조 생성
+  const originalProp = originalPropData.proposition;
+  let newParadigmProposition;
+  
+  if (originalProp.type === "atomic") {
+    newParadigmProposition = {
+      type: "atomic",
+      subject: originalProp.subject,
+      predicate: newPredicate,
+    };
+  } else if (originalProp.type === "universal" || originalProp.type === "existential") {
+    newParadigmProposition = {
+      type: originalProp.type,
+      entity: originalProp.entity,
+      predicate: newPredicate,
+    };
+  } else {
+    // individual 타입이나 기타 타입 처리
+    newParadigmProposition = {
+      type: originalProp.type,
+      entity: originalProp.entity || originalProp.subject,
+      predicate: newPredicate,
+    };
+  }
 
   const newParadigmPropForList = {
     propId: `sim_${Date.now()}`,
@@ -3261,7 +3280,25 @@ function executeKuhnAbilityCheck(player) {
   if (userMadePropsCount < 15) return null;
 
   const availablePropositions = truePropositions.filter(
-    (p) => p.proposition && p.proposition.type === "universal" && p.propId
+    (p) => {
+      if (!p.proposition || !p.propId) return false;
+      
+      // 최소 단위 명제 타입들: atomic, universal, existential, individual
+      const isAtomicType = ['atomic', 'universal', 'existential', 'individual'].includes(p.proposition.type);
+      if (!isAtomicType) return false;
+      
+      // 연결사로 연결된 복합 명제는 제외
+      if (p.proposition.type === 'conjunction' || p.proposition.type === 'disjunction' || 
+          p.proposition.type === 'conditional' || p.proposition.type === 'negation') {
+        return false;
+      }
+      
+      // '선하다/악하다' 또는 '지혜롭다/어리석다' 술어만 허용
+      const predicate = p.proposition.predicate;
+      const allowedPredicates = ['선하다', '악하다', '지혜롭다', '어리석다', 'good', 'evil', 'wise', 'foolish'];
+      
+      return allowedPredicates.includes(predicate) && getOppositePredicate(predicate) !== null;
+    }
   );
   if (availablePropositions.length === 0) return null;
 
