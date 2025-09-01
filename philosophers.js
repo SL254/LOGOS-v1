@@ -135,8 +135,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/ku_icon.png",
     skill: {
-      ko: "패러다임 전환: 게임당 한 번, 플레이어들이 카드를 놓아 생성한 참 명제가 15개 이상일 때 사용할 수 있습니다. 사유시간에 '모든 A는 선하다/악하다' 혹은 '모든 A는 지혜롭다/어리석다' 명제 하나의 술어를 반대로 바꾸고, 그 명제와 모순되는 명제를 모두 삭제합니다.",
-      en: "Paradigm Shift: Once per game, when 15 or more true propositions have been created by players, during Thinking Time, you may take a universal proposition like 'Every A is good' or 'Every A is wise', change its predicate to the opposite (e.g., 'is evil' or 'is foolish'), and then delete all propositions that contradict this new paradigm.",
+      ko: "패러다임 전환: 게임당 한 번, 플레이어들이 카드를 놓아 생성한 참 명제가 15개 이상일 때 사용할 수 있습니다. 사유시간에 '선하다/악하다' 혹은 '지혜롭다/어리석다'를 가진 최소 단위 명제 하나의 술어를 반대로 바꾸고, 그 명제와 모순되는 명제를 모두 삭제합니다.",
+      en: "Paradigm Shift: Once per game, when 15 or more true propositions have been created by players, during Thinking Time, you may take an atomic proposition with 'good/evil' or 'wise/foolish' predicate, change the predicate to its opposite, and then delete all propositions that contradict this new paradigm.",
     },
   },
   derrida: {
@@ -1239,20 +1239,35 @@ function confirmHumeAbility() {
 }
 
 function activateKuhnAbility(player) {
-  // 1. '모든'으로 시작하는 보편 명제인지 확인합니다.
+  // 1. '선하다/악하다' 또는 '지혜롭다/어리석다'를 가진 최소 단위 명제 확인
   // 2. getOppositePredicate 함수를 이용해 해당 명제의 술어에 반대 개념이 존재하는지 확인합니다.
   const availablePropositions = truePropositions.filter(
-    (p) =>
-      p.proposition &&
-      p.proposition.type === "universal" &&
-      getOppositePredicate(p.proposition.predicate) !== null
+    (p) => {
+      if (!p.proposition) return false;
+      
+      // 최소 단위 명제 타입들: atomic, universal, existential, individual
+      const isAtomicType = ['atomic', 'universal', 'existential', 'individual'].includes(p.proposition.type);
+      if (!isAtomicType) return false;
+      
+      // 연결사로 연결된 복합 명제는 제외
+      if (p.proposition.type === 'conjunction' || p.proposition.type === 'disjunction' || 
+          p.proposition.type === 'conditional' || p.proposition.type === 'negation') {
+        return false;
+      }
+      
+      // '선하다/악하다' 또는 '지혜롭다/어리석다' 술어만 허용
+      const predicate = p.proposition.predicate;
+      const allowedPredicates = ['선하다', '악하다', '지혜롭다', '어리석다', 'good', 'evil', 'wise', 'foolish'];
+      
+      return allowedPredicates.includes(predicate) && getOppositePredicate(predicate) !== null;
+    }
   );
 
   if (availablePropositions.length === 0) {
     showAlert(
       currentLang.langCode === "ko"
-        ? "패러다임을 전환할 보편 명제가 없습니다."
-        : "There are no universal propositions for a paradigm shift."
+        ? "패러다임을 전환할 수 있는 명제가 없습니다. ('선하다/악하다' 또는 '지혜롭다/어리석다' 술어가 필요합니다)"
+        : "There are no propositions available for paradigm shift. (Requires 'good/evil' or 'wise/foolish' predicates)"
     );
     return;
   }
@@ -1336,11 +1351,30 @@ function confirmKuhnAbility() {
     return;
   }
 
-  const newParadigmProposition = {
-    type: "universal",
-    entity: originalPropData.proposition.entity,
-    predicate: newPredicate,
-  };
+  // 명제 타입별로 올바른 속성 구조 생성
+  const originalProp = originalPropData.proposition;
+  let newParadigmProposition;
+  
+  if (originalProp.type === "atomic") {
+    newParadigmProposition = {
+      type: "atomic",
+      subject: originalProp.subject,
+      predicate: newPredicate,
+    };
+  } else if (originalProp.type === "universal" || originalProp.type === "existential") {
+    newParadigmProposition = {
+      type: originalProp.type,
+      entity: originalProp.entity,
+      predicate: newPredicate,
+    };
+  } else {
+    // individual 타입이나 기타 타입 처리
+    newParadigmProposition = {
+      type: originalProp.type,
+      entity: originalProp.entity || originalProp.subject,
+      predicate: newPredicate,
+    };
+  }
 
   const newParadigmPropForList = {
     propId: `prop_${Date.now()}_paradigm`,
