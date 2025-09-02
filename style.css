@@ -2234,7 +2234,7 @@ body::after {
 #character-select-indicator {
   font-size: 20px;
   position: fixed; /* 화면에 고정 */
-  bottom: 30px; /* 하단에서의 거리 (기존 status-bar와 비슷하게) */
+  bottom: 120px; /* 하단에서의 거리 - 더 위로 올림 */
   left: 50%; /* 좌우 중앙 정렬을 위한 설정 */
   transform: translateX(-50%); /* 좌우 중앙 정렬을 위한 설정 */
   z-index: 501; /* 캐릭터 선택 화면(z-index: 500)보다 위에 표시 */
