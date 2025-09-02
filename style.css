@@ -1210,19 +1210,30 @@ summary {
   margin-right: 4px;
 }
 
-.premise-selection li.selected {
+.premise-selection li.selected.stick-top {
   border-image-source: url("assets/images/pre_li_selected.png");
   position: sticky;
-  top: 0;
+  z-index: 10;
+}
+
+.premise-selection li.selected.stick-bottom {
+  border-image-source: url("assets/images/pre_li_selected.png");
+  position: sticky;
   z-index: 10;
 }
 
 /* 가정 의존 항목이 선택됐을 때의 스타일 */
-.premise-selection li.assumption-dependent.selected,
-.premise-selection li.assumption-itself.selected {
+.premise-selection li.assumption-dependent.selected.stick-top,
+.premise-selection li.assumption-itself.selected.stick-top {
   border-image-source: url("assets/images/pre_li_assu_selected.png");
   position: sticky;
-  top: 0;
+  z-index: 10;
+}
+
+.premise-selection li.assumption-dependent.selected.stick-bottom,
+.premise-selection li.assumption-itself.selected.stick-bottom {
+  border-image-source: url("assets/images/pre_li_assu_selected.png");
+  position: sticky;
   z-index: 10;
 }
 
