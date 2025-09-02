@@ -1239,9 +1239,39 @@ function renderModal() {
       propData.label
     }</span> ${propositionToNaturalText(propData.proposition)}`;
 
+    // sticky 위치는 ui-utils.js에서 업데이트됨
+
     premiseList.appendChild(li);
   });
+
+  // 초기 sticky 위치 설정
+  updateStickyPositions();
 }
+
+// 선택된 전제들의 sticky 위치를 업데이트하는 함수
+function updateStickyPositions() {
+  const premiseList = document.getElementById("premise-list");
+  if (!premiseList) return;
+
+  const allItems = premiseList.querySelectorAll('li');
+  let selectedCount = 0;
+
+  allItems.forEach((li) => {
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    if (checkbox && checkbox.checked) {
+      li.classList.add('selected');
+      li.style.top = `${selectedCount * 45}px`;
+      selectedCount++;
+      devLog(`Setting sticky position for selected item: ${selectedCount - 1} * 45 = ${(selectedCount - 1) * 45}px`);
+    } else {
+      li.classList.remove('selected');
+      li.style.top = '0px';
+    }
+  });
+  
+  devLog(`Updated ${selectedCount} selected items with sticky positions`);
+}
+
 function updateConclusionPreview() {
   const titleEl = document.getElementById("conclusion-preview-title");
   const textEl = document.getElementById("conclusion-preview-text");

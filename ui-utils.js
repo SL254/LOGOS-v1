@@ -290,6 +290,11 @@ if (eurekaPremiseList) {
         targetLi.classList.toggle("selected", checkbox.checked);
 
         updateConclusionPreview();
+        
+        // sticky 위치 업데이트
+        if (typeof updateStickyPositions === 'function') {
+          updateStickyPositions();
+        }
       }
     }
   });
