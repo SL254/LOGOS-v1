@@ -1250,11 +1250,9 @@ function renderModal() {
   // 스크롤 이벤트 리스너 추가
   premiseList.removeEventListener('scroll', handleScroll);
   premiseList.removeEventListener('wheel', handleScroll);
-  premiseList.removeEventListener('mousemove', handleScroll);
   
   premiseList.addEventListener('scroll', handleScroll);
   premiseList.addEventListener('wheel', handleScroll);
-  premiseList.addEventListener('mousemove', handleScroll);
   
   // 부모 모달에도 이벤트 추가
   const modal = document.getElementById('eureka-modal');
@@ -1327,8 +1325,23 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
   if (!premiseList) return;
 
   const allItems = premiseList.querySelectorAll('li');
-  const containerRect = passedContainerRect || premiseList.getBoundingClientRect();
-  const containerMiddle = passedContainerMiddle || (containerRect.top + (containerRect.height / 2));
+  
+  // 매개변수가 없으면 올바른 방식으로 계산
+  let containerRect, containerMiddle;
+  if (passedContainerRect && passedContainerMiddle) {
+    containerRect = passedContainerRect;
+    containerMiddle = passedContainerMiddle;
+  } else {
+    containerRect = premiseList.getBoundingClientRect();
+    // 모달 또는 부모 컨테이너의 보이는 영역을 기준으로 계산
+    const modal = document.querySelector('.modal-content');
+    const modalRect = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+    
+    // 실제 보이는 영역 계산
+    const visibleTop = Math.max(containerRect.top, modalRect.top);
+    const visibleBottom = Math.min(containerRect.bottom, modalRect.bottom);
+    containerMiddle = visibleTop + ((visibleBottom - visibleTop) / 2);
+  }
   
   // 선택된 항목들을 위치별로 분류
   const topItems = [];
