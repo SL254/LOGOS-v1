@@ -3203,6 +3203,7 @@ function clearAllAITimeouts() {
 function goToMainMenu() {
   isTestMode = false;
 
+  // 일반적인 경우는 애니메이션 없이 바로 숨김
   document.getElementById("character-selection-screen").classList.add("hidden");
   document.getElementById("character-select-indicator").classList.add("hidden");
   document.getElementById("turn-order-modal").classList.remove("visible");

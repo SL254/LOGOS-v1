@@ -211,9 +211,17 @@ function finalizeSelection() {
 
   setTimeout(() => {
     charIndicator.classList.add("hidden");
-    document
-      .getElementById("character-selection-screen")
-      .classList.add("hidden");
+    const charScreen = document.getElementById("character-selection-screen");
+    
+    // 게임 시작 시에만 애니메이션 적용
+    charScreen.classList.add("closing");
+    
+    // 애니메이션이 끝난 후 완전히 숨김
+    setTimeout(() => {
+      charScreen.classList.add("hidden");
+      charScreen.classList.remove("closing");
+    }, 150); // 0.15초 애니메이션 시간
+    
     document.getElementById("turn-order-modal").classList.remove("visible");
     resetGame(tempSelections);
     updateMainMenuBtnVisibility();

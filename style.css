@@ -2045,7 +2045,20 @@ body::after {
   display: none !important;
 }
 
-/* 캐릭터 선택 화면 애니메이션 */
+/* 캐릭터 선택 화면 사라지는 애니메이션 */
+#character-selection-screen.closing:not(.hidden) #p1-display {
+  animation: slideOutLeft 0.15s ease-in !important;
+}
+
+#character-selection-screen.closing:not(.hidden) .shared-selection-area {
+  animation: slideOutTop 0.15s ease-in !important;
+}
+
+#character-selection-screen.closing:not(.hidden) #p2-display {
+  animation: slideOutRight 0.15s ease-in !important;
+}
+
+/* 캐릭터 선택 화면 들어오는 애니메이션 */
 #character-selection-screen:not(.hidden) #p1-display {
   animation: slideInLeft 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
 }
@@ -2091,6 +2104,33 @@ body::after {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideOutTop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
   }
 }
 
@@ -2302,7 +2342,7 @@ body::after {
 #character-select-indicator {
   font-size: 20px;
   position: fixed; /* 화면에 고정 */
-  bottom: 120px; /* 하단에서의 거리 - 더 위로 올림 */
+  bottom: 160px; /* 하단에서의 거리 - 더 위로 올림 */
   left: 50%; /* 좌우 중앙 정렬을 위한 설정 */
   transform: translateX(-50%); /* 좌우 중앙 정렬을 위한 설정 */
   z-index: 501; /* 캐릭터 선택 화면(z-index: 500)보다 위에 표시 */
