@@ -2046,6 +2046,10 @@ body::after {
 }
 
 /* 캐릭터 선택 화면 사라지는 애니메이션 */
+#character-selection-screen.closing:not(.hidden) {
+  animation: fadeOut 0.15s ease-in !important;
+}
+
 #character-selection-screen.closing:not(.hidden) #p1-display {
   animation: slideOutLeft 0.15s ease-in !important;
 }
@@ -2131,6 +2135,15 @@ body::after {
   }
   to {
     transform: translateY(-100%);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
