@@ -1020,6 +1020,25 @@ summary {
 .modal.visible {
   display: flex;
 }
+
+/* 모달 애니메이션 */
+#eureka-modal.visible .modal-content,
+#ability-modal.visible .modal-content,
+#kant-ability-modal.visible .modal-content {
+  animation: slideDownBounce 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
+}
+
+@keyframes slideDownBounce {
+  0% {
+    transform: translateY(-100%);
+  }
+  85% {
+    transform: translateY(0.5%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 .modal-content {
   padding: 25px;
   box-sizing: border-box;
@@ -2024,6 +2043,55 @@ body::after {
 
 #character-selection-screen.hidden {
   display: none !important;
+}
+
+/* 캐릭터 선택 화면 애니메이션 */
+#character-selection-screen:not(.hidden) #p1-display {
+  animation: slideInLeft 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
+}
+
+#character-selection-screen:not(.hidden) .shared-selection-area {
+  animation: slideInTop 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
+}
+
+#character-selection-screen:not(.hidden) #p2-display {
+  animation: slideInRight 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  85% {
+    transform: translateX(0.5%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+  }
+  85% {
+    transform: translateX(-0.5%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  85% {
+    transform: translateY(0.5%);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .player-display-area {
