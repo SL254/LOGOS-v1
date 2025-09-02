@@ -1339,7 +1339,6 @@ summary {
 }
 #add-assumption-btn:disabled {
   display: none;
-  cursor: not-allowed;
 }
 #cancel-assumption-btn {
   color: black;
