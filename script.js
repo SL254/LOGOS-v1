@@ -1096,6 +1096,11 @@ function showMainMenu() {
 
   document.getElementById("thinking-time-controls").classList.add("hidden");
   document.getElementById("character-select-indicator").classList.add("hidden");
+
+  // 게임 요소들 즉시 숨기기
+  document.getElementById("player-a-hand").innerHTML = "";
+  document.getElementById("player-b-hand").innerHTML = "";
+
   document.getElementById("container").classList.add("ready");
   document.querySelector(".main-center-bg").classList.remove("hidden");
   document.getElementById("credits-btn").classList.remove("hidden");
