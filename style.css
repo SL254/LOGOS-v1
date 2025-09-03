@@ -129,7 +129,7 @@ body.thinking-time-night #true-propositions {
 
 /* 사유 시간 컨트롤 밤 테마 */
 body.thinking-time-night #thinking-time-controls {
-  border-image-source: url("assets/images/papiru_1_night.png");
+  border-image-source: url("assets/images/papiru_night.png");
 }
 
 /* 턴 인디케이터 밤 테마 */
@@ -1428,12 +1428,12 @@ summary {
   justify-content: center;
   gap: 20px;
 
-  /* 기존 배경 이미지 스타일 유지 */
+  /* 현재 명제와 같은 배경 이미지 사용 */
   padding: 15px;
   border-width: 20px;
   border-style: solid;
   border-color: transparent;
-  border-image-source: url("assets/images/papiru_1.png");
+  border-image-source: url("assets/images/papiru.png");
   border-image-slice: 6 fill;
   border-image-repeat: stretch;
   text-align: center;
