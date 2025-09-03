@@ -20,6 +20,7 @@ function showPrompt(message, callback) {
   const input = document.getElementById("prompt-input");
   const confirmBtn = document.getElementById("prompt-confirm-btn");
   const cancelBtn = document.getElementById("prompt-cancel-btn");
+  const hintElement = document.getElementById("prompt-hint");
   input.value = "";
 
   const confirmHandler = () => {
@@ -32,6 +33,7 @@ function showPrompt(message, callback) {
   };
   const cleanup = () => {
     modal.classList.remove("visible");
+    hintElement.style.display = "none";
     confirmBtn.removeEventListener("click", confirmHandler);
     cancelBtn.removeEventListener("click", cancelHandler);
   };
@@ -39,6 +41,7 @@ function showPrompt(message, callback) {
   confirmBtn.addEventListener("click", confirmHandler);
   cancelBtn.addEventListener("click", cancelHandler);
   modal.classList.add("visible");
+  hintElement.style.display = "block";
   input.focus();
 }
 
@@ -48,8 +51,10 @@ function showConfirm(message, onConfirm, onCancel) {
   const input = document.getElementById("prompt-input");
   const confirmBtn = document.getElementById("prompt-confirm-btn");
   const cancelBtn = document.getElementById("prompt-cancel-btn");
+  const hintElement = document.getElementById("prompt-hint");
 
   input.style.display = "none";
+  hintElement.style.display = "none";
   confirmBtn.textContent = currentLang.ui.yesButton;
   cancelBtn.textContent = currentLang.ui.noButton;
 
@@ -67,6 +72,7 @@ function showConfirm(message, onConfirm, onCancel) {
   const cleanup = () => {
     modal.classList.remove("visible");
     input.style.display = "";
+    hintElement.style.display = "none";
     confirmBtn.textContent = currentLang.ui.okButton;
     cancelBtn.textContent = currentLang.ui.cancelButton;
     confirmBtn.removeEventListener("click", confirmHandler);
