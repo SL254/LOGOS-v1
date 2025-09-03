@@ -615,6 +615,7 @@ body.thinking-time-night #proof-review-btn:hover {
   min-height: 120px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 #proposition-display {
@@ -714,6 +715,8 @@ body.thinking-time-night #proof-review-btn:hover {
   border-image-repeat: stretch;
   background-color: transparent; /* 버튼의 배경색을 투명하게 설정 */
   image-rendering: pixelated;
+  position: relative;
+  z-index: 3; /* 사유 시간 컨트롤(z-index: 2)보다 위에 표시 */
 }
 #end-turn-btn:hover:not(:disabled) {
   border-width: 5px; /* 테두리로 사용할 이미지 영역의 두께 */
@@ -1411,8 +1414,10 @@ summary {
 #thinking-time-controls {
   /* 레이아웃 및 위치 설정 */
   position: absolute; /* 겹치도록 설정 */
-  inset: 0; /* 👈 부모 요소를 꽉 채우는 가장 간단한 방법 (top:0; left:0; right:0; bottom:0;) */
-  /* width, height, margin 속성은 제거해도 됩니다. */
+  top: -20px; /* 부모의 border-width만큼 위로 */
+  left: -20px; /* 부모의 border-width만큼 왼쪽으로 */
+  right: -20px; /* 부모의 border-width만큼 오른쪽으로 */
+  bottom: -20px; /* 부모의 border-width만큼 아래로 */
   z-index: 2; /* 다른 요소들 위에 표시 */
   transition: border-image-source 0.8s ease-in-out; /* 부드러운 배경 전환 */
 
