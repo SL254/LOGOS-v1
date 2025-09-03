@@ -1,5 +1,5 @@
 // 배포 시 이 값을 false로 바꾸면 모든 로그가 사라집니다.
-const IS_DEV_MODE = true;
+const IS_DEV_MODE = false;
 
 /**
  * 개발 모드일 때만 콘솔에 로그를 출력하는 함수.

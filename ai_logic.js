@@ -1160,9 +1160,11 @@ function aiTurn() {
           devLog(`[DUPLICATE DEBUG] Is duplicate:`, isDuplicate);
 
           if (isDuplicate) {
-            console.warn(
-              `AI DUPLICATE PREVENTION: Penalizing move '${move.text}' - creates duplicate proposition.`
-            );
+            if (IS_DEV_MODE) {
+              console.warn(
+                `AI DUPLICATE PREVENTION: Penalizing move '${move.text}' - creates duplicate proposition.`
+              );
+            }
             score -= 5; // 미세한 감점으로 무의미한 행동 억제
             devLog(`[DUPLICATE DEBUG] Score after penalty:`, score);
           } else {
@@ -1234,9 +1236,11 @@ function aiTurn() {
               propOnBoard &&
               arePropositionsEqual(propOnBoard, myVictoryData.core_goal)
             ) {
-              console.warn(
-                `AI SUICIDE PREVENTION: Penalizing move '${move.text}' after own win condition + 'then'.`
-              );
+              if (IS_DEV_MODE) {
+                console.warn(
+                  `AI SUICIDE PREVENTION: Penalizing move '${move.text}' after own win condition + 'then'.`
+                );
+              }
               score -= 900000;
             }
           }
@@ -1261,9 +1265,11 @@ function aiTurn() {
           if (!opponentAbilityState.used && currentProposition.length > 0) {
             const lastCard = currentProposition[currentProposition.length - 1];
             if (lastCard.card.text === currentLang.keywords.if) {
-              console.warn(
-                `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose conditional.`
-              );
+              if (IS_DEV_MODE) {
+                console.warn(
+                  `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose conditional.`
+                );
+              }
               score -= 300000;
             }
           }
@@ -1410,9 +1416,11 @@ function aiTurn() {
             };
 
             if (!opponentAbilityState.used) {
-              console.warn(
-                `AI HUME COUNTER-STRATEGY: Additional penalty for '라면' card - Hume can decompose conditional.`
-              );
+              if (IS_DEV_MODE) {
+                console.warn(
+                  `AI HUME COUNTER-STRATEGY: Additional penalty for '라면' card - Hume can decompose conditional.`
+                );
+              }
               score -= 500200; // 기본 가점을 상쇄하고 추가 감점
             }
           }
@@ -1559,13 +1567,15 @@ function aiTurn() {
                 predicate: contradictoryPredicate,
               };
               if (aiFindProof(selfHarmProposition, expandedSet)) {
-                console.warn(
-                  `AI SUICIDE PREVENTION: Move '${
-                    move.text
-                  }' proves '${propositionToNaturalText(
-                    selfHarmProposition
-                  )}', which is self-destructive. Applying massive penalty.`
-                );
+                if (IS_DEV_MODE) {
+                  console.warn(
+                    `AI SUICIDE PREVENTION: Move '${
+                      move.text
+                    }' proves '${propositionToNaturalText(
+                      selfHarmProposition
+                    )}', which is self-destructive. Applying massive penalty.`
+                  );
+                }
                 score -= 1000000;
               }
             }
@@ -2342,11 +2352,13 @@ function executePlatoAbilityCheck(player) {
         )
       ) {
         // 3. 상대방의 승리가 증명된다면, 이 수는 자살 행위이므로 막대한 페널티 부여
-        console.warn(
-          `[Plato AI] SUICIDE PREVENTION: Using ability on '${propositionToNaturalText(
-            originalProp
-          )}' would prove opponent's victory. Massive penalty applied.`
-        );
+        if (IS_DEV_MODE) {
+          console.warn(
+            `[Plato AI] SUICIDE PREVENTION: Using ability on '${propositionToNaturalText(
+              originalProp
+            )}' would prove opponent's victory. Massive penalty applied.`
+          );
+        }
         score -= 999999;
       }
       const myOppositePredicate = myGoalPredicate
@@ -2365,13 +2377,15 @@ function executePlatoAbilityCheck(player) {
         };
 
         if (aiFindProof(myDefeatCondition, verificationResult.expandedSet)) {
-          console.warn(
-            `[Plato AI] SUICIDE PREVENTION (Self Defeat): Using ability on '${propositionToNaturalText(
-              originalProp
-            )}' would prove its own defeat condition '${propositionToNaturalText(
-              myDefeatCondition
-            )}'. Massive penalty applied.`
-          );
+          if (IS_DEV_MODE) {
+            console.warn(
+              `[Plato AI] SUICIDE PREVENTION (Self Defeat): Using ability on '${propositionToNaturalText(
+                originalProp
+              )}' would prove its own defeat condition '${propositionToNaturalText(
+                myDefeatCondition
+              )}'. Massive penalty applied.`
+            );
+          }
           score -= 900000;
         }
       }
