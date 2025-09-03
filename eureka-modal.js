@@ -1020,9 +1020,9 @@ function proveVictory() {
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
         populatePuzzleLevels();
-        document
-          .getElementById("puzzle-level-select-modal")
-          .classList.add("visible");
+        const puzzleModal = document.getElementById("puzzle-level-select-modal");
+        puzzleModal.classList.remove("animate");
+        puzzleModal.classList.add("visible");
       });
     } else {
       showAlert(

@@ -102,9 +102,9 @@ function setupEventListeners() {
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
         populatePuzzleLevels();
-        document
-          .getElementById("puzzle-level-select-modal")
-          .classList.add("visible");
+        const puzzleModal = document.getElementById("puzzle-level-select-modal");
+        puzzleModal.classList.remove("animate");
+        puzzleModal.classList.add("visible");
         return;
       }
 
@@ -151,17 +151,15 @@ function setupEventListeners() {
 
     populatePuzzleLevels();
 
-    document
-      .getElementById("puzzle-level-select-modal")
-      .classList.add("visible");
+    const puzzleModal = document.getElementById("puzzle-level-select-modal");
+    puzzleModal.classList.add("visible", "animate");
   });
 
   document
     .getElementById("close-puzzle-modal-btn")
     .addEventListener("click", () => {
-      document
-        .getElementById("puzzle-level-select-modal")
-        .classList.remove("visible");
+      const puzzleModal = document.getElementById("puzzle-level-select-modal");
+      puzzleModal.classList.remove("visible", "animate");
       showMainMenu();
     });
 
