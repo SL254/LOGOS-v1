@@ -359,8 +359,7 @@ const TEXTS = {
       statusAITurn: "AI is thinking...",
       thinkingTimeStatus: "Thinking Time. Derive new theorems.",
       thinkingTimeTitle: "Thinking Time",
-      thinkingTimeDesc:
-        "Derive new theorems and add them to the list using the 'Add Theorem' button.",
+      thinkingTimeDesc: "Derive new theorems and add them to the list.",
       endThinkingTimeButton: "End Thinking Time & Start Next Round",
       victoryMessage: "Player Wins!",
       victorySubMessage: "Succeeded with a logical proof!",
@@ -488,7 +487,7 @@ const TEXTS = {
       undoLastProposition: "Reverted the last completed proposition.",
       nothingToUndo: "There are no completed propositions to undo.",
       roundEndNoMoves:
-        "Player '{player}' has no valid moves. Entering thinking time.",
+        "Player '{player}' has no valid moves.<br>Entering thinking time.",
       criticalErrorUndo:
         "A critical error occurred while rebuilding the truth set. You may need to restart the game.",
       oneAssumptionOnly: "You can only have one assumption at a time.",
