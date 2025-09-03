@@ -147,6 +147,8 @@ function setupUI() {
     currentLang.ui.okButton;
   document.getElementById("prompt-input").placeholder =
     currentLang.modals.promptInputPlaceholder;
+  document.getElementById("prompt-hint").textContent =
+    currentLang.modals.promptInputHint;
 
   document.getElementById("p1-skill-title").textContent =
     currentLang.ui.skillTitle;
