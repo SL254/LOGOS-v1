@@ -23,7 +23,7 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/socra_icon.png",
     skill: {
-      ko: "무지의 자각: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택하고, 게임에서 제외시킵니다. 그 명제는 게임이 끝날 때까지 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
+      ko: "무지의 지: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 참 명제 목록에서 공리와 승리조건이 아닌 명제를 하나 선택하고, 게임에서 제외시킵니다. 그 명제는 게임이 끝날 때까지 양 플레이어 모두 논증의 전제로 사용할 수 없습니다.",
       en: "Awareness of Ignorance: Once per game, during Thinking Time, you may choose one proposition from the list of true propositions that is not an axiom or a win condition. For the rest of the game, that proposition cannot be used as a premise by either player.",
     },
   },
@@ -1241,27 +1241,46 @@ function confirmHumeAbility() {
 function activateKuhnAbility(player) {
   // 1. '선하다/악하다' 또는 '지혜롭다/어리석다'를 가진 최소 단위 명제 확인
   // 2. getOppositePredicate 함수를 이용해 해당 명제의 술어에 반대 개념이 존재하는지 확인합니다.
-  const availablePropositions = truePropositions.filter(
-    (p) => {
-      if (!p.proposition) return false;
-      
-      // 최소 단위 명제 타입들: atomic, universal, existential, individual
-      const isAtomicType = ['atomic', 'universal', 'existential', 'individual'].includes(p.proposition.type);
-      if (!isAtomicType) return false;
-      
-      // 연결사로 연결된 복합 명제는 제외
-      if (p.proposition.type === 'conjunction' || p.proposition.type === 'disjunction' || 
-          p.proposition.type === 'conditional' || p.proposition.type === 'negation') {
-        return false;
-      }
-      
-      // '선하다/악하다' 또는 '지혜롭다/어리석다' 술어만 허용
-      const predicate = p.proposition.predicate;
-      const allowedPredicates = ['선하다', '악하다', '지혜롭다', '어리석다', 'good', 'evil', 'wise', 'foolish'];
-      
-      return allowedPredicates.includes(predicate) && getOppositePredicate(predicate) !== null;
+  const availablePropositions = truePropositions.filter((p) => {
+    if (!p.proposition) return false;
+
+    // 최소 단위 명제 타입들: atomic, universal, existential, individual
+    const isAtomicType = [
+      "atomic",
+      "universal",
+      "existential",
+      "individual",
+    ].includes(p.proposition.type);
+    if (!isAtomicType) return false;
+
+    // 연결사로 연결된 복합 명제는 제외
+    if (
+      p.proposition.type === "conjunction" ||
+      p.proposition.type === "disjunction" ||
+      p.proposition.type === "conditional" ||
+      p.proposition.type === "negation"
+    ) {
+      return false;
     }
-  );
+
+    // '선하다/악하다' 또는 '지혜롭다/어리석다' 술어만 허용
+    const predicate = p.proposition.predicate;
+    const allowedPredicates = [
+      "선하다",
+      "악하다",
+      "지혜롭다",
+      "어리석다",
+      "good",
+      "evil",
+      "wise",
+      "foolish",
+    ];
+
+    return (
+      allowedPredicates.includes(predicate) &&
+      getOppositePredicate(predicate) !== null
+    );
+  });
 
   if (availablePropositions.length === 0) {
     showAlert(
@@ -1354,14 +1373,17 @@ function confirmKuhnAbility() {
   // 명제 타입별로 올바른 속성 구조 생성
   const originalProp = originalPropData.proposition;
   let newParadigmProposition;
-  
+
   if (originalProp.type === "atomic") {
     newParadigmProposition = {
       type: "atomic",
       subject: originalProp.subject,
       predicate: newPredicate,
     };
-  } else if (originalProp.type === "universal" || originalProp.type === "existential") {
+  } else if (
+    originalProp.type === "universal" ||
+    originalProp.type === "existential"
+  ) {
     newParadigmProposition = {
       type: originalProp.type,
       entity: originalProp.entity,

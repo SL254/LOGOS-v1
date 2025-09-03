@@ -62,7 +62,7 @@ const TEXTS = {
       useAbilityButton: "능력 사용",
       platoAbilityTitle: "이데아 회상",
       platoConfirmButton: "이 명제를 보편화하기",
-      socratesAbilityTitle: "무지의 자각",
+      socratesAbilityTitle: "무지의 지",
       socratesConfirmButton: "이 명제를 게임에서 제외",
       wittgensteinAbilityTitle: "사다리 걷어차기",
       wittgensteinConfirmButton: "정리 도출 및 전제 삭제",
@@ -77,7 +77,7 @@ const TEXTS = {
       platoAbilityDescription:
         "[이데아 회상] 능력으로 '{proposition}' 명제를 도출했습니다.",
       socratesAbilityDescription:
-        "[무지의 자각] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
+        "[무지의 지] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
       wittgensteinAbilityTitle: "사다리 걷어차기",
       wittgensteinConfirmButton: "정리 도출 및 전제 삭제",
       vsAIBattleButton: "AI 대전", // AI 대전 버튼
@@ -91,7 +91,7 @@ const TEXTS = {
       platoAbilityDescription:
         "[이데아 회상] 능력으로 '{proposition}' 명제를 도출했습니다.",
       socratesAbilityDescription:
-        "[무지의 자각] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
+        "[무지의 지] 능력으로 '{proposition}' 명제를 게임에서 제외합니다.",
       descartesAbilityDescription:
         "[방법적 회의] 능력으로 '{proposition}' 명제를 참 목록에서 삭제했습니다.",
       humeAbilityDescription:

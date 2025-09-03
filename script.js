@@ -3015,7 +3015,7 @@ function render() {
     if (isDisabled) {
       li.textContent +=
         currentLang.langCode === "ko"
-          ? " (무지의 자각)"
+          ? " (무지의 지)"
           : " (Awareness of Ignorance)";
     }
 
