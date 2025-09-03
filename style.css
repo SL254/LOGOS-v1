@@ -1028,11 +1028,6 @@ summary {
   animation: slideDownBounce 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
 }
 
-/* 퍼즐 레벨 선택 모달 애니메이션 - animate 클래스가 있을 때만 적용 */
-#puzzle-level-select-modal.visible.animate .shared-selection-area {
-  animation: slideDownBounce 0.35s cubic-bezier(0.68, 0, 0.32, 1.1);
-}
-
 @keyframes slideDownBounce {
   0% {
     transform: translateY(-100%);
