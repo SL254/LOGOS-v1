@@ -1081,7 +1081,7 @@ function initializeGame(lang) {
   TEXTS.en.tutorial = TUTORIAL_TEXTS.en;
 
   gamestate.fullDeck = gamestate.currentLang.cards;
-  cardTypeOrder = gamestate.currentLang.cardTypes;
+  gamestate.cardTypeOrder = gamestate.currentLang.cardTypes;
 
   // 언어 모달은 이제 기본적으로 숨겨져 있음
   setupUI();
@@ -2621,10 +2621,14 @@ function render() {
   handA_El.innerHTML = "";
   handB_El.innerHTML = "";
   playerA_Hand.sort(
-    (a, b) => cardTypeOrder.indexOf(a.type) - cardTypeOrder.indexOf(b.type)
+    (a, b) =>
+      gamestate.cardTypeOrder.indexOf(a.type) -
+      gamestate.cardTypeOrder.indexOf(b.type)
   );
   playerB_Hand.sort(
-    (a, b) => cardTypeOrder.indexOf(a.type) - cardTypeOrder.indexOf(b.type)
+    (a, b) =>
+      gamestate.cardTypeOrder.indexOf(a.type) -
+      gamestate.cardTypeOrder.indexOf(b.type)
   );
   let lastTypeA = null;
   playerA_Hand.forEach((card) => {

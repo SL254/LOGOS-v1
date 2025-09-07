@@ -1622,7 +1622,9 @@ function activateKantAbility(player) {
       hand.push(cardToReturn);
       // 손패 정렬을 다시 해주는 것이 좋습니다.
       hand.sort(
-        (a, b) => cardTypeOrder.indexOf(a.type) - cardTypeOrder.indexOf(b.type)
+        (a, b) =>
+          gamestate.cardTypeOrder.indexOf(a.type) -
+          gamestate.cardTypeOrder.indexOf(b.type)
       );
       renderKantModal(player);
     }
@@ -1637,7 +1639,9 @@ function activateKantAbility(player) {
       hand.push(...kantProposition);
       kantProposition = [];
       hand.sort(
-        (a, b) => cardTypeOrder.indexOf(a.type) - cardTypeOrder.indexOf(b.type)
+        (a, b) =>
+          gamestate.cardTypeOrder.indexOf(a.type) -
+          gamestate.cardTypeOrder.indexOf(b.type)
       );
     }
     modal.classList.remove("visible");

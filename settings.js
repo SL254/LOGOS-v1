@@ -62,7 +62,7 @@ function changeLanguage(newLang) {
 
   // 카드 덱 업데이트
   gamestate.fullDeck = gamestate.currentLang.cards;
-  cardTypeOrder = gamestate.currentLang.cardTypes;
+  gamestate.cardTypeOrder = gamestate.currentLang.cardTypes;
 
   // UI 텍스트 업데이트
   setupUI();
