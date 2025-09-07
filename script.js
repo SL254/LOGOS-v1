@@ -1663,7 +1663,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   // 게임 초기화 시 밤 테마 제거
   document.body.classList.remove("thinking-time-night");
 
-  socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
+  gamestate.socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
   victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
 
   // 승리 스타일 초기화
@@ -3017,7 +3017,9 @@ function render() {
     // 이제 propData에 ID가 있는지, 그리고 그 ID가 비활성화 목록에 있는지 확인합니다.
     const isDisabled =
       propData.propId &&
-      socratesDisabledProps.some((dp) => dp.propId === propData.propId);
+      gamestate.socratesDisabledProps.some(
+        (dp) => dp.propId === propData.propId
+      );
 
     if (isDisabled) {
       li.classList.add("socrates-disabled");

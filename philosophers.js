@@ -298,7 +298,7 @@ function activateSocratesAbility(player) {
     if (!isTargetType) return false;
 
     // 2. 해당 명제가 이미 비활성화 목록에 있는지 확인 (새로운 조건)
-    const isDisabled = socratesDisabledProps.some(
+    const isDisabled = gamestate.socratesDisabledProps.some(
       (disabledProp) => disabledProp.propId === p.propId
     );
 
@@ -358,9 +358,9 @@ function confirmSocratesAbility() {
 
   const selectedPropId = selectedRadio.value;
 
-  // socratesDisabledProps 배열에는 이제 propId만 저장합니다.
+  // gamestate.socratesDisabledProps 배열에는 이제 propId만 저장합니다.
   // 더 이상 proposition 객체를 저장할 필요가 없습니다.
-  socratesDisabledProps.push({
+  gamestate.socratesDisabledProps.push({
     propId: selectedPropId,
   });
 
@@ -511,7 +511,9 @@ function activateWittgensteinAbility(player) {
   ].filter(
     (propData) =>
       !propData.propId ||
-      !socratesDisabledProps.some((dp) => dp.propId === propData.propId)
+      !gamestate.socratesDisabledProps.some(
+        (dp) => dp.propId === propData.propId
+      )
   );
 
   // 공리들을 그룹별로 분류하고 순서대로 추가 (openEurekaModal과 동일)

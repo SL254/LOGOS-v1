@@ -38,9 +38,11 @@ function openEurekaModal() {
       .filter((p) => p.proposition),
   ].filter(
     (propData) =>
-      // ✅ propData에 propId가 있고, 그 ID가 socratesDisabledProps 배열에 포함되지 않은 경우만 true를 반환
+      // ✅ propData에 propId가 있고, 그 ID가 gamestate.socratesDisabledProps 배열에 포함되지 않은 경우만 true를 반환
       !propData.propId ||
-      !socratesDisabledProps.some((dp) => dp.propId === propData.propId)
+      !gamestate.socratesDisabledProps.some(
+        (dp) => dp.propId === propData.propId
+      )
   );
 
   // 공리들을 그룹별로 분류하고 순서대로 추가

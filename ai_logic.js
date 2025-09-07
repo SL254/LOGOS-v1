@@ -2106,7 +2106,7 @@ function aiTurn() {
 
 function getTemporaryUsableTruths() {
   // '무지의 지'이 사용되지 않았다면, AI도 gamestate.internalTruthSet을 그대로 씁니다.
-  if (socratesDisabledProps.length === 0) {
+  if (gamestate.socratesDisabledProps.length === 0) {
     return gamestate.internalTruthSet;
   }
 
@@ -2115,7 +2115,8 @@ function getTemporaryUsableTruths() {
   // 1. 화면의 참 명제 목록에서 비활성화된 명제를 먼저 제외합니다.
   const filteredUserMadeProps = gamestate.truePropositions.filter(
     (p) =>
-      !p.propId || !socratesDisabledProps.some((dp) => dp.propId === p.propId)
+      !p.propId ||
+      !gamestate.socratesDisabledProps.some((dp) => dp.propId === p.propId)
   );
 
   // 2. 공리와 필터링된 명제를 합쳐 AI가 사용할 최종 전제 목록을 만듭니다.
@@ -2179,7 +2180,8 @@ function aiDeclareEureka() {
     // 소크라테스 능력으로 비활성화된 명제를 제외한 순수 전제 목록 생성
     const activePropositions = gamestate.truePropositions.filter(
       (p) =>
-        !p.propId || !socratesDisabledProps.some((dp) => dp.propId === p.propId)
+        !p.propId ||
+        !gamestate.socratesDisabledProps.some((dp) => dp.propId === p.propId)
     );
 
     // 공리와 활성화된 명제들만 모아서 '순수한 문제집'을 만듦
@@ -2724,7 +2726,7 @@ function executeSocratesAbilityCheck(player) {
     const isTargetType = p.type === "user-made" || p.type === "theorem";
     if (!isTargetType || !p.propId) return false;
 
-    const isDisabled = socratesDisabledProps.some(
+    const isDisabled = gamestate.socratesDisabledProps.some(
       (disabledProp) => disabledProp.propId === p.propId
     );
     return !isDisabled; // 비활성화되지 않은 것만 true
@@ -2900,7 +2902,7 @@ function executeSocratesAbilityCheck(player) {
   }
 
   gamestate.abilityUsedState[player].used = true;
-  socratesDisabledProps.push({
+  gamestate.socratesDisabledProps.push({
     propId: bestCandidate.propData.propId,
   });
 
