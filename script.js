@@ -1476,7 +1476,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       proposition: parsePropositionFromString(str),
     }))
     .filter((a) => a.proposition);
-  internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+  gamestate.internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
 
   const { if: ifKeyword, wins, and } = gamestate.currentLang.keywords;
 
@@ -1503,7 +1503,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       predicate: predicateA,
     },
   });
-  if (parsedVictoryA) internalTruthSet.push(parsedVictoryA);
+  if (parsedVictoryA) gamestate.internalTruthSet.push(parsedVictoryA);
 
   const predicateB =
     testConfig?.victoryB ||
@@ -1528,7 +1528,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       predicate: predicateB,
     },
   });
-  if (parsedVictoryB) internalTruthSet.push(parsedVictoryB);
+  if (parsedVictoryB) gamestate.internalTruthSet.push(parsedVictoryB);
 
   // 5. 마르크스 특별 승리 조건 추가
   const setupMarxVictory = (player, subject) => {
@@ -1559,7 +1559,7 @@ function setupGame(selectedCharacters, testConfig = null) {
           predicate: revolutionPredicateCard.text,
         },
       });
-      internalTruthSet.push(parsedMarxVictory);
+      gamestate.internalTruthSet.push(parsedMarxVictory);
     } else {
       console.error(
         "CRITICAL: Failed to parse Marx's victory string.",
@@ -1586,7 +1586,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       if (parsed) {
         const verificationResult = verifyAndExpandTruths(
           parsed,
-          internalTruthSet
+          gamestate.internalTruthSet
         );
         if (verificationResult.success) {
           gamestate.truePropositions.push({
@@ -1596,7 +1596,7 @@ function setupGame(selectedCharacters, testConfig = null) {
             proposition: parsed,
             original_cards: [],
           });
-          internalTruthSet = verificationResult.expandedSet;
+          gamestate.internalTruthSet = verificationResult.expandedSet;
         } else {
           alert(
             `입력한 초기 참 명제 "${str}"가 기존 공리 또는 다른 명제와 모순되어 추가할 수 없습니다.`
@@ -2193,7 +2193,7 @@ function completeProposition() {
 
   if (verificationResult.success) {
     // 3. 논리적으로 참임이 증명되었으므로, 명제를 추가합니다.
-    internalTruthSet = verificationResult.expandedSet;
+    gamestate.internalTruthSet = verificationResult.expandedSet;
 
     // 추가할 명제 객체를 기본 형태로 생성합니다.
     const propToAdd = {
@@ -2304,7 +2304,7 @@ function undoProposition() {
         )
         .map((p) => p.proposition);
       for (const prop of propositionsToReverify) {
-        internalTruthSet = JSON.parse(JSON.stringify(newTruthSet));
+        gamestate.internalTruthSet = JSON.parse(JSON.stringify(newTruthSet));
         const verificationResult = verifyAndExpandTruths(prop);
         if (verificationResult.success) {
           newTruthSet = verificationResult.expandedSet;
@@ -2322,7 +2322,7 @@ function undoProposition() {
           return;
         }
       }
-      internalTruthSet = newTruthSet;
+      gamestate.internalTruthSet = newTruthSet;
       gamestate.currentProposition = propToUndo.original_cards;
       gamestate.currentPlayer =
         gamestate.currentProposition[
@@ -2460,7 +2460,7 @@ function endGame(winner, winningProposition) {
         predicate: predicateText,
       };
 
-      if (aiFindProof(targetProposition, internalTruthSet)) {
+      if (aiFindProof(targetProposition, gamestate.internalTruthSet)) {
         const subjectId =
           subjectText === gamestate.currentLang.keywords.socrates
             ? "socrates"

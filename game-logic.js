@@ -259,7 +259,7 @@ function isContradictory(newProp, allTrueProps) {
 
 function verifyAndExpandTruths(
   newProposition,
-  initialTruths = internalTruthSet
+  initialTruths = gamestate.internalTruthSet
 ) {
   let knownTruths = [...initialTruths];
 

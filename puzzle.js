@@ -421,11 +421,14 @@ function startPuzzle(levelNum, levelData) {
   });
 
   // 3. 내부 진리 집합 재구성
-  internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+  gamestate.internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   gamestate.truePropositions.forEach((p) =>
-    internalTruthSet.push(p.proposition)
+    gamestate.internalTruthSet.push(p.proposition)
   );
-  internalTruthSet = verifyAndExpandTruths(null, internalTruthSet).expandedSet;
+  gamestate.internalTruthSet = verifyAndExpandTruths(
+    null,
+    gamestate.internalTruthSet
+  ).expandedSet;
 
   // 4. 유레카 모달 바로 열기
   openEurekaModal();

@@ -958,7 +958,7 @@ function addTheoremsToList() {
         round: gamestate.currentRound,
         proposition: theoremData.proposition,
       });
-      internalTruthSet = verificationResult.expandedSet;
+      gamestate.internalTruthSet = verificationResult.expandedSet;
       theoremsAdded++;
     } else {
       console.error(
@@ -1151,7 +1151,7 @@ function proveVictory() {
     for (const theoremData of newTheorems) {
       const verificationResult = verifyAndExpandTruths(theoremData.proposition);
       if (verificationResult.success) {
-        internalTruthSet = verificationResult.expandedSet;
+        gamestate.internalTruthSet = verificationResult.expandedSet;
       } else {
         console.error(
           "치명적 오류: 승리 증명에 사용된 정리가 기존 사실과 모순됩니다.",

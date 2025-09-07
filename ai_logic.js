@@ -69,7 +69,7 @@ function generateAndScorePlans() {
   const goalPredicate = myVictoryData.core_goal.predicate;
 
   // '모든 [개체]는 ...' 이 이미 참 명제 목록에 있는 경우만 찾습니다.
-  const allUniversalProps = internalTruthSet.filter(
+  const allUniversalProps = gamestate.internalTruthSet.filter(
     (p) => p.type === "universal"
   );
   if (allUniversalProps.length === 0) return null;
@@ -98,7 +98,9 @@ function generateAndScorePlans() {
       // 그 명제가 아직 참이 아니라면, 이것을 최우선 계획으로 삼습니다.
       if (
         neededProp &&
-        !internalTruthSet.some((p) => arePropositionsEqual(p, neededProp))
+        !gamestate.internalTruthSet.some((p) =>
+          arePropositionsEqual(p, neededProp)
+        )
       ) {
         return {
           name: `FINISH_HIM_${entityText}`,
@@ -232,7 +234,7 @@ function aiThinkingTimeTurn() {
   }
 }
 function generateCandidateTheorems() {
-  const knownTruths = [...internalTruthSet];
+  const knownTruths = [...gamestate.internalTruthSet];
   const candidates = new Map(); // Map을 사용해 이번 턴에 중복 생성되는 것만 막습니다.
 
   // 후보 목록에 '새로운' 정리만 추가하던 기존 로직을 수정합니다.
@@ -384,7 +386,7 @@ function scoreCandidateTheorems(candidates) {
       }
     }
 
-    const simulatedTruths = [...internalTruthSet, candidate];
+    const simulatedTruths = [...gamestate.internalTruthSet, candidate];
     if (aiFindProof(opponentUltimateGoal, simulatedTruths)) {
       score -= 2000;
     }
@@ -480,7 +482,7 @@ function isBoardDangerous(opponentVictoryData) {
   }
 
   // 위협 유형 2: 이 명제를 참으로 인정할 경우, 상대의 승리가 '추론 가능'해지는 경우
-  const simulatedTruths = [...internalTruthSet, parsedProp];
+  const simulatedTruths = [...gamestate.internalTruthSet, parsedProp];
   if (aiFindProof(opponentVictoryData.ultimate_target, simulatedTruths)) {
     devLog("Threat Detected (Type 2: Inferred Defeat)");
     return parsedProp;
@@ -657,7 +659,7 @@ function checkForGuaranteedWinMove() {
       // 패턴 2: (참인 명제) 라면 [이름]
       if (
         secondLastCardInfo.card.text === ifKeyword &&
-        aiFindProof(parsedFirstPart, internalTruthSet)
+        aiFindProof(parsedFirstPart, gamestate.internalTruthSet)
       ) {
         isWinningOpportunity = true;
       }
@@ -667,7 +669,7 @@ function checkForGuaranteedWinMove() {
           type: "negation",
           proposition: parsedFirstPart,
         };
-        if (aiFindProof(negationOfFirstPart, internalTruthSet)) {
+        if (aiFindProof(negationOfFirstPart, gamestate.internalTruthSet)) {
           isWinningOpportunity = true;
         }
       }
@@ -803,7 +805,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   if (depth > 5) return; // 탐색 깊이 제한
 
   // 기저 조건 1: 목표가 이미 참으로 증명되었다면, 이 경로는 완전한 계획입니다.
-  if (internalTruthSet.some((p) => arePropositionsEqual(p, goal))) {
+  if (gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, goal))) {
     allPlans.push({ steps: [...path] }); // 더 이상 하위 목표가 필요 없습니다.
     return;
   }
@@ -830,7 +832,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // **재귀 단계**: 다양한 추론 규칙을 역으로 적용하여 하위 목표를 찾습니다.
 
   // 1. 전건 긍정(Modus Ponens) 역추적
-  const modusPonensBridges = internalTruthSet.filter(
+  const modusPonensBridges = gamestate.internalTruthSet.filter(
     (p) => p.type === "conditional" && arePropositionsEqual(p.right, goal)
   );
   for (const bridge of modusPonensBridges) {
@@ -841,7 +843,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // 2. 후건 부정(Modus Tollens) 역추적
   if (goal.type === "negation") {
     const p = goal.proposition; // goal = ~p
-    const modusTollensBridges = internalTruthSet.filter(
+    const modusTollensBridges = gamestate.internalTruthSet.filter(
       (prop) =>
         prop.type === "conditional" && arePropositionsEqual(prop.left, p)
     );
@@ -852,7 +854,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   }
 
   // 3. 선언적 삼단논법(Disjunctive Syllogism) 역추적
-  const disjunctiveBridges = internalTruthSet.filter(
+  const disjunctiveBridges = gamestate.internalTruthSet.filter(
     (p) => p.type === "disjunction"
   );
   for (const bridge of disjunctiveBridges) {
@@ -872,7 +874,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
 
   // 4. 보편 적용(Universal Application) 역추적
   if (goal.type === "atomic") {
-    const universalBridges = internalTruthSet.filter(
+    const universalBridges = gamestate.internalTruthSet.filter(
       (p) => p.type === "universal" && p.predicate === goal.predicate
     );
     for (const bridge of universalBridges) {
@@ -979,10 +981,10 @@ function aiTurn() {
     "color: blue; font-weight: bold; font-size: 1.2em;"
   );
   devLog(
-    "%c1. AI's Knowledge Base (internalTruthSet):",
+    "%c1. AI's Knowledge Base (gamestate.internalTruthSet):",
     "color: green; font-weight: bold;"
   );
-  devLog(internalTruthSet.map((p) => propositionToNaturalText(p)));
+  devLog(gamestate.internalTruthSet.map((p) => propositionToNaturalText(p)));
   devLog(
     "%c2. Proposition on Board to be Evaluated:",
     "color: green; font-weight: bold;"
@@ -1008,7 +1010,7 @@ function aiTurn() {
     if (propOnBoard && propOnBoard.type === "negation") {
       const newTruthFromDoubleNegation = propOnBoard.proposition;
       const hypotheticalTruths = [
-        ...internalTruthSet,
+        ...gamestate.internalTruthSet,
         newTruthFromDoubleNegation,
       ];
       const myUltimateTarget = myVictoryData.ultimate_target;
@@ -1232,7 +1234,7 @@ function aiTurn() {
 
           // 2. 필승 확인: 이 수로 즉시 이길 수 있는지 먼저 확인합니다.
           const hypotheticalTruths = [
-            ...internalTruthSet,
+            ...gamestate.internalTruthSet,
             normalizedResultingProp,
           ];
           if (
@@ -1361,7 +1363,7 @@ function aiTurn() {
             if (parsedFirstPart) {
               if (
                 lastCardInfo.card.text === ifKeyword &&
-                aiFindProof(parsedFirstPart, internalTruthSet)
+                aiFindProof(parsedFirstPart, gamestate.internalTruthSet)
               ) {
                 isTrap = true;
               } else if (lastCardInfo.card.text === orKeyword) {
@@ -1369,7 +1371,9 @@ function aiTurn() {
                   type: "negation",
                   proposition: parsedFirstPart,
                 };
-                if (aiFindProof(negationOfFirstPart, internalTruthSet)) {
+                if (
+                  aiFindProof(negationOfFirstPart, gamestate.internalTruthSet)
+                ) {
                   isTrap = true;
                 }
               }
@@ -1772,7 +1776,7 @@ function aiTurn() {
       if (parsedHypothetical) {
         const verificationResult = verifyAndExpandTruths(
           parsedHypothetical,
-          internalTruthSet
+          gamestate.internalTruthSet
         );
         if (verificationResult.success) {
           const expandedSet = verificationResult.expandedSet;
@@ -2083,9 +2087,9 @@ function aiTurn() {
 }
 
 function getTemporaryUsableTruths() {
-  // '무지의 지'이 사용되지 않았다면, AI도 internalTruthSet을 그대로 씁니다.
+  // '무지의 지'이 사용되지 않았다면, AI도 gamestate.internalTruthSet을 그대로 씁니다.
   if (socratesDisabledProps.length === 0) {
-    return internalTruthSet;
+    return gamestate.internalTruthSet;
   }
 
   // --- '무지의 지'이 사용된 경우, AI의 지식을 재구성합니다. ---
@@ -2112,7 +2116,7 @@ function getTemporaryUsableTruths() {
     return expandedSet;
   } else {
     console.error("AI: Truth set reconstruction failed.");
-    return internalTruthSet; // 오류 시 안전하게 기존 값 반환
+    return gamestate.internalTruthSet; // 오류 시 안전하게 기존 값 반환
   }
 }
 function aiDeclareEureka() {
@@ -2175,7 +2179,10 @@ function aiDeclareEureka() {
 
   return false;
 }
-function aiFindProof(targetProposition, initialTruths = internalTruthSet) {
+function aiFindProof(
+  targetProposition,
+  initialTruths = gamestate.internalTruthSet
+) {
   let knownTruths = [...initialTruths];
   let newTruthsFoundInIteration = true;
   let iterations = 0;
@@ -2493,7 +2500,7 @@ function isPlanTooRisky(path, perspectivePlayer) {
   const finalStep = path[path.length - 1];
   const { success, expandedSet } = verifyAndExpandTruths(
     finalStep,
-    internalTruthSet
+    gamestate.internalTruthSet
   );
 
   if (!success) return true; // 계획 자체가 모순을 일으키면 위험
@@ -2577,7 +2584,7 @@ function executePlatoAbilityCheck(player) {
 
     const verificationResult = verifyAndExpandTruths(
       universalProp,
-      internalTruthSet
+      gamestate.internalTruthSet
     );
 
     if (!verificationResult.success) {
@@ -2665,10 +2672,10 @@ function executePlatoAbilityCheck(player) {
 
   const finalVerification = verifyAndExpandTruths(
     bestCandidate.newProp,
-    internalTruthSet
+    gamestate.internalTruthSet
   );
   if (finalVerification.success) {
-    internalTruthSet = finalVerification.expandedSet;
+    gamestate.internalTruthSet = finalVerification.expandedSet;
   } else {
     console.error(
       "AI Plato Ability CRITICAL: Contradiction after final check."
@@ -2715,7 +2722,7 @@ function executeSocratesAbilityCheck(player) {
   );
   if (!myVictoryData || !opponentVictoryData) return null;
 
-  const internalTruthSet = getTemporaryUsableTruths();
+  gamestate.internalTruthSet = getTemporaryUsableTruths();
 
   // 3. 제거할 후보 명제들의 위협 점수 계산
 
@@ -2761,10 +2768,10 @@ function executeSocratesAbilityCheck(player) {
     // --- PRIORITY 1: 패배 임박 상황 방어 ---
     const opponentWinsWithCurrentTruths = aiFindProof(
       opponentVictoryData.ultimate_target,
-      internalTruthSet
+      gamestate.internalTruthSet
     );
     if (opponentWinsWithCurrentTruths) {
-      const tempTruthSetWithoutCandidate = internalTruthSet.filter(
+      const tempTruthSetWithoutCandidate = gamestate.internalTruthSet.filter(
         (p) => !arePropositionsEqual(p, candidateProp)
       );
       const opponentStillWins = aiFindProof(
@@ -2804,7 +2811,7 @@ function executeSocratesAbilityCheck(player) {
       }
     }
 
-    const otherTruthsOnBoard = internalTruthSet.filter(
+    const otherTruthsOnBoard = gamestate.internalTruthSet.filter(
       (p) => !arePropositionsEqual(p, candidateProp)
     );
 
@@ -3008,8 +3015,8 @@ function executeDescartesAbilityCheck(player) {
     }
   }
 
-  // ★★★ 전역 변수인 'internalTruthSet'에 최종 결과를 할당합니다.
-  internalTruthSet = newTruthSet;
+  // ★★★ 전역 변수인 'gamestate.internalTruthSet'에 최종 결과를 할당합니다.
+  gamestate.internalTruthSet = newTruthSet;
 
   return {
     type: "ability",
@@ -3060,7 +3067,7 @@ function executeHumeAbilityCheck(player) {
     const { left, right } = originalProp;
 
     // --- 2. 알아서 분해되는 명제 거르기 (데리다 로직과 동일) ---
-    if (aiFindProof(originalProp.left, internalTruthSet)) {
+    if (aiFindProof(originalProp.left, gamestate.internalTruthSet)) {
       continue;
     }
 
@@ -3173,7 +3180,7 @@ function executeHumeAbilityCheck(player) {
     },
   ];
   gamestate.truePropositions.push(...newProps);
-  internalTruthSet = bestCandidate.finalTruthSet;
+  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
   return {
@@ -3396,7 +3403,7 @@ function executeWittgensteinAbilityCheck(player) {
           source: "wittgenstein_ability",
         });
 
-        internalTruthSet = finalTruthSet; // 재구성된 진리 집합으로 업데이트
+        gamestate.internalTruthSet = finalTruthSet; // 재구성된 진리 집합으로 업데이트
 
         return {
           type: "ability",
@@ -3519,7 +3526,7 @@ function executeKuhnsAbility(propIdToChange, player) {
   }
 
   gamestate.truePropositions = simResult.finalPropList;
-  internalTruthSet = simResult.finalTruthSet;
+  gamestate.internalTruthSet = simResult.finalTruthSet;
 
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
@@ -3710,7 +3717,7 @@ function executeDerridaAbilityCheck(player) {
     // --- 1. 알아서 분해되는 명제 거르기 (전건 긍정) ---
     if (originalProp.type === "conditional") {
       // (참인 명제) -> A 형태인지 검사
-      if (aiFindProof(originalProp.left, internalTruthSet)) {
+      if (aiFindProof(originalProp.left, gamestate.internalTruthSet)) {
         continue; // 이미 참인 조건이므로, 일반 추론으로도 분해 가능. 능력 낭비 방지.
       }
     }
@@ -3838,7 +3845,7 @@ function executeDerridaAbilityCheck(player) {
   gamestate.truePropositions.push(...newProps);
 
   // 최종 진리 집합으로 업데이트
-  internalTruthSet = bestCandidate.finalTruthSet;
+  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
   return {
@@ -3919,7 +3926,7 @@ function executeKantAbilityCheck(player) {
   for (const candidate of candidatePropositions) {
     const verificationResult = verifyAndExpandTruths(
       candidate,
-      internalTruthSet
+      gamestate.internalTruthSet
     );
     if (!verificationResult.success) continue;
 
@@ -4018,7 +4025,7 @@ function executeKantAbilityCheck(player) {
     proposition: bestCandidate.proposition,
   });
 
-  internalTruthSet = bestCandidate.finalTruthSet;
+  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
 
   return {
     type: "ability",

@@ -260,7 +260,7 @@ function confirmPlatoAbility() {
       source: "plato_ability", // '이데아 회상' 출처 명시
       proposition: universalProp,
     });
-    internalTruthSet = verificationResult.expandedSet;
+    gamestate.internalTruthSet = verificationResult.expandedSet;
 
     // 5. 모달을 닫고 게임 상태를 갱신합니다.
     document.getElementById("ability-modal").classList.remove("visible");
@@ -456,7 +456,7 @@ function confirmDescartesAbility() {
 
   // 3. ★★★ 핵심 단계 ★★★
   //    명제 하나가 사라졌으므로, 전체 논리 체계에 모순이 생겼을 수 있습니다.
-  //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(internalTruthSet)을 완전히 재구성합니다.
+  //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(gamestate.internalTruthSet)을 완전히 재구성합니다.
   let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
@@ -473,7 +473,7 @@ function confirmDescartesAbility() {
       // 실제 게임에서는 이 오류를 더 견고하게 처리해야 할 수 있습니다.
     }
   }
-  internalTruthSet = newTruthSet;
+  gamestate.internalTruthSet = newTruthSet;
 
   // 4. 능력 사용 상태를 기록하고 UI를 갱신합니다.
   const philosopherId =
@@ -931,7 +931,7 @@ function confirmWittgensteinAbility() {
       );
     }
   }
-  internalTruthSet = newTruthSet;
+  gamestate.internalTruthSet = newTruthSet;
 
   // 6. 능력 사용 상태를 업데이트하고 마무리합니다.
   const philosopherId =
@@ -1094,7 +1094,7 @@ function confirmDerridaAbility() {
   gamestate.truePropositions.push(...newProps);
 
   // 7. 최종적으로 검증된 진리 집합으로 내부 상태를 업데이트합니다.
-  internalTruthSet = verification2.expandedSet;
+  gamestate.internalTruthSet = verification2.expandedSet;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
@@ -1244,7 +1244,7 @@ function confirmHumeAbility() {
   gamestate.truePropositions.push(...newProps);
 
   // 7. 최종 진리 집합으로 업데이트합니다.
-  internalTruthSet = verification2.expandedSet;
+  gamestate.internalTruthSet = verification2.expandedSet;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
@@ -1478,7 +1478,7 @@ function confirmKuhnAbility() {
 
   // --- (4) 최종 목록 확정 및 UI 갱신 ---
   gamestate.truePropositions = survivingPropositions;
-  internalTruthSet = currentValidatedTruths;
+  gamestate.internalTruthSet = currentValidatedTruths;
 
   const philosopherId =
     thinkingTimeTurn === "A"
@@ -1593,7 +1593,7 @@ function confirmKantAbility(player) {
   });
 
   // 7. 내부 진리 집합 업데이트
-  internalTruthSet = verificationResult.expandedSet;
+  gamestate.internalTruthSet = verificationResult.expandedSet;
 
   // 8. 마무리
   const modal = document.getElementById("kant-ability-modal");

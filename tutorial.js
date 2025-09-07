@@ -1874,7 +1874,9 @@ function setupTutorialScenario(step) {
       }))
       .filter((a) => a.proposition);
 
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     const {
       if: ifKeyword,
       and: andKeyword,
@@ -1908,7 +1910,7 @@ function setupTutorialScenario(step) {
           predicate: goodPredicate,
         },
       });
-      internalTruthSet.push(parsedSocratesVC);
+      gamestate.internalTruthSet.push(parsedSocratesVC);
     }
 
     // 플라톤 승리 조건
@@ -1931,7 +1933,7 @@ function setupTutorialScenario(step) {
           predicate: evilPredicate,
         },
       });
-      internalTruthSet.push(parsedPlatoVC);
+      gamestate.internalTruthSet.push(parsedPlatoVC);
     }
     gamestate.currentProposition = [];
     gamestate.currentPlayer = "A";
@@ -2030,7 +2032,9 @@ function setupTutorialScenario(step) {
     );
 
     gamestate.truePropositions = [];
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
 
     const premises = [
       gamestate.currentLang.langCode === "ko"
@@ -2049,13 +2053,15 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
     startThinkingTime();
   } else if (step === 5) {
     gamestate.truePropositions = [];
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     gamestate.currentPlayer = "A";
     gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2106,7 +2112,7 @@ function setupTutorialScenario(step) {
       const parsed = parsePropositionFromString(pText);
       if (
         parsed &&
-        !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
+        !gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
         gamestate.truePropositions.push({
           type: "user-made",
@@ -2114,12 +2120,14 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
   } else if (step === 6) {
     gamestate.truePropositions = [];
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     gamestate.currentPlayer = "A";
     gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2141,7 +2149,7 @@ function setupTutorialScenario(step) {
       const parsed = parsePropositionFromString(pText);
       if (
         parsed &&
-        !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
+        !gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
         gamestate.truePropositions.push({
           type: "user-made",
@@ -2149,13 +2157,15 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
     openEurekaModalTutorial();
   } else if (step === 7) {
     gamestate.truePropositions = [];
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     gamestate.currentPlayer = "A";
     gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2179,13 +2189,15 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
     openEurekaModalTutorial();
   } else if (step === 8) {
     gamestate.truePropositions = [];
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     gamestate.currentPlayer = "A";
     gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2204,7 +2216,7 @@ function setupTutorialScenario(step) {
       const parsed = parsePropositionFromString(pText);
       if (
         parsed &&
-        !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
+        !gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
         gamestate.truePropositions.push({
           type: "user-made",
@@ -2212,7 +2224,7 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
     openEurekaModalTutorial();
@@ -2234,7 +2246,9 @@ function setupTutorialScenario(step) {
       }))
       .filter((a) => a.proposition);
 
-    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    gamestate.internalTruthSet = gamestate.parsedAxioms.map(
+      (a) => a.proposition
+    );
     gamestate.currentPlayer = "A";
     gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2263,7 +2277,7 @@ function setupTutorialScenario(step) {
             gamestate.currentLang.langCode === "ko" ? "선하다" : "is good",
         },
       });
-      internalTruthSet.push(socratesVC_Parsed);
+      gamestate.internalTruthSet.push(socratesVC_Parsed);
     }
 
     const platoVC_Text =
@@ -2289,7 +2303,7 @@ function setupTutorialScenario(step) {
             gamestate.currentLang.langCode === "ko" ? "어리석다" : "is foolish",
         },
       });
-      internalTruthSet.push(platoVC_Parsed);
+      gamestate.internalTruthSet.push(platoVC_Parsed);
     }
 
     // 전제 명제 설정
@@ -2310,7 +2324,7 @@ function setupTutorialScenario(step) {
       const parsed = parsePropositionFromString(pText);
       if (
         parsed &&
-        !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
+        !gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
         gamestate.truePropositions.push({
           type: "user-made",
@@ -2318,7 +2332,7 @@ function setupTutorialScenario(step) {
           proposition: parsed,
           original_cards: [],
         });
-        internalTruthSet.push(parsed);
+        gamestate.internalTruthSet.push(parsed);
       }
     });
 
