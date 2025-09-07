@@ -127,7 +127,7 @@ function startProofRecording() {
   gamestate.isRecordingProof = true;
   gamestate.proofSteps = [];
   gamestate.stepCounter = 0;
-  victoryProposition = null;
+  gamestate.victoryProposition = null;
 }
 
 function stopProofRecording() {
@@ -163,15 +163,15 @@ function recordProofStep(
   gamestate.proofSteps.push(step);
 
   // 승리 명제인지 확인
-  if (conclusion && isVictoryProposition(conclusion)) {
-    victoryProposition = { ...conclusion };
+  if (conclusion && isvictoryProposition(conclusion)) {
+    gamestate.victoryProposition = { ...conclusion };
     step.type = "victory";
   }
 
   return gamestate.stepCounter;
 }
 
-function isVictoryProposition(proposition) {
+function isvictoryProposition(proposition) {
   if (!proposition) return false;
 
   // "X는 승리한다" 또는 "X wins" 패턴 확인
@@ -204,7 +204,7 @@ function addPropositionId(proposition, stepId) {
 }
 
 function traceVictoryProof() {
-  if (!victoryProposition || gamestate.proofSteps.length === 0) {
+  if (!gamestate.victoryProposition || gamestate.proofSteps.length === 0) {
     return [];
   }
 
@@ -245,7 +245,7 @@ function traceVictoryProof() {
   const victoryStep = gamestate.proofSteps.find(
     (step) =>
       step.type === "victory" ||
-      (step.conclusion && isVictoryProposition(step.conclusion))
+      (step.conclusion && isgamestate.victoryProposition(step.conclusion))
   );
 
   if (victoryStep) {
@@ -1344,7 +1344,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   gamestate.proofSteps = [];
   gamestate.isRecordingProof = false;
   gamestate.stepCounter = 0;
-  victoryProposition = null;
+  gamestate.victoryProposition = null;
   hideProofReviewButton();
 
   const p1_id = selectedCharacters.p1;

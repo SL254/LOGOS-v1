@@ -4214,7 +4214,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
     timestamp: Date.now(),
   }));
 
-  victoryProposition = goal;
+  gamestate.victoryProposition = goal;
 
   // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
   // 2. 최종 승리 단계(goal)를 찾아서 type을 'victory'로 명시적으로 변경

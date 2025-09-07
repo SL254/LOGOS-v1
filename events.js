@@ -94,7 +94,7 @@ function setupEventListeners() {
       }
       gamestate.proofSteps = [];
       gamestate.stepCounter = 0;
-      victoryProposition = null;
+      gamestate.victoryProposition = null;
       // ▲▲▲ [수정] 코드 추가 끝 ▲▲▲
 
       if (inPuzzleMode) {
