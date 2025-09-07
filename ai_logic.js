@@ -113,10 +113,12 @@ function generateAndScorePlans() {
   }
   return null;
 }
-function aiThinkingTimeTurn() {
+function aithinkingTimeTurn() {
   const summaryActions = []; // 이번 턴에 AI가 수행한 모든 행동을 기록
   const aiPhilosopherData =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data : gamestate.playerB_Data;
+    gamestate.thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data
+      : gamestate.playerB_Data;
   const philosopherId = aiPhilosopherData.id;
 
   // 1단계: 새로운 정리 도출 시도
@@ -135,10 +137,12 @@ function aiThinkingTimeTurn() {
   if (philosopherId === "plato") {
     // 사용 가능한 횟수만큼 반복 시도
     while (
-      abilityUsedState[thinkingTimeTurn].usedCount <
-      abilityUsedState[thinkingTimeTurn].maxUses
+      abilityUsedState[gamestate.thinkingTimeTurn].usedCount <
+      abilityUsedState[gamestate.thinkingTimeTurn].maxUses
     ) {
-      const abilityAction = executePlatoAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executePlatoAbilityCheck(
+        gamestate.thinkingTimeTurn
+      );
       if (abilityAction) {
         summaryActions.push(abilityAction);
       } else {
@@ -151,8 +155,10 @@ function aiThinkingTimeTurn() {
   // 소크라테스 능력 체크 (단일 사용으로 변경)
   if (philosopherId === "socrates") {
     // 'used' 플래그를 확인하여 아직 사용하지 않았을 경우에만 실행
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
-      const abilityAction = executeSocratesAbilityCheck(thinkingTimeTurn);
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+      const abilityAction = executeSocratesAbilityCheck(
+        gamestate.thinkingTimeTurn
+      );
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
@@ -161,9 +167,11 @@ function aiThinkingTimeTurn() {
 
   // 데카르트 능력 체크 (단일 사용)
   if (philosopherId === "descartes") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const abilityAction = executeDescartesAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executeDescartesAbilityCheck(
+        gamestate.thinkingTimeTurn
+      );
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
@@ -171,27 +179,29 @@ function aiThinkingTimeTurn() {
   }
   // 흄 능력 체크 (단일 사용으로 수정)
   if (philosopherId === "hume") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 이렇게 바꿔야 합니다.
-      const abilityAction = executeHumeAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executeHumeAbilityCheck(gamestate.thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
     }
   }
   if (philosopherId === "wittgenstein") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const abilityAction = executeWittgensteinAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executeWittgensteinAbilityCheck(
+        gamestate.thinkingTimeTurn
+      );
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
     }
   }
   if (philosopherId === "kuhn") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const abilityAction = executeKuhnAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executeKuhnAbilityCheck(gamestate.thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
@@ -199,18 +209,20 @@ function aiThinkingTimeTurn() {
   }
   // 데리다 능력 체크 (단일 사용)
   if (philosopherId === "derrida") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const abilityAction = executeDerridaAbilityCheck(thinkingTimeTurn);
+      const abilityAction = executeDerridaAbilityCheck(
+        gamestate.thinkingTimeTurn
+      );
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
     }
   }
   if (philosopherId === "kant") {
-    if (!abilityUsedState[thinkingTimeTurn]?.used) {
+    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const kantAction = executeKantAbilityCheck(thinkingTimeTurn);
+      const kantAction = executeKantAbilityCheck(gamestate.thinkingTimeTurn);
       if (kantAction) {
         summaryActions.push(kantAction);
       }
@@ -318,9 +330,9 @@ function generateCandidateTheorems() {
 }
 
 function scoreCandidateTheorems(candidates) {
-  const opponentPlayer = thinkingTimeTurn === "A" ? "B" : "A";
+  const opponentPlayer = gamestate.thinkingTimeTurn === "A" ? "B" : "A";
   const myVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === thinkingTimeTurn
+    (p) => p.type === "victory" && p.owner === gamestate.thinkingTimeTurn
   );
   const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer

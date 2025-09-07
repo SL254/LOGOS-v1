@@ -1782,8 +1782,8 @@ function checkNextTurn() {
   if (gamestate.isThinkingTime) {
     // --- 사유 시간일 때의 턴 관리 ---
     // 현재 생각해야 할 플레이어가 AI라면, AI의 사유 시간 턴을 예약
-    if (gamestate.isPlayerAI[thinkingTimeTurn]) {
-      aiTimeoutId = setTimeout(aiThinkingTimeTurn, 1500);
+    if (gamestate.isPlayerAI[gamestate.thinkingTimeTurn]) {
+      aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 1500);
     }
     // 사람이 턴이라면, 아무것도 하지 않고 사용자 입력을 기다림
   } else {
@@ -1807,15 +1807,15 @@ function endTurn() {
     const roundStarter = gamestate.currentRound % 2 === 1 ? "A" : "B";
 
     // 지금 턴을 마친 플레이어가 '두 번째' 순서라면, 사유 시간을 완전히 종료합니다.
-    if (thinkingTimeTurn === roundStarter) {
+    if (gamestate.thinkingTimeTurn === roundStarter) {
       endThinkingTime();
     } else {
       // '첫 번째' 순서의 플레이어라면, 턴을 상대에게 넘깁니다.
-      thinkingTimeTurn = roundStarter;
+      gamestate.thinkingTimeTurn = roundStarter;
 
-      if (gameMode === "AI" && thinkingTimeTurn === aiPlayer) {
+      if (gameMode === "AI" && gamestate.thinkingTimeTurn === aiPlayer) {
         clearAllAITimeouts();
-        aiTimeoutId = setTimeout(aiThinkingTimeTurn, 2000);
+        aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 2000);
       }
       render();
 
@@ -1960,8 +1960,9 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player].usedCount >=
               abilityUsedState[player].maxUses ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -1976,8 +1977,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2006,8 +2008,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2021,8 +2024,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2036,8 +2040,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2050,8 +2055,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2070,8 +2076,9 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             userMadePropsCount < 15 ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2084,8 +2091,9 @@ function getAbilityButtonStateFor(player) {
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
             abilityUsedState[player]?.used ||
-            thinkingTimeTurn !== player ||
-            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
+            gamestate.thinkingTimeTurn !== player ||
+            (gamestate.isPlayerAI[player] &&
+              gamestate.thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2093,7 +2101,7 @@ function getAbilityButtonStateFor(player) {
 
     // --- 여기에 새로운 철학자들의 case를 계속 추가 ---
     // case 'descartes':
-    //     if (gamestate.isThinkingTime && thinkingTimeTurn === player) { ... }
+    //     if (gamestate.isThinkingTime && gamestate.thinkingTimeTurn === player) { ... }
     //     break;
   }
 
@@ -2575,7 +2583,7 @@ function startThinkingTime() {
   // 후공 플레이어부터 사유 시간 턴을 시작
   const roundStarter = gamestate.currentRound % 2 === 1 ? "A" : "B";
   const thinkingTimeStarter = roundStarter === "A" ? "B" : "A";
-  thinkingTimeTurn = thinkingTimeStarter;
+  gamestate.thinkingTimeTurn = thinkingTimeStarter;
 
   render();
 
@@ -2588,7 +2596,7 @@ function endThinkingTime() {
   audioManager.play("game-play"); // 기존 코드
 
   gamestate.isThinkingTime = false; // 기존 코드
-  thinkingTimeTurn = null; // 기존 코드
+  gamestate.thinkingTimeTurn = null; // 기존 코드
 
   // 사유 시간 종료 시 낮 테마로 배경 복원
   document.body.classList.remove("thinking-time-night");
@@ -3133,7 +3141,7 @@ function render() {
   if (playerATitleBox && playerBTitleBox) {
     // 사유 시간인지 일반 턴인지에 따라 현재 활성화된 플레이어를 결정
     const activePlayer = gamestate.isThinkingTime
-      ? thinkingTimeTurn
+      ? gamestate.thinkingTimeTurn
       : gamestate.currentPlayer;
 
     // 게임오버가 아닐 때, 활성화된 플레이어에게만 'active-turn' 클래스를 적용
@@ -3180,21 +3188,22 @@ function render() {
 
       // 2. 하단 상태바에 현재 턴인 플레이어를 표시합니다.
       const thinkingPlayerName = getLastName(
-        thinkingTimeTurn === "A"
+        gamestate.thinkingTimeTurn === "A"
           ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
           : gamestate.playerB_Data.name[gamestate.currentLang.langCode]
       );
-      const thinkingPlayerColor = thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
-      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gamestate.currentLang.ui.thinkingTimeTurnMessage}</span>`;
+      const thinkingPlayerColor =
+        gamestate.thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
+      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gamestate.currentLang.ui.gamestate.thinkingTimeTurnMessage}</span>`;
 
       // 3. 현재 턴인 플레이어의 영역만 활성화합니다.
-      if (thinkingTimeTurn === "A") {
+      if (gamestate.thinkingTimeTurn === "A") {
         playerAreaA.classList.remove("disabled");
         playerAreaB.classList.add("disabled");
         eurekaBtnA.disabled = gameMode === "AI" && aiPlayer === "A";
         eurekaBtnB.disabled = true;
       } else {
-        // thinkingTimeTurn === 'B'
+        // gamestate.thinkingTimeTurn === 'B'
         playerAreaA.classList.add("disabled");
         playerAreaB.classList.remove("disabled");
         eurekaBtnA.disabled = true;
@@ -3210,8 +3219,8 @@ function render() {
       completeBtn.disabled = true;
       undoBtn.disabled = true;
       endTurnBtn.disabled =
-        (gameMode === "AI" && thinkingTimeTurn === aiPlayer) ||
-        (inTutorialMode && thinkingTimeTurn !== "A");
+        (gameMode === "AI" && gamestate.thinkingTimeTurn === aiPlayer) ||
+        (inTutorialMode && gamestate.thinkingTimeTurn !== "A");
     } else {
       statusEl.style.color = "#333";
       eurekaBtnA.textContent = gamestate.currentLang.ui.eurekaButton;
