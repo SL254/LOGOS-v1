@@ -1797,7 +1797,7 @@ function checkNextTurn() {
     // --- 사유 시간일 때의 턴 관리 ---
     // 현재 생각해야 할 플레이어가 AI라면, AI의 사유 시간 턴을 예약
     if (gamestate.isPlayerAI[gamestate.thinkingTimeTurn]) {
-      aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 1500);
+      gamestate.aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 1500);
     }
     // 사람이 턴이라면, 아무것도 하지 않고 사용자 입력을 기다림
   } else {
@@ -1805,7 +1805,7 @@ function checkNextTurn() {
     // 현재 턴의 플레이어가 AI라면, AI의 일반 턴을 예약
     if (gamestate.isPlayerAI[gamestate.currentPlayer]) {
       const delay = gameMode === "AI_VS_AI" ? 250 : 1500;
-      aiTimeoutId = setTimeout(aiTurn, delay);
+      gamestate.aiTimeoutId = setTimeout(aiTurn, delay);
     }
     // 사람이 턴이라면, 행동 가능 여부만 체크 (행동 없으면 사유 시간 전환)
     else {
@@ -1829,7 +1829,7 @@ function endTurn() {
 
       if (gameMode === "AI" && gamestate.thinkingTimeTurn === aiPlayer) {
         clearAllAITimeouts();
-        aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 2000);
+        gamestate.aiTimeoutId = setTimeout(aigamestate.thinkingTimeTurn, 2000);
       }
       render();
 
@@ -3341,9 +3341,9 @@ updateMainCenterVisibility();
 updateMainMenuBtnVisibility();
 
 function clearAllAITimeouts() {
-  if (aiTimeoutId) {
-    clearTimeout(aiTimeoutId);
-    aiTimeoutId = null;
+  if (gamestate.aiTimeoutId) {
+    clearTimeout(gamestate.aiTimeoutId);
+    gamestate.aiTimeoutId = null;
   }
 }
 function goToMainMenu() {
