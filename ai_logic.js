@@ -469,8 +469,8 @@ function showAITurnSummary(actions) {
 }
 
 function isBoardDangerous(opponentVictoryData) {
-  if (currentProposition.length === 0) return null;
-  const parsedProp = parsePropositionFromCards(currentProposition);
+  if (gamestate.currentProposition.length === 0) return null;
+  const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
   if (!parsedProp || !opponentVictoryData) return null;
 
   // 위협 유형 1: 상대의 핵심 승리 조건과 '직접 일치'하는 경우
@@ -491,12 +491,12 @@ function isBoardDangerous(opponentVictoryData) {
 
 function isBoardCompletable() {
   // 명제판에 카드가 없으면 완성 불가능
-  if (currentProposition.length === 0) return false;
+  if (gamestate.currentProposition.length === 0) return false;
   // AI 자신이 마지막 카드를 냈다면 완성 불가능 (상대 턴에만 완성 가능)
   if (lastCardPlayer === aiPlayer) return false;
 
   // 문법적으로 완성 가능한 명제인지 확인
-  const parsedProp = parsePropositionFromCards(currentProposition);
+  const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
   return parsedProp !== null;
 }
 
@@ -531,7 +531,9 @@ function assessOpponentAdvantage(proposition, opponentVictoryData) {
 function aiCanActuallyComplete() {
   if (!isBoardCompletable()) return false;
 
-  const propToComplete = parsePropositionFromCards(currentProposition);
+  const propToComplete = parsePropositionFromCards(
+    gamestate.currentProposition
+  );
   if (!propToComplete) return false;
 
   const aiPhilosopherId =
@@ -585,13 +587,13 @@ function isImmediateWinSecure(opponentHand, aiHand, langData) {
 
 function checkForGuaranteedWinMove() {
   // 1. 기본 조건 확인: 명제판에 카드가 2장 이상 있어야 함
-  if (currentProposition.length < 2) {
+  if (gamestate.currentProposition.length < 2) {
     return null;
   }
 
-  const propLength = currentProposition.length;
-  const lastCardInfo = currentProposition[propLength - 1];
-  const secondLastCardInfo = currentProposition[propLength - 2];
+  const propLength = gamestate.currentProposition.length;
+  const lastCardInfo = gamestate.currentProposition[propLength - 1];
+  const secondLastCardInfo = gamestate.currentProposition[propLength - 2];
 
   // 2. '는 거짓이다' 카드 보유 상황 대칭성 확인
   const { not: notKeyword } = gamestate.currentLang.keywords;
@@ -641,7 +643,10 @@ function checkForGuaranteedWinMove() {
   if (secondLastCardInfo.card.text === andKeyword) {
     isWinningOpportunity = true;
   } else {
-    const firstPartCards = currentProposition.slice(0, propLength - 2);
+    const firstPartCards = gamestate.currentProposition.slice(
+      0,
+      propLength - 2
+    );
     const parsedFirstPart = parsePropositionFromCards(firstPartCards);
 
     if (parsedFirstPart) {
@@ -699,7 +704,10 @@ function checkForGuaranteedWinMove() {
     if (predicateToPlay) {
       const winningMove = aiHand.find((card) => card.text === predicateToPlay);
 
-      if (winningMove && isValidPlay(winningMove, currentProposition)) {
+      if (
+        winningMove &&
+        isValidPlay(winningMove, gamestate.currentProposition)
+      ) {
         devLog("확정 승리 패턴 발견! 승리 수를 둡니다.");
         return winningMove;
       }
@@ -737,7 +745,7 @@ function scorePlans(plans, aiHand) {
     }
 
     // 3. 현재 명제판의 상황을 고려하여 점수를 가감합니다.
-    const currentBoardText = currentProposition
+    const currentBoardText = gamestate.currentProposition
       .map((info) => info.card.text)
       .join(" ");
     if (currentBoardText === "") {
@@ -971,7 +979,7 @@ function aiTurn() {
     "%c2. Proposition on Board to be Evaluated:",
     "color: green; font-weight: bold;"
   );
-  devLog(currentProposition.map((c) => c.card.text).join(" "));
+  devLog(gamestate.currentProposition.map((c) => c.card.text).join(" "));
 
   const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
@@ -981,8 +989,12 @@ function aiTurn() {
   const notKeyword = gamestate.currentLang.keywords.not;
   const notCardInHand = aiHand.find((c) => c.text === notKeyword);
 
-  if (notCardInHand && currentProposition.length > 0 && myVictoryData) {
-    const propOnBoard = parsePropositionFromCards(currentProposition);
+  if (
+    notCardInHand &&
+    gamestate.currentProposition.length > 0 &&
+    myVictoryData
+  ) {
+    const propOnBoard = parsePropositionFromCards(gamestate.currentProposition);
     if (propOnBoard && propOnBoard.type === "negation") {
       const newTruthFromDoubleNegation = propOnBoard.proposition;
       const hypotheticalTruths = [
@@ -1014,7 +1026,7 @@ function aiTurn() {
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   const hasValidCardMove = aiHand.some((card) =>
-    isValidPlay(card, currentProposition)
+    isValidPlay(card, gamestate.currentProposition)
   );
   const canActuallyComplete = aiCanActuallyComplete();
 
@@ -1030,7 +1042,9 @@ function aiTurn() {
 
   let isRiskyToComplete = false;
   if (isBoardCompletable()) {
-    const propToComplete = parsePropositionFromCards(currentProposition);
+    const propToComplete = parsePropositionFromCards(
+      gamestate.currentProposition
+    );
     const verificationResult = verifyAndExpandTruths(propToComplete);
     const myLossCondition = myVictoryData
       ? { type: "negation", proposition: myVictoryData.core_goal }
@@ -1051,7 +1065,7 @@ function aiTurn() {
 
   let bestCardAction = null;
   const validMoves = aiHand.filter((card) =>
-    isValidPlay(card, currentProposition)
+    isValidPlay(card, gamestate.currentProposition)
   );
 
   if (validMoves.length > 0) {
@@ -1066,7 +1080,7 @@ function aiTurn() {
 
         // 현재 보드 + 이번에 낼 카드가 계획의 첫 단계를 구성하는가?
         const expectedNextStep = [
-          ...currentProposition.map((c) => c.card.text),
+          ...gamestate.currentProposition.map((c) => c.card.text),
           move.text,
         ].join(" ");
         if (cardsNeededForStep.join(" ").startsWith(expectedNextStep)) {
@@ -1086,11 +1100,13 @@ function aiTurn() {
       );
       devLog(
         `[DUPLICATE DEBUG] Current proposition:`,
-        currentProposition.map((c) => (c && c.card ? c.card.text : "undefined"))
+        gamestate.currentProposition.map((c) =>
+          c && c.card ? c.card.text : "undefined"
+        )
       );
 
       const hypotheticalProp = [
-        ...currentProposition,
+        ...gamestate.currentProposition,
         { card: move, player: currentPlayer },
       ];
       devLog(
@@ -1195,7 +1211,9 @@ function aiTurn() {
       }
 
       if (move.text === notKeyword) {
-        const propOnBoard = parsePropositionFromCards(currentProposition);
+        const propOnBoard = parsePropositionFromCards(
+          gamestate.currentProposition
+        );
 
         // 1. 명제판에 되받아칠 부정 명제(~P)가 있는지 확인합니다.
         if (propOnBoard && propOnBoard.type === "negation") {
@@ -1234,14 +1252,16 @@ function aiTurn() {
         }
       }
 
-      if (currentProposition.length > 0 && myVictoryData) {
+      if (gamestate.currentProposition.length > 0 && myVictoryData) {
         const myName = myVictoryData.core_goal.subject;
         if (move.text === myName) {
           const lastCardOnBoard =
-            currentProposition[currentProposition.length - 1].card;
+            gamestate.currentProposition[
+              gamestate.currentProposition.length - 1
+            ].card;
           if (lastCardOnBoard.text === gamestate.currentLang.keywords.if) {
             const propOnBoard = parsePropositionFromCards(
-              currentProposition.slice(0, -1)
+              gamestate.currentProposition.slice(0, -1)
             );
             if (
               propOnBoard &&
@@ -1275,8 +1295,14 @@ function aiTurn() {
             used: false,
           };
 
-          if (!opponentAbilityState.used && currentProposition.length > 0) {
-            const lastCard = currentProposition[currentProposition.length - 1];
+          if (
+            !opponentAbilityState.used &&
+            gamestate.currentProposition.length > 0
+          ) {
+            const lastCard =
+              gamestate.currentProposition[
+                gamestate.currentProposition.length - 1
+              ];
             if (lastCard.card.text === gamestate.currentLang.keywords.if) {
               if (IS_DEV_MODE) {
                 console.warn(
@@ -1302,9 +1328,12 @@ function aiTurn() {
         const opponentHasNot = opponentHand.some(
           (card) => card.text === notKeyword
         );
-        if (aiHasNot === opponentHasNot && currentProposition.length > 0) {
-          const propLength = currentProposition.length;
-          const lastCardInfo = currentProposition[propLength - 1];
+        if (
+          aiHasNot === opponentHasNot &&
+          gamestate.currentProposition.length > 0
+        ) {
+          const propLength = gamestate.currentProposition.length;
+          const lastCardInfo = gamestate.currentProposition[propLength - 1];
           const {
             and: andKeyword,
             if: ifKeyword,
@@ -1314,7 +1343,10 @@ function aiTurn() {
           if (lastCardInfo.card.text === andKeyword) {
             isTrap = true;
           } else {
-            const firstPartCards = currentProposition.slice(0, propLength - 1);
+            const firstPartCards = gamestate.currentProposition.slice(
+              0,
+              propLength - 1
+            );
             const parsedFirstPart = parsePropositionFromCards(firstPartCards);
             if (parsedFirstPart) {
               if (
@@ -1359,13 +1391,14 @@ function aiTurn() {
       const existentialQuantifier =
         gamestate.currentLang.langCode === "ko" ? "어떤" : "Some";
       const andKeyword = gamestate.currentLang.keywords.and;
-      if (currentProposition.length > 0) {
+      if (gamestate.currentProposition.length > 0) {
         const lastCardText =
-          currentProposition[currentProposition.length - 1].card.text;
+          gamestate.currentProposition[gamestate.currentProposition.length - 1]
+            .card.text;
         const isQuantifiedcapitalist =
-          currentProposition.length === 2 &&
-          currentProposition[0].card.text === existentialQuantifier &&
-          currentProposition[1].card.text === capitalistText;
+          gamestate.currentProposition.length === 2 &&
+          gamestate.currentProposition[0].card.text === existentialQuantifier &&
+          gamestate.currentProposition[1].card.text === capitalistText;
         if (lastCardText === capitalistText || isQuantifiedcapitalist) {
           if (aiPhilosopherId === "marx") {
             if (move.text === evilText) score += 15000;
@@ -1377,7 +1410,9 @@ function aiTurn() {
         }
       }
       if (move.text === andKeyword) {
-        const propOnBoard = parsePropositionFromCards(currentProposition);
+        const propOnBoard = parsePropositionFromCards(
+          gamestate.currentProposition
+        );
         if (propOnBoard) {
           if (aiPhilosopherId === "marx") {
             const antiGoalUniversal = {
@@ -1450,7 +1485,9 @@ function aiTurn() {
         }
       }
       if (move.text === gamestate.currentLang.keywords.and) {
-        const propOnBoard = parsePropositionFromCards(currentProposition);
+        const propOnBoard = parsePropositionFromCards(
+          gamestate.currentProposition
+        );
         if (propOnBoard) {
           if (opponentVictoryData) {
             const opponentAdvantagePenalty = assessOpponentAdvantage(
@@ -1641,7 +1678,7 @@ function aiTurn() {
       }
 
       const hypotheticalProposition = [
-        ...currentProposition,
+        ...gamestate.currentProposition,
         { card: move, player: currentPlayer },
       ];
       const parsedHypothetical = parsePropositionFromCards(
@@ -1704,13 +1741,14 @@ function aiTurn() {
         }
       }
       const isNewClauseStart =
-        currentProposition.length === 0 ||
+        gamestate.currentProposition.length === 0 ||
         [
           gamestate.currentLang.keywords.and,
           gamestate.currentLang.keywords.or,
           gamestate.currentLang.keywords.if,
         ].includes(
-          currentProposition[currentProposition.length - 1]?.card.text
+          gamestate.currentProposition[gamestate.currentProposition.length - 1]
+            ?.card.text
         );
       if (isNewClauseStart) {
         if (move.type === gamestate.currentLang.cardTypes[1]) {
@@ -1795,7 +1833,9 @@ function aiTurn() {
           ? gamestate.playerA_Data.id
           : gamestate.playerB_Data.id;
       if (aiPhilosopherId === "nietzsche") {
-        const propToComplete = parsePropositionFromCards(currentProposition);
+        const propToComplete = parsePropositionFromCards(
+          gamestate.currentProposition
+        );
         if (propToComplete) {
           const isAlreadyProven = gamestate.truePropositions.some(
             (p) =>
@@ -1815,7 +1855,9 @@ function aiTurn() {
         );
         completeScore = -999999;
       } else {
-        const propToComplete = parsePropositionFromCards(currentProposition);
+        const propToComplete = parsePropositionFromCards(
+          gamestate.currentProposition
+        );
         if (propToComplete) {
           if (opponentVictoryData) {
             const opponentAdvantagePenalty = assessOpponentAdvantage(
@@ -3812,7 +3854,7 @@ function executeKantAbilityCheck(player) {
   const candidatePropositions = [];
   function generatePropositionsFromHand(currentProposition, remainingHand) {
     const parsed = parsePropositionFromCards(
-      currentProposition.map((c) => ({ card: c }))
+      gamestate.currentProposition.map((c) => ({ card: c }))
     );
     if (parsed) {
       if (!candidatePropositions.some((p) => arePropositionsEqual(p, parsed))) {
@@ -3830,11 +3872,13 @@ function executeKantAbilityCheck(player) {
       if (connectiveKeywords.includes(nextCard.text)) {
         continue;
       }
-      const tempPropositionForValidation = currentProposition.map((c) => ({
-        card: c,
-      }));
+      const tempPropositionForValidation = gamestate.currentProposition.map(
+        (c) => ({
+          card: c,
+        })
+      );
       if (isValidPlay(nextCard, tempPropositionForValidation)) {
-        const nextProposition = [...currentProposition, nextCard];
+        const nextProposition = [...gamestate.currentProposition, nextCard];
         const nextRemainingHand = remainingHand.filter(
           (_, index) => index !== i
         );

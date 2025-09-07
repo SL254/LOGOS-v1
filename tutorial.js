@@ -1140,7 +1140,10 @@ function playCardTutorial(cardToPlay) {
 
   if (cardIndex > -1) {
     const [playedCard] = hand.splice(cardIndex, 1);
-    currentProposition.push({ card: playedCard, player: currentPlayer });
+    gamestate.currentProposition.push({
+      card: playedCard,
+      player: currentPlayer,
+    });
     cardsPlayedThisTurn[currentPlayer]++;
     lastCardPlayer = currentPlayer;
     render();
@@ -1156,21 +1159,24 @@ function endTurnTutorial() {
 }
 
 function completePropositionTutorial() {
-  const parsedProp = parsePropositionFromCards([...currentProposition]);
+  const parsedProp = parsePropositionFromCards([
+    ...gamestate.currentProposition,
+  ]);
   if (parsedProp) {
     gamestate.truePropositions.push({
       type: "user-made",
       round: currentRound,
       proposition: parsedProp,
-      original_cards: [...currentProposition],
+      original_cards: [...gamestate.currentProposition],
     });
 
     audioManager.playSfx("complete");
 
     lastPropositionMaker =
-      currentProposition[currentProposition.length - 1].player;
+      gamestate.currentProposition[gamestate.currentProposition.length - 1]
+        .player;
     currentPlayer = lastPropositionMaker === "A" ? "B" : "A";
-    currentProposition = [];
+    gamestate.currentProposition = [];
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
@@ -1753,7 +1759,7 @@ function clearHighlights() {
           isThinkingTime ||
           player !== currentPlayer ||
           cardsPlayedThisTurn[player] >= 1 ||
-          !isValidPlay(cardData, currentProposition);
+          !isValidPlay(cardData, gamestate.currentProposition);
 
         if (shouldBeUnplayable) {
           el.classList.add("unplayable");
@@ -1921,7 +1927,7 @@ function setupTutorialScenario(step) {
       });
       internalTruthSet.push(parsedPlatoVC);
     }
-    currentProposition = [];
+    gamestate.currentProposition = [];
     currentPlayer = "A";
     propositionStarter = "A";
     gameIsOver = false;
@@ -1983,7 +1989,7 @@ function setupTutorialScenario(step) {
         .slice(0, 2)
     );
   } else if (step === 2) {
-    const socratesCardInfo = currentProposition.find(
+    const socratesCardInfo = gamestate.currentProposition.find(
       (info) => info.card.text === gamestate.currentLang.keywords.socrates
     );
     const wiseCardText =
@@ -1994,12 +2000,15 @@ function setupTutorialScenario(step) {
 
     if (socratesCardInfo && wiseCardIndex > -1) {
       const [wiseCard] = gamestate.playerB_Hand.splice(wiseCardIndex, 1);
-      currentProposition = [socratesCardInfo, { card: wiseCard, player: "B" }];
+      gamestate.currentProposition = [
+        socratesCardInfo,
+        { card: wiseCard, player: "B" },
+      ];
       lastCardPlayer = "B";
       currentPlayer = "A";
     }
   } else if (step === 4) {
-    currentProposition = [];
+    gamestate.currentProposition = [];
     gamestate.playerA_Hand = gamestate.fullDeck.filter(
       (c) =>
         c.type ===

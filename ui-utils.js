@@ -119,7 +119,7 @@ function setupUI() {
     .getElementById("ability-b")
     .addEventListener("click", () => activateAbility("B"));
   document.getElementById("current-proposition-title").textContent =
-    gamestate.currentLang.ui.currentPropositionTitle;
+    gamestate.currentLang.ui.gamestate.currentPropositionTitle;
   document.getElementById("complete-btn").textContent =
     gamestate.currentLang.ui.completeButton;
   document.getElementById("undo-btn").textContent =

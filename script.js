@@ -1674,7 +1674,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   gamestate.playerA_Hand = [];
   gamestate.playerB_Hand = [];
   gamestate.truePropositions = [];
-  currentProposition = [];
+  gamestate.currentProposition = [];
   currentPlayer = "A";
   gameIsOver = false;
   currentRound = 1;
@@ -2109,19 +2109,19 @@ function playCard(player, cardToPlay) {
     return;
   }
 
-  if (!isValidPlay(cardToPlay, currentProposition)) {
+  if (!isValidPlay(cardToPlay, gamestate.currentProposition)) {
     if (player !== aiPlayer) {
       showAlert(gamestate.currentLang.alerts.invalidCard);
     }
     return;
   }
-  if (currentProposition.length === 0) propositionStarter = player;
+  if (gamestate.currentProposition.length === 0) propositionStarter = player;
   const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const cardIndex = hand.findIndex(
     (card) => card.text === cardToPlay.text && card.type === cardToPlay.type
   );
   if (cardIndex === -1) return;
-  currentProposition.push({
+  gamestate.currentProposition.push({
     card: hand.splice(cardIndex, 1)[0],
     player: player,
     originalIndex: cardIndex, // 카드의 원래 위치를 함께 저장
@@ -2136,10 +2136,12 @@ function playCard(player, cardToPlay) {
 }
 
 function completeProposition() {
-  if (currentProposition.length === 0 || gameIsOver || isThinkingTime)
+  if (gamestate.currentProposition.length === 0 || gameIsOver || isThinkingTime)
     return false;
 
-  const parsedProp = parsePropositionFromCards([...currentProposition]);
+  const parsedProp = parsePropositionFromCards([
+    ...gamestate.currentProposition,
+  ]);
   if (!parsedProp) {
     if (currentPlayer !== aiPlayer) {
       showAlert(gamestate.currentLang.alerts.incompleteProposition);
@@ -2186,7 +2188,7 @@ function completeProposition() {
       type: "user-made",
       round: currentRound,
       proposition: parsedProp,
-      original_cards: [...currentProposition],
+      original_cards: [...gamestate.currentProposition],
     };
 
     // 만약 "니체가 중복 명제를 완성"한 경우, 'source'를 추가합니다.
@@ -2201,9 +2203,10 @@ function completeProposition() {
     // --- 명제 추가 성공 후 공통 로직 ---
     audioManager.playSfx("complete");
     lastPropositionMaker =
-      currentProposition[currentProposition.length - 1].player;
+      gamestate.currentProposition[gamestate.currentProposition.length - 1]
+        .player;
     currentPlayer = lastPropositionMaker === "A" ? "B" : "A";
-    currentProposition = [];
+    gamestate.currentProposition = [];
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
@@ -2227,11 +2230,11 @@ function undoProposition() {
   if (gameIsOver || isThinkingTime) return;
   if (gameMode === "AI" && currentPlayer === aiPlayer) return;
 
-  if (currentProposition.length > 0) {
+  if (gamestate.currentProposition.length > 0) {
     audioManager.playSfx("undo");
-    const lastPlayedInfo = currentProposition.pop();
+    const lastPlayedInfo = gamestate.currentProposition.pop();
     if (gameMode === "AI" && lastPlayedInfo.player === aiPlayer) {
-      currentProposition.push(lastPlayedInfo);
+      gamestate.currentProposition.push(lastPlayedInfo);
       return;
     }
     const hand =
@@ -2249,8 +2252,10 @@ function undoProposition() {
     cardsPlayedThisTurn[lastPlayedInfo.player]--;
     currentPlayer = lastPlayedInfo.player;
 
-    if (currentProposition.length > 0) {
-      lastCardPlayer = currentProposition[currentProposition.length - 1].player;
+    if (gamestate.currentProposition.length > 0) {
+      lastCardPlayer =
+        gamestate.currentProposition[gamestate.currentProposition.length - 1]
+          .player;
     } else {
       lastCardPlayer = null;
     }
@@ -2303,9 +2308,13 @@ function undoProposition() {
         }
       }
       internalTruthSet = newTruthSet;
-      currentProposition = propToUndo.original_cards;
-      currentPlayer = currentProposition[currentProposition.length - 1].player;
-      lastCardPlayer = currentProposition[currentProposition.length - 1].player;
+      gamestate.currentProposition = propToUndo.original_cards;
+      currentPlayer =
+        gamestate.currentProposition[gamestate.currentProposition.length - 1]
+          .player;
+      lastCardPlayer =
+        gamestate.currentProposition[gamestate.currentProposition.length - 1]
+          .player;
       cardsPlayedThisTurn = { A: 0, B: 0 };
       showAlert(gamestate.currentLang.alerts.undoLastProposition);
       render();
@@ -2481,12 +2490,15 @@ function checkRoundEndConditions() {
   const hand =
     currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const hasValidCardMove = hand.some((card) =>
-    isValidPlay(card, currentProposition)
+    isValidPlay(card, gamestate.currentProposition)
   );
 
   let canComplete = false;
-  if (currentProposition.length > 0 && lastCardPlayer !== currentPlayer) {
-    const parsedProp = parsePropositionFromCards(currentProposition);
+  if (
+    gamestate.currentProposition.length > 0 &&
+    lastCardPlayer !== currentPlayer
+  ) {
+    const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
     if (parsedProp) {
       const verificationResult = verifyAndExpandTruths(parsedProp);
       if (verificationResult.success) {
@@ -2524,7 +2536,7 @@ function startThinkingTime() {
   audioManager.fadeOut("game-play");
   audioManager.play("thinking-time");
 
-  currentProposition = [];
+  gamestate.currentProposition = [];
   lastCardPlayer = null;
   isThinkingTime = true;
   cardsPlayedThisTurn = { A: 0, B: 0 };
@@ -2676,7 +2688,7 @@ function render() {
           if (cardsPlayedThisTurn["A"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
-            if (isValidPlay(card, currentProposition)) {
+            if (isValidPlay(card, gamestate.currentProposition)) {
               cardEl.addEventListener("click", () => {
                 if (!inTutorialMode) playCard("A", card);
               });
@@ -2715,7 +2727,7 @@ function render() {
           if (cardsPlayedThisTurn["B"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
-            if (isValidPlay(card, currentProposition)) {
+            if (isValidPlay(card, gamestate.currentProposition)) {
               cardEl.addEventListener("click", () => {
                 if (!inTutorialMode) playCard("B", card);
               });
@@ -2730,7 +2742,7 @@ function render() {
   });
   const propositionEl = document.getElementById("proposition-display");
   propositionEl.innerHTML = "";
-  currentProposition.forEach((info) => {
+  gamestate.currentProposition.forEach((info) => {
     const cardEl = document.createElement("div");
     const colorClass = info.player === "A" ? "card-white" : "card-black";
     cardEl.className = `card ${colorClass}`;
@@ -3177,8 +3189,8 @@ function render() {
       eurekaBtnB.textContent = gamestate.currentLang.ui.eurekaButton;
       const isAITurn = gameMode === "AI" && currentPlayer === aiPlayer;
       const isCompletable =
-        currentProposition.length > 0 &&
-        parsePropositionFromCards(currentProposition) !== null;
+        gamestate.currentProposition.length > 0 &&
+        parsePropositionFromCards(gamestate.currentProposition) !== null;
 
       if (isAITurn) {
         statusEl.innerHTML = `<span class="turn-indicator">${gamestate.currentLang.ui.statusAITurn}</span>`;
