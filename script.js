@@ -1680,7 +1680,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   gamestate.currentRound = 1;
   gamestate.isThinkingTime = false;
 
-  eurekaUsedInRound = { A: false, B: false };
+  gamestate.eurekaUsedInRound = { A: false, B: false };
 
   gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
 
@@ -2350,7 +2350,7 @@ function declareEureka(player) {
   if (gameMode === "AI" && player === aiPlayer) return;
 
   if (!gamestate.isThinkingTime) {
-    if (eurekaUsedInRound[player]) {
+    if (gamestate.eurekaUsedInRound[player]) {
       return;
     }
 
@@ -2359,7 +2359,7 @@ function declareEureka(player) {
       event.stopPropagation(); // 💡 변경점: 이벤트 전파를 막아 중복 소리를 제거
 
       audioManager.playSfx("eureka");
-      eurekaUsedInRound[player] = true;
+      gamestate.eurekaUsedInRound[player] = true;
       openEurekaModal();
       render();
     });
@@ -2596,7 +2596,7 @@ function endThinkingTime() {
   document.getElementById("thinking-time-controls").classList.add("hidden"); // 기존 코드
 
   gamestate.currentRound++; // 기존 코드
-  eurekaUsedInRound = { A: false, B: false }; // 기존 코드
+  gamestate.eurekaUsedInRound = { A: false, B: false }; // 기존 코드
 
   // 손패를 새로 분배하는 부분 (기존 코드)
   const nonPlayerCards = [
@@ -3241,8 +3241,8 @@ function render() {
           statusEl.innerHTML = `<span class="turn-indicator">⚪️ ${playerAName}${gamestate.currentLang.ui.statusTurn}</span>`;
           playerAreaA.classList.remove("disabled");
           playerAreaB.classList.add("disabled");
-          // ⭐️ 핵심 수정: eurekaUsedInRound['A']가 true이면 버튼 비활성화
-          eurekaBtnA.disabled = eurekaUsedInRound["A"];
+          // ⭐️ 핵심 수정: gamestate.eurekaUsedInRound['A']가 true이면 버튼 비활성화
+          eurekaBtnA.disabled = gamestate.eurekaUsedInRound["A"];
           eurekaBtnB.disabled = true;
         } else {
           const playerBName = gamestate.playerB_Data
@@ -3254,8 +3254,8 @@ function render() {
           playerAreaB.classList.remove("disabled");
           playerAreaA.classList.add("disabled");
           eurekaBtnA.disabled = true;
-          // ⭐️ 핵심 수정: eurekaUsedInRound['B']가 true이면 버튼 비활성화
-          eurekaBtnB.disabled = eurekaUsedInRound["B"];
+          // ⭐️ 핵심 수정: gamestate.eurekaUsedInRound['B']가 true이면 버튼 비활성화
+          eurekaBtnB.disabled = gamestate.eurekaUsedInRound["B"];
         }
         completeBtn.disabled =
           !isCompletable ||
