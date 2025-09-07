@@ -177,7 +177,7 @@ function setupEventListeners() {
     });
   document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
     if (inTutorialMode) return;
-    isTestMode = true;
+    gamestate.isTestMode = true;
     audioManager.fadeOut("main-menu");
     audioManager.play("character-select");
     startCharacterSelection("AI");

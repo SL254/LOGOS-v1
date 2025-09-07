@@ -228,7 +228,7 @@ function finalizeSelection() {
     updateMainMenuBtnVisibility();
     updateMainCenterVisibility();
 
-    if (isTestMode) {
+    if (gamestate.isTestMode) {
       // 테스트 모드일 경우, 데이터 입력 및 테스트 게임 시작
       promptAndSetupTestGame(tempSelections);
     }

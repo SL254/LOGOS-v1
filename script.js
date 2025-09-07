@@ -55,7 +55,7 @@ let gameState = {
   aiTimeoutId: null,
   victorySoundPlayed: false,
   hasUserInteracted: false,
-  isTestMode: false, // isTestMode도 게임 상태의 일부로 간주하여 포함
+  isTestMode: false, // gamestate.isTestMode도 게임 상태의 일부로 간주하여 포함
 };
 
 // --- TUTORIAL STATUS FUNCTIONS ---
@@ -3316,7 +3316,7 @@ document.getElementById("main-menu-btn").addEventListener("click", () => {
     endTutorial(); // endTutorial 함수가 음악 전환을 포함한 모든 것을 처리합니다.
     return;
   }
-  isTestMode = false;
+  gamestate.isTestMode = false;
 
   // 2. 게임 상태를 초기화합니다.
   clearAllAITimeouts();
@@ -3347,7 +3347,7 @@ function clearAllAITimeouts() {
   }
 }
 function goToMainMenu() {
-  isTestMode = false;
+  gamestate.isTestMode = false;
 
   // 일반적인 경우는 애니메이션 없이 바로 숨김
   document.getElementById("character-selection-screen").classList.add("hidden");
