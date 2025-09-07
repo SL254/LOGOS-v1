@@ -989,7 +989,7 @@ function aiTurn() {
           "background: #ff0000; color: #ffffff; font-size: 1.3em;"
         );
         playCard(currentPlayer, notCardInHand);
-        setTimeout(completeProposition, 250);
+        setTimeout(endTurn, 250);
         return;
       }
     }
