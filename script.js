@@ -1682,7 +1682,7 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   eurekaUsedInRound = { A: false, B: false };
 
-  cardsPlayedThisTurn = { A: 0, B: 0 };
+  gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
 
   document.getElementById("thinking-time-controls").style.display = "none";
   document.getElementById("status").innerHTML = "";
@@ -1828,12 +1828,12 @@ function endTurn() {
   }
 
   // --- 이하 일반 턴 종료 로직 (수정 없음) ---
-  if (cardsPlayedThisTurn[gamestate.currentPlayer] === 0) return;
+  if (gamestate.cardsPlayedThisTurn[gamestate.currentPlayer] === 0) return;
 
   audioManager.playSfx("end");
 
   const playerWhoEndedTurn = gamestate.currentPlayer;
-  cardsPlayedThisTurn[playerWhoEndedTurn] = 0;
+  gamestate.cardsPlayedThisTurn[playerWhoEndedTurn] = 0;
 
   gamestate.currentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
 
@@ -2109,7 +2109,7 @@ function playCard(player, cardToPlay) {
   )
     return;
 
-  if (cardsPlayedThisTurn[player] >= 1) {
+  if (gamestate.cardsPlayedThisTurn[player] >= 1) {
     showAlert(gamestate.currentLang.alerts.oneCardPerTurn);
     return;
   }
@@ -2136,7 +2136,7 @@ function playCard(player, cardToPlay) {
   audioManager.playSfx("playCard");
 
   gamestate.lastCardPlayer = player;
-  cardsPlayedThisTurn[player]++;
+  gamestate.cardsPlayedThisTurn[player]++;
 
   render();
 }
@@ -2223,7 +2223,7 @@ function completeProposition() {
       gamestate.lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
     gamestate.lastCardPlayer = null;
-    cardsPlayedThisTurn = { A: 0, B: 0 };
+    gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
     const truePropositionsEl = document.getElementById("true-propositions");
     gamestate.truePropositionsEl.scrollTo({
@@ -2264,7 +2264,7 @@ function undoProposition() {
       // 혹시 모를 예외 상황을 위한 대비 코드
       hand.push(lastPlayedInfo.card);
     }
-    cardsPlayedThisTurn[lastPlayedInfo.player]--;
+    gamestate.cardsPlayedThisTurn[lastPlayedInfo.player]--;
     gamestate.currentPlayer = lastPlayedInfo.player;
 
     if (gamestate.currentProposition.length > 0) {
@@ -2333,7 +2333,7 @@ function undoProposition() {
         gamestate.currentProposition[
           gamestate.currentProposition.length - 1
         ].player;
-      cardsPlayedThisTurn = { A: 0, B: 0 };
+      gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
       showAlert(gamestate.currentLang.alerts.undoLastProposition);
       render();
     } else {
@@ -2505,7 +2505,7 @@ function checkRoundEndConditions() {
   if (
     gamestate.gameIsOver ||
     gamestate.isThinkingTime ||
-    cardsPlayedThisTurn[gamestate.currentPlayer] > 0
+    gamestate.cardsPlayedThisTurn[gamestate.currentPlayer] > 0
   )
     return;
 
@@ -2563,7 +2563,7 @@ function startThinkingTime() {
   gamestate.currentProposition = [];
   gamestate.lastCardPlayer = null;
   gamestate.isThinkingTime = true;
-  cardsPlayedThisTurn = { A: 0, B: 0 };
+  gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
 
   // 사유 시간 시작 시 밤 테마로 배경 변경
   document.body.classList.add("thinking-time-night");
@@ -2712,7 +2712,7 @@ function render() {
         cardEl.classList.add("ai-hand");
       } else {
         if (gamestate.currentPlayer === "A" && !gamestate.gameIsOver) {
-          if (cardsPlayedThisTurn["A"] >= 1) {
+          if (gamestate.cardsPlayedThisTurn["A"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
             if (isValidPlay(card, gamestate.currentProposition)) {
@@ -2751,7 +2751,7 @@ function render() {
         cardEl.classList.add("ai-hand");
       } else {
         if (gamestate.currentPlayer === "B" && !gamestate.gameIsOver) {
-          if (cardsPlayedThisTurn["B"] >= 1) {
+          if (gamestate.cardsPlayedThisTurn["B"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
             if (isValidPlay(card, gamestate.currentProposition)) {
@@ -3260,9 +3260,10 @@ function render() {
         completeBtn.disabled =
           !isCompletable ||
           gamestate.lastCardPlayer === gamestate.currentPlayer;
-        undoBtn.disabled = cardsPlayedThisTurn[gamestate.currentPlayer] === 0;
+        undoBtn.disabled =
+          gamestate.cardsPlayedThisTurn[gamestate.currentPlayer] === 0;
         endTurnBtn.disabled =
-          cardsPlayedThisTurn[gamestate.currentPlayer] === 0;
+          gamestate.cardsPlayedThisTurn[gamestate.currentPlayer] === 0;
       }
     }
     updateAbilityButtonsState();

@@ -1146,7 +1146,7 @@ function playCardTutorial(cardToPlay) {
       card: playedCard,
       player: gamestate.currentPlayer,
     });
-    cardsPlayedThisTurn[gamestate.currentPlayer]++;
+    gamestate.cardsPlayedThisTurn[gamestate.currentPlayer]++;
     gamestate.lastCardPlayer = gamestate.currentPlayer;
     render();
   }
@@ -1155,8 +1155,8 @@ function playCardTutorial(cardToPlay) {
 function endTurnTutorial() {
   audioManager.playSfx("end");
   gamestate.currentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
-  cardsPlayedThisTurn.A = 0;
-  cardsPlayedThisTurn.B = 0;
+  gamestate.cardsPlayedThisTurn.A = 0;
+  gamestate.cardsPlayedThisTurn.B = 0;
   render();
 }
 
@@ -1182,7 +1182,7 @@ function completePropositionTutorial() {
       gamestate.lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
     gamestate.lastCardPlayer = null;
-    cardsPlayedThisTurn = { A: 0, B: 0 };
+    gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
   }
 }
@@ -1766,7 +1766,7 @@ function clearHighlights() {
         const shouldBeUnplayable =
           gamestate.isThinkingTime ||
           player !== gamestate.currentPlayer ||
-          cardsPlayedThisTurn[player] >= 1 ||
+          gamestate.cardsPlayedThisTurn[player] >= 1 ||
           !isValidPlay(cardData, gamestate.currentProposition);
 
         if (shouldBeUnplayable) {
@@ -1946,7 +1946,7 @@ function setupTutorialScenario(step) {
     gamestate.lastPropositionMaker = null;
     gamestate.currentAssumption = null;
     gamestate.lastCardPlayer = null;
-    cardsPlayedThisTurn = { A: 0, B: 0 };
+    gamestate.cardsPlayedThisTurn = { A: 0, B: 0 };
     gameMode = "2P";
 
     // 튜토리얼을 위한 기본 철학자 데이터 설정
