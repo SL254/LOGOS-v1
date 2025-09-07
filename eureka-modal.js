@@ -955,7 +955,7 @@ function addTheoremsToList() {
       gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`, // ✅ 이 줄이 추가되었습니다.
         type: "theorem",
-        round: currentRound,
+        round: gamestate.currentRound,
         proposition: theoremData.proposition,
       });
       internalTruthSet = verificationResult.expandedSet;

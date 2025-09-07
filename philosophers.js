@@ -910,7 +910,7 @@ function confirmWittgensteinAbility() {
   gamestate.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem",
-    round: currentRound,
+    round: gamestate.currentRound,
     proposition: finalTheoremData.proposition,
     source: "wittgenstein_ability",
   });

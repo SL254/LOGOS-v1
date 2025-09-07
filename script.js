@@ -1676,8 +1676,8 @@ function resetGame(selectedCharacters, testConfig = null) {
   gamestate.truePropositions = [];
   gamestate.currentProposition = [];
   gamestate.currentPlayer = "A";
-  gameIsOver = false;
-  currentRound = 1;
+  gamestate.gameIsOver = false;
+  gamestate.currentRound = 1;
   isThinkingTime = false;
 
   eurekaUsedInRound = { A: false, B: false };
@@ -1775,7 +1775,7 @@ function isValidPlay(cardToPlay, proposition) {
 }
 
 function checkNextTurn() {
-  if (gameIsOver || inTutorialMode) return; // 게임오버, 튜토리얼 중에는 실행 안 함
+  if (gamestate.gameIsOver || inTutorialMode) return; // 게임오버, 튜토리얼 중에는 실행 안 함
 
   clearAllAITimeouts(); // 기존에 예약된 AI 동작이 있다면 모두 취소
 
@@ -1804,7 +1804,7 @@ function endTurn() {
   if (isThinkingTime) {
     audioManager.playSfx("end");
     // 해당 라운드를 먼저 시작했던 플레이어 (사유 시간에는 두 번째로 행동함)
-    const roundStarter = currentRound % 2 === 1 ? "A" : "B";
+    const roundStarter = gamestate.currentRound % 2 === 1 ? "A" : "B";
 
     // 지금 턴을 마친 플레이어가 '두 번째' 순서라면, 사유 시간을 완전히 종료합니다.
     if (thinkingTimeTurn === roundStarter) {
@@ -1933,7 +1933,7 @@ function getAbilityButtonStateFor(player) {
 
   // 현재 게임이 진행 중이 아니거나, 해당 플레이어의 철학자 정보가 없으면 기본 상태 반환
   if (
-    gameIsOver ||
+    gamestate.gameIsOver ||
     (player === "A" && !gamestate.playerA_Data) ||
     (player === "B" && !gamestate.playerB_Data)
   ) {
@@ -2102,7 +2102,11 @@ function getAbilityButtonStateFor(player) {
 }
 
 function playCard(player, cardToPlay) {
-  if (player !== gamestate.currentPlayer || gameIsOver || isThinkingTime)
+  if (
+    player !== gamestate.currentPlayer ||
+    gamestate.gameIsOver ||
+    isThinkingTime
+  )
     return;
 
   if (cardsPlayedThisTurn[player] >= 1) {
@@ -2138,7 +2142,11 @@ function playCard(player, cardToPlay) {
 }
 
 function completeProposition() {
-  if (gamestate.currentProposition.length === 0 || gameIsOver || isThinkingTime)
+  if (
+    gamestate.currentProposition.length === 0 ||
+    gamestate.gameIsOver ||
+    isThinkingTime
+  )
     return false;
 
   const parsedProp = parsePropositionFromCards([
@@ -2191,7 +2199,7 @@ function completeProposition() {
     const propToAdd = {
       propId: `prop_${Date.now()}_${Math.random()}`,
       type: "user-made",
-      round: currentRound,
+      round: gamestate.currentRound,
       proposition: parsedProp,
       original_cards: [...gamestate.currentProposition],
     };
@@ -2232,7 +2240,7 @@ function completeProposition() {
 }
 
 function undoProposition() {
-  if (gameIsOver || isThinkingTime) return;
+  if (gamestate.gameIsOver || isThinkingTime) return;
   if (gameMode === "AI" && gamestate.currentPlayer === aiPlayer) return;
 
   if (gamestate.currentProposition.length > 0) {
@@ -2331,7 +2339,7 @@ function undoProposition() {
 }
 
 function declareEureka(player) {
-  if (gameIsOver) return;
+  if (gamestate.gameIsOver) return;
 
   if (!isThinkingTime && player !== gamestate.currentPlayer) return;
 
@@ -2364,7 +2372,7 @@ function endGame(winner, winningProposition) {
   }
   audioManager.fadeOut("game-play");
   audioManager.fadeOut("thinking-time");
-  gameIsOver = true;
+  gamestate.gameIsOver = true;
   document.getElementById("eureka-modal").classList.remove("visible");
   const statusEl = document.getElementById("status");
   let winnerName;
@@ -2491,7 +2499,7 @@ function endGame(winner, winningProposition) {
 }
 function checkRoundEndConditions() {
   if (
-    gameIsOver ||
+    gamestate.gameIsOver ||
     isThinkingTime ||
     cardsPlayedThisTurn[gamestate.currentPlayer] > 0
   )
@@ -2561,7 +2569,7 @@ function startThinkingTime() {
   thinkingTimeEl.style.display = "";
 
   // 후공 플레이어부터 사유 시간 턴을 시작
-  const roundStarter = currentRound % 2 === 1 ? "A" : "B";
+  const roundStarter = gamestate.currentRound % 2 === 1 ? "A" : "B";
   const thinkingTimeStarter = roundStarter === "A" ? "B" : "A";
   thinkingTimeTurn = thinkingTimeStarter;
 
@@ -2583,7 +2591,7 @@ function endThinkingTime() {
 
   document.getElementById("thinking-time-controls").classList.add("hidden"); // 기존 코드
 
-  currentRound++; // 기존 코드
+  gamestate.currentRound++; // 기존 코드
   eurekaUsedInRound = { A: false, B: false }; // 기존 코드
 
   // 손패를 새로 분배하는 부분 (기존 코드)
@@ -2622,7 +2630,7 @@ function endThinkingTime() {
     ); // 손패 B에서 필터링
   }
 
-  gamestate.currentPlayer = currentRound % 2 === 1 ? "A" : "B"; // 기존 코드
+  gamestate.currentPlayer = gamestate.currentRound % 2 === 1 ? "A" : "B"; // 기존 코드
   render(); // 기존 코드
 
   // 새로운 라운드 시작 시 참 명제 목록을 맨 아래로 스크롤
@@ -2659,7 +2667,10 @@ function render() {
     }
   }
   document.getElementById("round-display").textContent =
-    gamestate.currentLang.ui.roundDisplay.replace("{round}", currentRound);
+    gamestate.currentLang.ui.roundDisplay.replace(
+      "{round}",
+      gamestate.currentRound
+    );
   const handA_El = document.getElementById("player-a-hand"),
     handB_El = document.getElementById("player-b-hand");
   handA_El.innerHTML = "";
@@ -2696,7 +2707,7 @@ function render() {
       if (gameMode === "AI" && aiPlayer === "A") {
         cardEl.classList.add("ai-hand");
       } else {
-        if (gamestate.currentPlayer === "A" && !gameIsOver) {
+        if (gamestate.currentPlayer === "A" && !gamestate.gameIsOver) {
           if (cardsPlayedThisTurn["A"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
@@ -2735,7 +2746,7 @@ function render() {
       if (gameMode === "AI" && aiPlayer === "B") {
         cardEl.classList.add("ai-hand");
       } else {
-        if (gamestate.currentPlayer === "B" && !gameIsOver) {
+        if (gamestate.currentPlayer === "B" && !gamestate.gameIsOver) {
           if (cardsPlayedThisTurn["B"] >= 1) {
             cardEl.classList.add("unplayable");
           } else {
@@ -3124,11 +3135,11 @@ function render() {
     // 게임오버가 아닐 때, 활성화된 플레이어에게만 'active-turn' 클래스를 적용
     playerATitleBox.classList.toggle(
       "active-turn",
-      activePlayer === "A" && !gameIsOver
+      activePlayer === "A" && !gamestate.gameIsOver
     );
     playerBTitleBox.classList.toggle(
       "active-turn",
-      activePlayer === "B" && !gameIsOver
+      activePlayer === "B" && !gamestate.gameIsOver
     );
   }
 
@@ -3147,7 +3158,7 @@ function render() {
       endTurnBtn = document.getElementById("end-turn-btn");
 
     let winnerName = "";
-    if (gameIsOver) {
+    if (gamestate.gameIsOver) {
       statusEl.style.color = "#c0392b";
       playerAreaA.classList.add("disabled");
       playerAreaB.classList.add("disabled");
@@ -3275,7 +3286,7 @@ document.getElementById("main-menu-btn").addEventListener("click", () => {
   clearAllAITimeouts();
   aiPlayer = null;
   gameMode = null;
-  gameIsOver = true; // 게임이 끝났음을 명시
+  gamestate.gameIsOver = true; // 게임이 끝났음을 명시
 
   // 3. 메인 메뉴 UI를 표시하고 관련 음악을 재생합니다.
   // 이 함수가 게임 음악 fade-out과 메뉴 음악 fade-in을 모두 담당합니다.

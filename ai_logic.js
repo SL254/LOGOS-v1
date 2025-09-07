@@ -415,7 +415,7 @@ function executeTheoremDerivation(scoredTheorems) {
       gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`,
         type: "theorem",
-        round: currentRound,
+        round: gamestate.currentRound,
         proposition: candidateProp,
       });
       addedThisTurn.push(candidateProp);
@@ -961,7 +961,7 @@ function normalizeProposition(prop) {
   return prop;
 }
 function aiTurn() {
-  if (gameIsOver || isThinkingTime) return;
+  if (gamestate.gameIsOver || isThinkingTime) return;
 
   // --- 1. 새로운 갬빗 계획 수립 및 기존 계획 유효성 검사 ---
   activeGambitPlan = findBestGambitPlan(gamestate.currentPlayer);
@@ -975,7 +975,7 @@ function aiTurn() {
   }
 
   devLog(
-    `%c--- AI TURN DEBUG START (Round ${currentRound}, Player: ${gamestate.currentPlayer}) ---`,
+    `%c--- AI TURN DEBUG START (Round ${gamestate.currentRound}, Player: ${gamestate.currentPlayer}) ---`,
     "color: blue; font-weight: bold; font-size: 1.2em;"
   );
   devLog(
@@ -3391,7 +3391,7 @@ function executeWittgensteinAbilityCheck(player) {
         gamestate.truePropositions.push({
           propId: `prop_${Date.now()}_${Math.random()}`,
           type: "theorem",
-          round: currentRound,
+          round: gamestate.currentRound,
           proposition: newTheorem,
           source: "wittgenstein_ability",
         });

@@ -1167,7 +1167,7 @@ function completePropositionTutorial() {
   if (parsedProp) {
     gamestate.truePropositions.push({
       type: "user-made",
-      round: currentRound,
+      round: gamestate.currentRound,
       proposition: parsedProp,
       original_cards: [...gamestate.currentProposition],
     });
@@ -1711,7 +1711,7 @@ function addTheoremsToListTutorial() {
       gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`, // ✅ 이 줄이 추가되었습니다.
         type: "theorem",
-        round: currentRound,
+        round: gamestate.currentRound,
         proposition: theoremData.proposition,
       });
     }
@@ -1932,8 +1932,8 @@ function setupTutorialScenario(step) {
     gamestate.currentProposition = [];
     gamestate.currentPlayer = "A";
     gamestate.propositionStarter = "A";
-    gameIsOver = false;
-    currentRound = 1;
+    gamestate.gameIsOver = false;
+    gamestate.currentRound = 1;
     isThinkingTime = false;
     lastPropositionMaker = null;
     currentAssumption = null;
@@ -2327,7 +2327,7 @@ function setupTutorialScenario(step) {
 // 튜토리얼 '다음' 버튼 Enter 키 지원
 window.addEventListener("keydown", (event) => {
   // 튜토리얼 모드가 아니거나, 게임오버 상태이면 아무것도 하지 않음
-  if (!inTutorialMode || gameIsOver) return;
+  if (!inTutorialMode || gamestate.gameIsOver) return;
 
   const nextBtn = document.getElementById("tutorial-next-btn");
 
