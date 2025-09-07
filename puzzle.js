@@ -3,12 +3,10 @@ const STAR_THRESHOLDS = {
   1: { threeStar: 8, twoStar: 12 }, // 8 steps = 3 stars, 9-12 steps = 2 stars, 13+ steps = 1 star
   2: { threeStar: 8, twoStar: 12 }, // Same as level 1
   3: { threeStar: 7, twoStar: 11 }, // 7 or less = 3 stars, 8-11 = 2 stars, 12+ = 1 star
-  4: { threeStar: 6, twoStar: 10 }, // 6 or less = 3 stars, 7-10 = 2 stars, 11+ = 1 star
+  4: { threeStar: 5, twoStar: 9 }, // 6 or less = 3 stars, 7-10 = 2 stars, 11+ = 1 star
   5: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
-  6: { threeStar: 7, twoStar: 11 }, // Same as level 3
-  7: { threeStar: 8, twoStar: 12 }, // 8 or less = 3 stars, 9-12 = 2 stars, 14+ = 1 star
-  8: { threeStar: 6, twoStar: 10 }, // Same as level 4
-  9: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
+  6: { threeStar: 8, twoStar: 12 }, // 8 or less = 3 stars, 9-12 = 2 stars, 14+ = 1 star
+  7: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
 };
 
 /**
@@ -123,7 +121,7 @@ const PUZZLES = {
   4: {
     goalDescription: {
       ko: "당신의 승리 <strong>[소크라테스는 승리한다]</strong>나 상대의 패배 <strong>[플라톤은 승리한다 는 거짓이다]</strong>를 증명하세요.",
-      en: "Prove your victory, <strong>[Socrates wins]</strong> or opponent's defeat <strong>[Plato wins is false]</strong>.",
+      en: "Prove your victory, <strong>[Socrates wins]</strong> or opponent's defeat <strong>[Plato wins is false]</strong>.<br><strong>*You cannot use 'Assume' in this level.</strong>",
     },
     victoryConditions: {
       socrates: {
@@ -136,8 +134,8 @@ const PUZZLES = {
       },
     },
     premises: {
-      ko: ["플라톤은 지혜롭다 또는 플라톤은 지혜롭다"],
-      en: ["(Plato is wise) or (Plato is wise)"],
+      ko: ["소크라테스는 선하다 또는 소크라테스는 선하다"],
+      en: ["(Socrates is good) or (Socrates is good)"],
     },
   },
   5: {
@@ -189,34 +187,6 @@ const PUZZLES = {
     },
     premises: {
       ko: [
-        "소크라테스는 악하다 라면 플라톤은 개이다",
-        "모든 개는 선하다",
-        "플라톤은 악하다",
-      ],
-      en: [
-        "(Socrates is evil) then (Plato is a dog)",
-        "Every dog is good",
-        "Plato is evil",
-      ],
-    },
-  },
-  7: {
-    goalDescription: {
-      ko: "당신의 승리 <strong>[소크라테스는 승리한다]</strong>나 상대의 패배 <strong>[플라톤은 승리한다 는 거짓이다]</strong>를 증명하세요.",
-      en: "Prove your victory, <strong>[Socrates wins]</strong> or opponent's defeat <strong>[Plato wins is false]</strong>.",
-    },
-    victoryConditions: {
-      socrates: {
-        ko: "(소크라테스는 선하다 라면 소크라테스는 승리한다) 그리고 (소크라테스는 승리한다 라면 소크라테스는 선하다)",
-        en: "(Socrates is good then Socrates wins) and (Socrates wins then Socrates is good)",
-      },
-      plato: {
-        ko: "(플라톤은 어리석다 라면 플라톤은 승리한다) 그리고 (플라톤은 승리한다 라면 플라톤은 어리석다)",
-        en: "(Plato is foolish then Plato wins) and (Plato wins then Plato is foolish)",
-      },
-    },
-    premises: {
-      ko: [
         "플라톤은 새이다",
         "플라톤은 개이다",
         "플라톤은 물고기이다",
@@ -240,30 +210,7 @@ const PUZZLES = {
       ],
     },
   },
-  8: {
-    goalDescription: {
-      ko: "당신의 승리 <strong>[소크라테스는 승리한다]</strong>나 상대의 패배 <strong>[플라톤은 승리한다 는 거짓이다]</strong>를 증명하세요.<br><strong>*이 레벨에서는 가정하기를 사용할 수 없습니다.</strong>",
-      en: "Prove your victory, <strong>[Socrates wins]</strong> or opponent's defeat <strong>[Plato wins is false]</strong>.<br><strong>*You cannot use 'Assume' in this level.</strong>",
-    },
-    victoryConditions: {
-      socrates: {
-        ko: "(소크라테스는 선하다 라면 소크라테스는 승리한다) 그리고 (소크라테스는 승리한다 라면 소크라테스는 선하다)",
-        en: "(Socrates is good then Socrates wins) and (Socrates wins then Socrates is good)",
-      },
-      plato: {
-        ko: "(플라톤은 어리석다 라면 플라톤은 승리한다) 그리고 (플라톤은 승리한다 라면 플라톤은 어리석다)",
-        en: "(Plato is foolish then Plato wins) and (Plato wins then Plato is foolish)",
-      },
-    },
-    premises: {
-      ko: ["모든 새는 선하다 또는 모든 새는 선하다", "소크라테스는 새이다"],
-      en: [
-        "(Every bird is good) or (Every bird is good)",
-        "Socrates is a bird",
-      ],
-    },
-  },
-  9: {
+  7: {
     goalDescription: {
       ko: "당신의 승리 <strong>[소크라테스는 승리한다]</strong>나 상대의 패배 <strong>[플라톤은 승리한다 는 거짓이다]</strong>를 증명하세요.",
       en: "Prove your victory, <strong>[Socrates wins]</strong> or opponent's defeat <strong>[Plato wins is false]</strong>.",

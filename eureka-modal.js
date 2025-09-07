@@ -2,9 +2,7 @@ function openEurekaModal() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
   
-  // 퍼즐 레벨 7에서는 가정하기 버튼을 항상 비활성화
-  const isPuzzleLevel7 = currentPuzzleLevel === 7 || currentPuzzleLevel === "7";
-  devLog("Opening Eureka Modal, currentPuzzleLevel:", currentPuzzleLevel, "type:", typeof currentPuzzleLevel, "isPuzzleLevel7:", isPuzzleLevel7);
+  devLog("Opening Eureka Modal, currentPuzzleLevel:", currentPuzzleLevel, "type:", typeof currentPuzzleLevel);
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
   if (!isThinkingTime) {
@@ -393,11 +391,6 @@ function openEurekaModal() {
 
   updateConclusionPreview(); // Initialize preview
 
-  // 퍼즐 레벨 7에서 가정하기 버튼 비활성화 처리
-  if (currentPuzzleLevel === 7 || currentPuzzleLevel === "7") {
-    document.getElementById("add-assumption-btn").disabled = true;
-    devLog("Puzzle level 7: add-assumption-btn disabled");
-  }
 
   modal.classList.add("visible");
 
@@ -1178,9 +1171,7 @@ function renderModal() {
   premiseList.innerHTML = "";
 
   const hasAssumption = !!currentAssumption;
-  // 퍼즐 레벨 7에서는 가정하기 버튼을 항상 비활성화
-  const isPuzzleLevel7 = currentPuzzleLevel === 7 || currentPuzzleLevel === "7";
-  document.getElementById("add-assumption-btn").disabled = hasAssumption || isPuzzleLevel7;
+  document.getElementById("add-assumption-btn").disabled = hasAssumption;
   document.getElementById("cancel-assumption-btn").style.display = hasAssumption
     ? "inline-block"
     : "none";
