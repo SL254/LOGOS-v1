@@ -1147,7 +1147,7 @@ function playCardTutorial(cardToPlay) {
       player: gamestate.currentPlayer,
     });
     cardsPlayedThisTurn[gamestate.currentPlayer]++;
-    lastCardPlayer = gamestate.currentPlayer;
+    gamestate.lastCardPlayer = gamestate.currentPlayer;
     render();
   }
 }
@@ -1181,7 +1181,7 @@ function completePropositionTutorial() {
     gamestate.currentPlayer =
       gamestate.lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
-    lastCardPlayer = null;
+    gamestate.lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
   }
@@ -1945,7 +1945,7 @@ function setupTutorialScenario(step) {
     gamestate.isThinkingTime = false;
     gamestate.lastPropositionMaker = null;
     gamestate.currentAssumption = null;
-    lastCardPlayer = null;
+    gamestate.lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     gameMode = "2P";
 
@@ -2014,7 +2014,7 @@ function setupTutorialScenario(step) {
         socratesCardInfo,
         { card: wiseCard, player: "B" },
       ];
-      lastCardPlayer = "B";
+      gamestate.lastCardPlayer = "B";
       gamestate.currentPlayer = "A";
     }
   } else if (step === 4) {

@@ -2135,7 +2135,7 @@ function playCard(player, cardToPlay) {
 
   audioManager.playSfx("playCard");
 
-  lastCardPlayer = player;
+  gamestate.lastCardPlayer = player;
   cardsPlayedThisTurn[player]++;
 
   render();
@@ -2222,7 +2222,7 @@ function completeProposition() {
     gamestate.currentPlayer =
       gamestate.lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
-    lastCardPlayer = null;
+    gamestate.lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
     const truePropositionsEl = document.getElementById("true-propositions");
@@ -2268,11 +2268,12 @@ function undoProposition() {
     gamestate.currentPlayer = lastPlayedInfo.player;
 
     if (gamestate.currentProposition.length > 0) {
-      lastCardPlayer =
-        gamestate.currentProposition[gamestate.currentProposition.length - 1]
-          .player;
+      gamestate.lastCardPlayer =
+        gamestate.currentProposition[
+          gamestate.currentProposition.length - 1
+        ].player;
     } else {
-      lastCardPlayer = null;
+      gamestate.lastCardPlayer = null;
     }
 
     render();
@@ -2328,9 +2329,10 @@ function undoProposition() {
         gamestate.currentProposition[
           gamestate.currentProposition.length - 1
         ].player;
-      lastCardPlayer =
-        gamestate.currentProposition[gamestate.currentProposition.length - 1]
-          .player;
+      gamestate.lastCardPlayer =
+        gamestate.currentProposition[
+          gamestate.currentProposition.length - 1
+        ].player;
       cardsPlayedThisTurn = { A: 0, B: 0 };
       showAlert(gamestate.currentLang.alerts.undoLastProposition);
       render();
@@ -2518,7 +2520,7 @@ function checkRoundEndConditions() {
   let canComplete = false;
   if (
     gamestate.currentProposition.length > 0 &&
-    lastCardPlayer !== gamestate.currentPlayer
+    gamestate.lastCardPlayer !== gamestate.currentPlayer
   ) {
     const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
     if (parsedProp) {
@@ -2559,7 +2561,7 @@ function startThinkingTime() {
   audioManager.play("thinking-time");
 
   gamestate.currentProposition = [];
-  lastCardPlayer = null;
+  gamestate.lastCardPlayer = null;
   gamestate.isThinkingTime = true;
   cardsPlayedThisTurn = { A: 0, B: 0 };
 
@@ -3256,7 +3258,8 @@ function render() {
           eurekaBtnB.disabled = eurekaUsedInRound["B"];
         }
         completeBtn.disabled =
-          !isCompletable || lastCardPlayer === gamestate.currentPlayer;
+          !isCompletable ||
+          gamestate.lastCardPlayer === gamestate.currentPlayer;
         undoBtn.disabled = cardsPlayedThisTurn[gamestate.currentPlayer] === 0;
         endTurnBtn.disabled =
           cardsPlayedThisTurn[gamestate.currentPlayer] === 0;

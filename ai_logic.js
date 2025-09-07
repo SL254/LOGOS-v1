@@ -495,7 +495,7 @@ function isBoardCompletable() {
   // 명제판에 카드가 없으면 완성 불가능
   if (gamestate.currentProposition.length === 0) return false;
   // AI 자신이 마지막 카드를 냈다면 완성 불가능 (상대 턴에만 완성 가능)
-  if (lastCardPlayer === aiPlayer) return false;
+  if (gamestate.lastCardPlayer === aiPlayer) return false;
 
   // 문법적으로 완성 가능한 명제인지 확인
   const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
