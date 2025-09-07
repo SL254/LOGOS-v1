@@ -770,12 +770,14 @@ function parseTokensToProposition(tokens) {
     if (!prop) return null;
     return { type: "negation", proposition: prop };
   }
-  const cardInfo = tokens.map((t) => fullDeck.find((c) => c.text === t));
+  const cardInfo = tokens.map((t) =>
+    gamestate.fullDeck.find((c) => c.text === t)
+  );
   if (cardInfo.some((c) => !c)) {
     const [properNoun, quantifier, entity, predicate] =
       gamestate.currentLang.cardTypes;
     const types = tokens.map((t) => {
-      const card = fullDeck.find((c) => c.text === t);
+      const card = gamestate.fullDeck.find((c) => c.text === t);
       return card ? card.type : null;
     });
     if (types.length === 2 && types[0] === properNoun) {
@@ -813,7 +815,7 @@ function parseTokensToProposition(tokens) {
 }
 
 function parsePropositionFromString(str) {
-  const allKeywords = [...fullDeck.map((c) => c.text), "(", ")"].sort(
+  const allKeywords = [...gamestate.fullDeck.map((c) => c.text), "(", ")"].sort(
     (a, b) => b.length - a.length
   );
   let tempStr = str.trim();
@@ -1078,7 +1080,7 @@ function initializeGame(lang) {
   TEXTS.ko.tutorial = TUTORIAL_TEXTS.ko;
   TEXTS.en.tutorial = TUTORIAL_TEXTS.en;
 
-  fullDeck = gamestate.currentLang.cards;
+  gamestate.fullDeck = gamestate.currentLang.cards;
   cardTypeOrder = gamestate.currentLang.cardTypes;
 
   // 언어 모달은 이제 기본적으로 숨겨져 있음
@@ -1408,13 +1410,13 @@ function setupGame(selectedCharacters, testConfig = null) {
     );
   }
 
-  fullDeck = currentGameDeck;
+  gamestate.fullDeck = currentGameDeck;
 
   // 3. 손패 분배 (마르크스 플레이 불가능 카드 제거 포함)
   if (testConfig && testConfig.handA) {
     const handATexts = testConfig.handA.split(",").map((s) => s.trim());
     playerA_Hand = handATexts
-      .map((text) => fullDeck.find((c) => c.text === text))
+      .map((text) => gamestate.fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
     const nonPlayerCards = [
@@ -1424,13 +1426,15 @@ function setupGame(selectedCharacters, testConfig = null) {
       "is a capitalist",
     ];
     playerA_Hand = JSON.parse(
-      JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
+      JSON.stringify(
+        gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
+      )
     );
   }
   if (testConfig && testConfig.handB) {
     const handBTexts = testConfig.handB.split(",").map((s) => s.trim());
     playerB_Hand = handBTexts
-      .map((text) => fullDeck.find((c) => c.text === text))
+      .map((text) => gamestate.fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
     const nonPlayerCards = [
@@ -1440,7 +1444,9 @@ function setupGame(selectedCharacters, testConfig = null) {
       "is a capitalist",
     ];
     playerB_Hand = JSON.parse(
-      JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
+      JSON.stringify(
+        gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
+      )
     );
   }
 
@@ -2546,10 +2552,14 @@ function endThinkingTime() {
     gamestate.currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
   ]; // 기존 코드
   playerA_Hand = JSON.parse(
-    JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
+    JSON.stringify(
+      gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
+    )
   ); // 기존 코드
   playerB_Hand = JSON.parse(
-    JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
+    JSON.stringify(
+      gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
+    )
   ); // 기존 코드
 
   // 현재 게임에 마르크스가 있는지 확인합니다.

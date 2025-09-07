@@ -273,7 +273,7 @@ function startTutorial(startStep = 0) {
   abilityUsedState["A"] = { used: false }; // 소크라테스는 1회 사용 가능
   abilityUsedState["B"] = { used: false }; // 플라톤은 1회 사용 가능
 
-  fullDeck = gamestate.currentLang.cards;
+  gamestate.fullDeck = gamestate.currentLang.cards;
 
   inTutorialMode = true;
   tutorialStep = startStep;
@@ -388,7 +388,9 @@ function handleTutorialStepLogic() {
         const entityCards = Array.from(
           document.querySelectorAll("#player-a-hand .card")
         ).filter((c) => {
-          const cardData = fullDeck.find((card) => card.text === c.textContent);
+          const cardData = gamestate.fullDeck.find(
+            (card) => card.text === c.textContent
+          );
           return (
             cardData && cardData.type === gamestate.currentLang.cardTypes[2]
           ); // 개체 or Entity
@@ -396,7 +398,9 @@ function handleTutorialStepLogic() {
         const quantifierCards = Array.from(
           document.querySelectorAll("#player-a-hand .card")
         ).filter((c) => {
-          const cardData = fullDeck.find((card) => card.text === c.textContent);
+          const cardData = gamestate.fullDeck.find(
+            (card) => card.text === c.textContent
+          );
           return (
             cardData && cardData.type === gamestate.currentLang.cardTypes[1]
           ); // 양화사 or Quantifier
@@ -1953,7 +1957,9 @@ function setupTutorialScenario(step) {
       gamestate.currentLang.keywords.universal_q,
       gamestate.currentLang.keywords.existential_q,
     ];
-    playerA_Hand = fullDeck.filter((c) => requiredA_CardTexts.includes(c.text));
+    playerA_Hand = gamestate.fullDeck.filter((c) =>
+      requiredA_CardTexts.includes(c.text)
+    );
 
     const wiseCardText =
       gamestate.currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
@@ -1961,9 +1967,11 @@ function setupTutorialScenario(step) {
       wiseCardText,
       gamestate.currentLang.keywords.plato,
     ];
-    playerB_Hand = fullDeck.filter((c) => requiredB_CardTexts.includes(c.text));
+    playerB_Hand = gamestate.fullDeck.filter((c) =>
+      requiredB_CardTexts.includes(c.text)
+    );
     playerB_Hand.push(
-      ...fullDeck
+      ...gamestate.fullDeck
         .filter(
           (c) =>
             !requiredB_CardTexts.includes(c.text) &&
@@ -1990,13 +1998,13 @@ function setupTutorialScenario(step) {
     }
   } else if (step === 4) {
     currentProposition = [];
-    playerA_Hand = fullDeck.filter(
+    playerA_Hand = gamestate.fullDeck.filter(
       (c) =>
         c.type ===
           (gamestate.currentLang.langCode === "ko" ? "연산자" : "Operator") &&
         c.text !== gamestate.currentLang.keywords.not
     );
-    playerB_Hand = fullDeck.filter(
+    playerB_Hand = gamestate.fullDeck.filter(
       (c) =>
         c.type ===
           (gamestate.currentLang.langCode === "ko" ? "서술어" : "Predicate") &&
