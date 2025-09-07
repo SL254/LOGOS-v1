@@ -93,7 +93,7 @@ function setupEventListeners() {
         stopProofRecording();
       }
       gamestate.proofSteps = [];
-      stepCounter = 0;
+      gamestate.stepCounter = 0;
       victoryProposition = null;
       // ▲▲▲ [수정] 코드 추가 끝 ▲▲▲
 

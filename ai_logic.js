@@ -4075,7 +4075,7 @@ function getOppositePredicate(predicate) {
  * @returns {{id: number, proposition: object, rule: string, premises: number[]}[]} 모든 추론 단계를 포함하는 ProofNode 객체 배열.
  */
 function expandAndRecordTruths(initialTruths) {
-  let stepCounter = 0;
+  gamestate.stepCounter = 0;
   let fullProofLog = [];
 
   const addNodeIfNew = (conclusion, rule, premiseNodes) => {
@@ -4086,9 +4086,9 @@ function expandAndRecordTruths(initialTruths) {
     if (isAlreadyKnown) {
       return false;
     }
-    stepCounter++;
+    gamestate.stepCounter++;
     fullProofLog.push({
-      id: stepCounter,
+      id: gamestate.stepCounter,
       proposition: conclusion,
       rule: rule,
       premises: premiseNodes.map((node) => node.id),
@@ -4097,9 +4097,9 @@ function expandAndRecordTruths(initialTruths) {
   };
 
   initialTruths.forEach((prop) => {
-    stepCounter++;
+    gamestate.stepCounter++;
     fullProofLog.push({
-      id: stepCounter,
+      id: gamestate.stepCounter,
       proposition: prop,
       rule: "Initial Truth",
       premises: [],

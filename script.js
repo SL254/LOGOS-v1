@@ -126,7 +126,7 @@ function autoInitializeGame() {
 function startProofRecording() {
   gamestate.isRecordingProof = true;
   gamestate.proofSteps = [];
-  stepCounter = 0;
+  gamestate.stepCounter = 0;
   victoryProposition = null;
 }
 
@@ -143,10 +143,10 @@ function recordProofStep(
 ) {
   if (!gamestate.isRecordingProof) return;
 
-  stepCounter++;
+  gamestate.stepCounter++;
 
   const step = {
-    id: stepCounter,
+    id: gamestate.stepCounter,
     type: stepType, // 'premise', 'assumption', 'inference', 'victory'
     premises: premises ? [...premises] : [], // 사용된 전제들의 ID 배열
     conclusion: conclusion ? { ...conclusion } : null, // 결론 명제
@@ -157,7 +157,7 @@ function recordProofStep(
 
   // 각 명제에 고유 ID 부여
   if (step.conclusion && !step.conclusion.proofStepId) {
-    step.conclusion.proofStepId = stepCounter;
+    step.conclusion.proofStepId = gamestate.stepCounter;
   }
 
   gamestate.proofSteps.push(step);
@@ -168,7 +168,7 @@ function recordProofStep(
     step.type = "victory";
   }
 
-  return stepCounter;
+  return gamestate.stepCounter;
 }
 
 function isVictoryProposition(proposition) {
@@ -1343,7 +1343,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   // 논증 기록 시스템 초기화
   gamestate.proofSteps = [];
   gamestate.isRecordingProof = false;
-  stepCounter = 0;
+  gamestate.stepCounter = 0;
   victoryProposition = null;
   hideProofReviewButton();
 
