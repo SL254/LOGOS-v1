@@ -1516,10 +1516,12 @@ function renderKantModal(player) {
     cardEl.className = `card ${colorClass}`;
     cardEl.textContent = card.text;
     cardEl.onclick = () => {
-      const tempPropositionForValidation = kantProposition.map((c) => ({
-        card: c,
-        player: player,
-      }));
+      const tempPropositionForValidation = gamestate.kantProposition.map(
+        (c) => ({
+          card: c,
+          player: player,
+        })
+      );
 
       if (isValidPlay(card, tempPropositionForValidation)) {
         audioManager.playSfx("playCard");
@@ -1528,7 +1530,7 @@ function renderKantModal(player) {
         );
         if (cardIndex > -1) {
           const [movedCard] = hand.splice(cardIndex, 1);
-          kantProposition.push(movedCard);
+          gamestate.kantProposition.push(movedCard);
           renderKantModal(player);
         }
       } else {
@@ -1539,7 +1541,7 @@ function renderKantModal(player) {
   });
 
   // 2. 명제 구성 영역 렌더링
-  kantProposition.forEach((card) => {
+  gamestate.kantProposition.forEach((card) => {
     const cardEl = document.createElement("div");
 
     cardEl.className = `card ${colorClass}`;
@@ -1550,27 +1552,28 @@ function renderKantModal(player) {
   // 3. 버튼들 활성화/비활성화 상태 업데이트
   // 되돌리기 버튼: 카드가 없으면 비활성화
   document.getElementById("kant-undo-btn").disabled =
-    kantProposition.length === 0;
+    gamestate.kantProposition.length === 0;
 
   // 완성 버튼: 카드가 없거나 문법적으로 완성되지 않았으면 비활성화
   const isGrammaticallyComplete =
-    kantProposition.length > 0 &&
-    parsePropositionFromCards(kantProposition.map((c) => ({ card: c }))) !==
-      null;
+    gamestate.kantProposition.length > 0 &&
+    parsePropositionFromCards(
+      gamestate.kantProposition.map((c) => ({ card: c }))
+    ) !== null;
   document.getElementById("kant-confirm-btn").disabled =
     !isGrammaticallyComplete;
 }
 
 function confirmKantAbility(player) {
   // 1. 명제가 비어있는지 확인
-  if (kantProposition.length === 0) {
+  if (gamestate.kantProposition.length === 0) {
     return;
   }
 
   // 2. 문법적 완결성 검사
   // parsePropositionFromCards는 {card: cardObject} 형태의 배열을 기대하므로 변환
   const parsedProp = parsePropositionFromCards(
-    kantProposition.map((c) => ({ card: c }))
+    gamestate.kantProposition.map((c) => ({ card: c }))
   );
   if (!parsedProp) {
     showAlert(gamestate.currentLang.alerts.incompleteProposition);
@@ -1603,7 +1606,7 @@ function confirmKantAbility(player) {
   // 8. 마무리
   const modal = document.getElementById("kant-ability-modal");
   modal.classList.remove("visible");
-  kantProposition = []; // 임시 명제 배열 비우기
+  gamestate.kantProposition = []; // 임시 명제 배열 비우기
 
   showAlert(gamestate.currentLang.alerts.kantSuccess);
   render(); // 게임 화면 전체 갱신
@@ -1613,7 +1616,7 @@ function confirmKantAbility(player) {
  * 칸트 능력 활성화: 모달창을 설정하고 띄웁니다.
  */
 function activateKantAbility(player) {
-  kantProposition = []; // 명제 배열 초기화
+  gamestate.kantProposition = []; // 명제 배열 초기화
   const modal = document.getElementById("kant-ability-modal");
 
   // UI 텍스트 설정
@@ -1636,11 +1639,11 @@ function activateKantAbility(player) {
 
   // 되돌리기 버튼 기능 연결
   document.getElementById("kant-undo-btn").onclick = (event) => {
-    if (kantProposition.length > 0) {
+    if (gamestate.kantProposition.length > 0) {
       // 글로벌 click 이벤트 전파를 막아 중복 hover 효과음 방지
       event.stopPropagation();
       audioManager.playSfx("undo");
-      const cardToReturn = kantProposition.pop();
+      const cardToReturn = gamestate.kantProposition.pop();
       const hand =
         player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
       hand.push(cardToReturn);
@@ -1658,11 +1661,11 @@ function activateKantAbility(player) {
   // 닫기 버튼 기능 연결 (중요: 취소 시 카드를 모두 손패로 되돌림)
   document.getElementById("close-kant-modal-btn").onclick = () => {
     audioManager.playSfx("hover");
-    if (kantProposition.length > 0) {
+    if (gamestate.kantProposition.length > 0) {
       const hand =
         player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
-      hand.push(...kantProposition);
-      kantProposition = [];
+      hand.push(...gamestate.kantProposition);
+      gamestate.kantProposition = [];
       hand.sort(
         (a, b) =>
           gamestate.cardTypeOrder.indexOf(a.type) -
