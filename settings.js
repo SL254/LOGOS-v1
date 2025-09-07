@@ -1,23 +1,28 @@
 function saveSettings() {
-  const settings = {
-    bgmVolume: bgmVolume,
-    sfxVolume: sfxVolume,
-    language: gamestate.currentLang ? gamestate.currentLang.langCode : "ko",
+  // gameState에서 저장하고 싶은 설정만 골라 새로운 객체를 만듭니다.
+  const settingsToSave = {
+    bgmVolume: gameState.bgmVolume,
+    sfxVolume: gameState.sfxVolume,
+    language: gameState.currentLang ? gameState.currentLang.langCode : "ko",
   };
-  localStorage.setItem("logos_settings", JSON.stringify(settings));
+  localStorage.setItem("logos_settings", JSON.stringify(settingsToSave));
 }
 
 function loadSettings() {
   const savedSettings = localStorage.getItem("logos_settings");
   if (savedSettings) {
     const settings = JSON.parse(savedSettings);
-    bgmVolume = settings.bgmVolume !== undefined ? settings.bgmVolume : 0.4;
-    sfxVolume = settings.sfxVolume !== undefined ? settings.sfxVolume : 0.6;
+    // 불러온 설정 값으로 gameState의 해당 속성을 덮어씁니다.
+    gameState.bgmVolume =
+      settings.bgmVolume !== undefined ? settings.bgmVolume : 0.4;
+    gameState.sfxVolume =
+      settings.sfxVolume !== undefined ? settings.sfxVolume : 0.6;
+    // 언어 설정은 getPreferredLanguage 함수에서 처리하므로 여기서는 직접 바꾸지 않습니다.
   }
 
-  // 로드된 값으로 오디오 및 UI 업데이트
-  audioManager.setVolume(bgmVolume);
-  audioManager.setSfxVolume(sfxVolume);
+  // gameState에 저장된 볼륨 값으로 오디오 및 UI를 업데이트합니다.
+  audioManager.setVolume(gameState.bgmVolume);
+  audioManager.setSfxVolume(gameState.sfxVolume);
 
   const bgmSlider = document.getElementById("bgm-volume-slider");
   const bgmValueSpan = document.getElementById("bgm-volume-value");
@@ -26,15 +31,15 @@ function loadSettings() {
   const languageSelect = document.getElementById("language-select");
 
   if (bgmSlider) {
-    bgmSlider.value = bgmVolume;
-    bgmValueSpan.textContent = `${Math.round(bgmVolume * 100)}%`;
+    bgmSlider.value = gameState.bgmVolume;
+    bgmValueSpan.textContent = `${Math.round(gameState.bgmVolume * 100)}%`;
   }
   if (sfxSlider) {
-    sfxSlider.value = sfxVolume;
-    sfxValueSpan.textContent = `${Math.round(sfxVolume * 100)}%`;
+    sfxSlider.value = gameState.sfxVolume;
+    sfxValueSpan.textContent = `${Math.round(gameState.sfxVolume * 100)}%`;
   }
-  if (languageSelect && gamestate.currentLang) {
-    languageSelect.value = gamestate.currentLang.langCode;
+  if (languageSelect && gameState.currentLang) {
+    languageSelect.value = gameState.currentLang.langCode;
   }
 
   // 초기 언어 선택 상태 업데이트
@@ -55,14 +60,14 @@ function getPreferredLanguage() {
 function changeLanguage(newLang) {
   if (!["ko", "en"].includes(newLang)) return;
 
-  // 언어 변경
-  gamestate.currentLang = TEXTS[newLang];
-  document.documentElement.lang = gamestate.currentLang.langCode;
-  document.title = gamestate.currentLang.ui.title;
+  // 언어 변경 시 gameState.currentLang을 업데이트합니다.
+  gameState.currentLang = TEXTS[newLang];
+  document.documentElement.lang = gameState.currentLang.langCode;
+  document.title = gameState.currentLang.ui.title;
 
-  // 카드 덱 업데이트
-  gamestate.fullDeck = gamestate.currentLang.cards;
-  gamestate.cardTypeOrder = gamestate.currentLang.cardTypes;
+  // 카드 덱 정보도 gameState에 저장합니다.
+  gameState.fullDeck = gameState.currentLang.cards;
+  gameState.cardTypeOrder = gameState.currentLang.cardTypes;
 
   // UI 텍스트 업데이트
   setupUI();
