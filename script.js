@@ -1776,14 +1776,14 @@ function checkNextTurn() {
   if (isThinkingTime) {
     // --- 사유 시간일 때의 턴 관리 ---
     // 현재 생각해야 할 플레이어가 AI라면, AI의 사유 시간 턴을 예약
-    if (isPlayerAI[thinkingTimeTurn]) {
+    if (gamestate.isPlayerAI[thinkingTimeTurn]) {
       aiTimeoutId = setTimeout(aiThinkingTimeTurn, 1500);
     }
     // 사람이 턴이라면, 아무것도 하지 않고 사용자 입력을 기다림
   } else {
     // --- 일반 턴일 때의 턴 관리 ---
     // 현재 턴의 플레이어가 AI라면, AI의 일반 턴을 예약
-    if (isPlayerAI[currentPlayer]) {
+    if (gamestate.isPlayerAI[currentPlayer]) {
       const delay = gameMode === "AI_VS_AI" ? 250 : 1500;
       aiTimeoutId = setTimeout(aiTurn, delay);
     }
@@ -1953,7 +1953,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player].usedCount >=
               abilityUsedState[player].maxUses ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -1969,7 +1969,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -1999,7 +1999,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2014,7 +2014,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2029,7 +2029,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2043,7 +2043,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2063,7 +2063,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             userMadePropsCount < 15 ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
@@ -2077,7 +2077,7 @@ function getAbilityButtonStateFor(player) {
           disabled:
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
-            (isPlayerAI[player] && thinkingTimeTurn === player),
+            (gamestate.isPlayerAI[player] && thinkingTimeTurn === player),
           text: gamestate.currentLang.ui.useAbilityButton,
         };
       }

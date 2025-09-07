@@ -11,7 +11,7 @@ function startCharacterSelection(mode) {
   gameMode = mode;
   selectionMode = mode;
   tempSelections = { p1: null, p2: null };
-  isPlayerAI = { A: false, B: false }; // 상태 초기화
+  gamestate.isPlayerAI = { A: false, B: false }; // 상태 초기화
 
   document.getElementById("credits-btn").classList.add("hidden");
   updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
@@ -47,7 +47,7 @@ function startCharacterSelection(mode) {
     document.getElementById("select-first-player").onclick = () => {
       humanPlayerId = "P1";
       aiPlayer = "B"; // 기존 호환성을 위해 유지
-      isPlayerAI.B = true; // 새로운 상태 변수 설정
+      gamestate.isPlayerAI.B = true; // 새로운 상태 변수 설정
       turnModal.classList.remove("visible");
       document
         .getElementById("character-selection-screen")
@@ -57,7 +57,7 @@ function startCharacterSelection(mode) {
     document.getElementById("select-second-player").onclick = () => {
       humanPlayerId = "P2";
       aiPlayer = "A"; // 기존 호환성을 위해 유지
-      isPlayerAI.A = true; // 새로운 상태 변수 설정
+      gamestate.isPlayerAI.A = true; // 새로운 상태 변수 설정
       turnModal.classList.remove("visible");
       document
         .getElementById("character-selection-screen")
@@ -67,7 +67,7 @@ function startCharacterSelection(mode) {
   } else if (mode === "AI_VS_AI") {
     aiPlayer = null; // 사용하지 않음
     humanPlayerId = null;
-    isPlayerAI = { A: true, B: true }; // 양쪽 모두 AI로 설정
+    gamestate.isPlayerAI = { A: true, B: true }; // 양쪽 모두 AI로 설정
     document
       .getElementById("character-selection-screen")
       .classList.remove("hidden");
