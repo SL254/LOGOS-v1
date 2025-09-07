@@ -321,7 +321,7 @@ function populatePuzzleLevels() {
  * @param {object} levelData - PUZZLES 객체에서 가져온 레벨 정보
  */
 function startPuzzle(levelNum, levelData) {
-  currentPuzzleLevel = levelNum;
+  gamestate.currentPuzzleLevel = levelNum;
 
   const masterDeck = gamestate.currentLang.cards;
   // '소크라테스는', '플라톤은' 카드를 기본 덱에서 찾습니다.

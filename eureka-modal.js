@@ -3,10 +3,10 @@ function openEurekaModal() {
   currentAssumption = null;
 
   devLog(
-    "Opening Eureka Modal, currentPuzzleLevel:",
-    currentPuzzleLevel,
+    "Opening Eureka Modal, gamestate.currentPuzzleLevel:",
+    gamestate.currentPuzzleLevel,
     "type:",
-    typeof currentPuzzleLevel
+    typeof gamestate.currentPuzzleLevel
   );
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
@@ -1000,16 +1000,23 @@ function proveVictory() {
 
     if (isMyVictoryProven || isOpponentLossProven) {
       // Calculate star rating based on proof steps
-      const stars = calculateStarRating(currentPuzzleLevel, inferenceStepCount);
+      const stars = calculateStarRating(
+        gamestate.currentPuzzleLevel,
+        inferenceStepCount
+      );
 
       try {
         // Record puzzle completion with star rating
-        recordPuzzleCompletion(currentPuzzleLevel, inferenceStepCount, stars);
+        recordPuzzleCompletion(
+          gamestate.currentPuzzleLevel,
+          inferenceStepCount,
+          stars
+        );
 
         // Keep backward compatibility - also save to old format
         const clearedPuzzles =
           JSON.parse(localStorage.getItem("logos_cleared_puzzles")) || {};
-        clearedPuzzles[currentPuzzleLevel] = true;
+        clearedPuzzles[gamestate.currentPuzzleLevel] = true;
         localStorage.setItem(
           "logos_cleared_puzzles",
           JSON.stringify(clearedPuzzles)
