@@ -119,7 +119,7 @@ function setupUI() {
     .getElementById("ability-b")
     .addEventListener("click", () => activateAbility("B"));
   document.getElementById("current-proposition-title").textContent =
-    gameState.currentLang.ui.gameState.currentPropositionTitle;
+    gameState.currentLang.ui.currentPropositionTitle;
   document.getElementById("complete-btn").textContent =
     gameState.currentLang.ui.completeButton;
   document.getElementById("undo-btn").textContent =
@@ -127,7 +127,7 @@ function setupUI() {
   document.getElementById("end-turn-btn").textContent =
     gameState.currentLang.ui.endTurnButton;
   document.getElementById("true-propositions-title").textContent =
-    gameState.currentLang.ui.gameState.truePropositionsTitle;
+    gameState.currentLang.ui.truePropositionsTitle;
   document.getElementById("thinking-time-title").textContent =
     gameState.currentLang.ui.thinkingTimeTitle;
   document.getElementById("thinking-time-desc").innerHTML =

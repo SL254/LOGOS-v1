@@ -245,7 +245,7 @@ function traceVictoryProof() {
   const victoryStep = gameState.proofSteps.find(
     (step) =>
       step.type === "victory" ||
-      (step.conclusion && isgameState.victoryProposition(step.conclusion))
+      (step.conclusion && isvictoryProposition(step.conclusion))
   );
 
   if (victoryStep) {
@@ -1797,7 +1797,7 @@ function checkNextTurn() {
     // --- 사유 시간일 때의 턴 관리 ---
     // 현재 생각해야 할 플레이어가 AI라면, AI의 사유 시간 턴을 예약
     if (gameState.isPlayerAI[gameState.thinkingTimeTurn]) {
-      gameState.aiTimeoutId = setTimeout(aigameState.thinkingTimeTurn, 1500);
+      gameState.aiTimeoutId = setTimeout(aithinkingTimeTurn, 1500);
     }
     // 사람이 턴이라면, 아무것도 하지 않고 사용자 입력을 기다림
   } else {
@@ -1829,7 +1829,7 @@ function endTurn() {
 
       if (gameMode === "AI" && gameState.thinkingTimeTurn === aiPlayer) {
         clearAllAITimeouts();
-        gameState.aiTimeoutId = setTimeout(aigameState.thinkingTimeTurn, 2000);
+        gameState.aiTimeoutId = setTimeout(aithinkingTimeTurn, 2000);
       }
       render();
 
@@ -2197,10 +2197,7 @@ function completeProposition() {
 
   // 1. "불가능한 경우"를 먼저 확인하고 함수를 즉시 종료시킵니다.
   // 현재 플레이어가 니체가 "아닌데" 중복 명제를 완성하려는 경우 -> 거부
-  if (
-    (isAxiom || isAlreadyProven) &&
-    gameState.currentPlayerId !== "nietzsche"
-  ) {
+  if ((isAxiom || isAlreadyProven) && currentPlayerId !== "nietzsche") {
     if (gameState.currentPlayer !== aiPlayer) {
       showAlert(gameState.currentLang.alerts.duplicateProposition);
     }
@@ -2227,7 +2224,7 @@ function completeProposition() {
     };
 
     // 만약 "니체가 중복 명제를 완성"한 경우, 'source'를 추가합니다.
-    if (isAlreadyProven && gameState.currentPlayerId === "nietzsche") {
+    if (isAlreadyProven && currentPlayerId === "nietzsche") {
       propToAdd.source = "nietzsche_ability";
     }
 
@@ -2248,8 +2245,8 @@ function completeProposition() {
     gameState.cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
     const truePropositionsEl = document.getElementById("true-propositions");
-    gameState.truePropositionsEl.scrollTo({
-      top: gameState.truePropositionsEl.scrollHeight,
+    truePropositionsEl.scrollTo({
+      top: truePropositionsEl.scrollHeight,
       behavior: "smooth",
     });
     checkNextTurn();
@@ -2666,9 +2663,8 @@ function endThinkingTime() {
 
   // 새로운 라운드 시작 시 참 명제 목록을 맨 아래로 스크롤
   const truePropositionsElement = document.getElementById("true-propositions");
-  if (gameState.truePropositionsElement) {
-    gameState.truePropositionsElement.scrollTop =
-      gameState.truePropositionsElement.scrollHeight;
+  if (truePropositionsElement) {
+    truePropositionsElement.scrollTop = truePropositionsElement.scrollHeight;
   }
 
   checkNextTurn(); // 기존 코드
@@ -3215,7 +3211,7 @@ function render() {
       );
       const thinkingPlayerColor =
         gameState.thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
-      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gameState.currentLang.ui.gameState.thinkingTimeTurnMessage}</span>`;
+      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gameState.currentLang.ui.thinkingTimeTurnMessage}</span>`;
 
       // 3. 현재 턴인 플레이어의 영역만 활성화합니다.
       if (gameState.thinkingTimeTurn === "A") {
