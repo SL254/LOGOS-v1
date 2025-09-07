@@ -2,7 +2,7 @@
 const STAR_THRESHOLDS = {
   1: { threeStar: 8, twoStar: 12 }, // 8 steps = 3 stars, 9-12 steps = 2 stars, 13+ steps = 1 star
   2: { threeStar: 8, twoStar: 12 }, // Same as level 1
-  3: { threeStar: 7, twoStar: 11 }, // 7 or less = 3 stars, 8-11 = 2 stars, 12+ = 1 star
+  3: { threeStar: 8, twoStar: 12 }, // Same as level 1
   4: { threeStar: 5, twoStar: 9 }, // 6 or less = 3 stars, 7-10 = 2 stars, 11+ = 1 star
   5: { threeStar: 11, twoStar: 15 }, // 11 or less = 3 stars, 12-15 = 2 stars, 16+ = 1 star
   6: { threeStar: 8, twoStar: 12 }, // 8 or less = 3 stars, 9-12 = 2 stars, 14+ = 1 star
