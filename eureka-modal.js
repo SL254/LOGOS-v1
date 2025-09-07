@@ -618,7 +618,7 @@ function applyRule() {
 
           // 가정의 경우 별도로 찾기
           if (p.isAssumption && assumptionForRecord) {
-            const assumptionStep = proofSteps.find(
+            const assumptionStep = gamestate.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -627,8 +627,8 @@ function applyRule() {
             return assumptionStep ? assumptionStep.id : null;
           }
 
-          // proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
-          const assumptionStep = proofSteps.find(
+          // gamestate.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+          const assumptionStep = gamestate.proofSteps.find(
             (step) =>
               step.type === "assumption" &&
               step.conclusion &&
@@ -636,7 +636,7 @@ function applyRule() {
           );
           if (assumptionStep) return assumptionStep.id;
 
-          const proofStep = proofSteps.find(
+          const proofStep = gamestate.proofSteps.find(
             (step) =>
               step.conclusion &&
               arePropositionsEqual(step.conclusion, p.proposition)
@@ -688,7 +688,7 @@ function applyRule() {
 
             // 가정의 경우 별도로 찾기
             if (p.isAssumption && gamestate.currentAssumption) {
-              const assumptionStep = proofSteps.find(
+              const assumptionStep = gamestate.proofSteps.find(
                 (step) =>
                   step.type === "assumption" &&
                   step.conclusion &&
@@ -700,8 +700,8 @@ function applyRule() {
               return assumptionStep ? assumptionStep.id : null;
             }
 
-            // 다른 전제들도 proofSteps에서 찾기 (가정을 우선적으로)
-            const assumptionStep = proofSteps.find(
+            // 다른 전제들도 gamestate.proofSteps에서 찾기 (가정을 우선적으로)
+            const assumptionStep = gamestate.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -709,7 +709,7 @@ function applyRule() {
             );
             if (assumptionStep) return assumptionStep.id;
 
-            const proofStep = proofSteps.find(
+            const proofStep = gamestate.proofSteps.find(
               (step) =>
                 step.conclusion &&
                 arePropositionsEqual(step.conclusion, p.proposition)
@@ -835,8 +835,8 @@ function applyRule() {
               if (existing && existing.proofStepId) return existing.proofStepId;
             }
 
-            // 4. proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
-            const assumptionStep = proofSteps.find(
+            // 4. gamestate.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+            const assumptionStep = gamestate.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -844,7 +844,7 @@ function applyRule() {
             );
             if (assumptionStep) return assumptionStep.id;
 
-            const proofStep = proofSteps.find(
+            const proofStep = gamestate.proofSteps.find(
               (step) =>
                 step.conclusion &&
                 arePropositionsEqual(step.conclusion, p.proposition)
@@ -1175,7 +1175,7 @@ function proveVictory() {
         : opponentLossCondition;
 
       // 승리 명제를 직접 도출한 마지막 추론 단계 찾기
-      const lastInferenceStep = proofSteps
+      const lastInferenceStep = gamestate.proofSteps
         .filter((step) => step.type === "inference")
         .reverse()
         .find(

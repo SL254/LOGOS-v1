@@ -4205,7 +4205,7 @@ function expandAndRecordTruths(initialTruths) {
  */
 function prepareAndShowAIProof(fullProofLog, goal) {
   // --- 1단계: 데이터 준비 (기존과 동일) ---
-  proofSteps = fullProofLog.map((node) => ({
+  gamestate.proofSteps = fullProofLog.map((node) => ({
     id: node.id,
     conclusion: node.proposition,
     type: node.rule === "Initial Truth" ? "premise" : "inference",
@@ -4218,7 +4218,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
 
   // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
   // 2. 최종 승리 단계(goal)를 찾아서 type을 'victory'로 명시적으로 변경
-  const finalVictoryStep = proofSteps.find((step) =>
+  const finalVictoryStep = gamestate.proofSteps.find((step) =>
     arePropositionsEqual(step.conclusion, goal)
   );
   if (finalVictoryStep) {

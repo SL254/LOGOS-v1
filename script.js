@@ -125,7 +125,7 @@ function autoInitializeGame() {
 
 function startProofRecording() {
   isRecordingProof = true;
-  proofSteps = [];
+  gamestate.proofSteps = [];
   stepCounter = 0;
   victoryProposition = null;
 }
@@ -160,7 +160,7 @@ function recordProofStep(
     step.conclusion.proofStepId = stepCounter;
   }
 
-  proofSteps.push(step);
+  gamestate.proofSteps.push(step);
 
   // 승리 명제인지 확인
   if (conclusion && isVictoryProposition(conclusion)) {
@@ -204,7 +204,7 @@ function addPropositionId(proposition, stepId) {
 }
 
 function traceVictoryProof() {
-  if (!victoryProposition || proofSteps.length === 0) {
+  if (!victoryProposition || gamestate.proofSteps.length === 0) {
     return [];
   }
 
@@ -213,7 +213,7 @@ function traceVictoryProof() {
   function traceStep(stepId) {
     if (!stepId) return;
 
-    const step = proofSteps.find((s) => s.id === stepId);
+    const step = gamestate.proofSteps.find((s) => s.id === stepId);
     if (!step || relevantSteps.has(step)) return;
 
     // 전제들을 먼저 추적 (깊이 우선 탐색)
@@ -227,7 +227,7 @@ function traceVictoryProof() {
       (step.rule === "conditionalIntroduction" ||
         step.rule === "reductioAdAbsurdum")
     ) {
-      const assumptionStep = proofSteps.find(
+      const assumptionStep = gamestate.proofSteps.find(
         (s) =>
           s.type === "assumption" &&
           s.conclusion &&
@@ -242,7 +242,7 @@ function traceVictoryProof() {
   }
 
   // 승리 명제부터 역추적 시작
-  const victoryStep = proofSteps.find(
+  const victoryStep = gamestate.proofSteps.find(
     (step) =>
       step.type === "victory" ||
       (step.conclusion && isVictoryProposition(step.conclusion))
@@ -252,7 +252,7 @@ function traceVictoryProof() {
     traceStep(victoryStep.id);
   } else {
     // 승리 단계가 없으면 마지막 추론 단계부터 시작
-    const lastInferenceStep = proofSteps
+    const lastInferenceStep = gamestate.proofSteps
       .filter((s) => s.type === "inference")
       .sort((a, b) => b.timestamp - a.timestamp)[0];
 
@@ -272,7 +272,7 @@ function traceVictoryProof() {
   );
   devLog(
     "All proof steps:",
-    proofSteps.map((s) => ({
+    gamestate.proofSteps.map((s) => ({
       id: s.id,
       type: s.type,
       premises: s.premises,
@@ -282,7 +282,9 @@ function traceVictoryProof() {
   );
 
   // 가정 단계들 확인
-  const assumptionSteps = proofSteps.filter((s) => s.type === "assumption");
+  const assumptionSteps = gamestate.proofSteps.filter(
+    (s) => s.type === "assumption"
+  );
   devLog(
     "Assumption steps:",
     assumptionSteps.map((s) => ({
@@ -295,7 +297,9 @@ function traceVictoryProof() {
   );
 
   // 중요한 추론 단계들의 premise 내용 확인
-  const inferenceSteps = proofSteps.filter((s) => s.type === "inference");
+  const inferenceSteps = gamestate.proofSteps.filter(
+    (s) => s.type === "inference"
+  );
   devLog(
     "Inference steps details:",
     inferenceSteps.map((s) => ({
@@ -354,7 +358,7 @@ function getRuleNameInLanguage(ruleKey) {
   return ruleNames[ruleKey] || ruleKey;
 }
 
-function convertProofStepsToNaturalLanguage(steps) {
+function convertproofStepsToNaturalLanguage(steps) {
   if (!steps || steps.length === 0) return [];
 
   const convertedSteps = [];
@@ -457,7 +461,7 @@ function isStepAssumptionDependent(step, allSteps) {
 }
 
 function showProofReviewModal() {
-  if (!proofSteps || proofSteps.length === 0) {
+  if (!gamestate.proofSteps || gamestate.proofSteps.length === 0) {
     showAlert("논증 과정이 기록되지 않았습니다.");
     return;
   }
@@ -514,9 +518,9 @@ function showProofReviewModal() {
           JSON.stringify(s.premises) === JSON.stringify(step.premises)
       );
 
-      // 단순화 규칙의 경우, 전체 proofSteps에서 같은 전제를 가진 모든 단순화 결론을 찾아 추가
+      // 단순화 규칙의 경우, 전체 gamestate.proofSteps에서 같은 전제를 가진 모든 단순화 결론을 찾아 추가
       if (step.rule === "conjunctionElimination") {
-        const allSimplificationSteps = proofSteps.filter(
+        const allSimplificationSteps = gamestate.proofSteps.filter(
           (s) =>
             s.rule === "conjunctionElimination" &&
             JSON.stringify(s.premises) === JSON.stringify(step.premises)
@@ -537,7 +541,9 @@ function showProofReviewModal() {
       // 이 추론에 사용된 전제들 찾기
       const usedPremises = step.premises
         ? step.premises
-            .map((premiseId) => proofSteps.find((s) => s.id === premiseId))
+            .map((premiseId) =>
+              gamestate.proofSteps.find((s) => s.id === premiseId)
+            )
             .filter(Boolean)
         : [];
 
@@ -563,7 +569,10 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
 
         // 가정 의존성 확인 및 스타일 적용
-        const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
+        const isAssumptionDep = isStepAssumptionDependent(
+          premise,
+          gamestate.proofSteps
+        );
         if (isAssumptionDep) {
           premiseDiv.classList.add("assumption-dependent");
         }
@@ -601,7 +610,7 @@ function showProofReviewModal() {
         conclusionDiv.className = `proof-step conclusion`;
 
         // 가정 의존성 확인 및 스타일 적용
-        if (isStepAssumptionDependent(relatedStep, proofSteps)) {
+        if (isStepAssumptionDependent(relatedStep, gamestate.proofSteps)) {
           conclusionDiv.classList.add("assumption-dependent");
         }
 
@@ -625,7 +634,9 @@ function showProofReviewModal() {
       // 승리로 이어진 전제들 찾기
       const usedPremises = step.premises
         ? step.premises
-            .map((premiseId) => proofSteps.find((s) => s.id === premiseId))
+            .map((premiseId) =>
+              gamestate.proofSteps.find((s) => s.id === premiseId)
+            )
             .filter(Boolean)
         : [];
 
@@ -635,7 +646,10 @@ function showProofReviewModal() {
         premiseDiv.className = `proof-step ${premise.type}`;
 
         // 가정 의존성 확인 및 스타일 적용
-        const isAssumptionDep = isStepAssumptionDependent(premise, proofSteps);
+        const isAssumptionDep = isStepAssumptionDependent(
+          premise,
+          gamestate.proofSteps
+        );
         devLog(
           "Premise dependency check:",
           premise.type,
@@ -1327,7 +1341,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   gamestate.truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
 
   // 논증 기록 시스템 초기화
-  proofSteps = [];
+  gamestate.proofSteps = [];
   isRecordingProof = false;
   stepCounter = 0;
   victoryProposition = null;
@@ -2505,7 +2519,12 @@ function endGame(winner, winningProposition) {
   });
 
   // 논증 다시보기 버튼 표시 (퍼즐 모드나 튜토리얼이 아닌 경우만)
-  if (!inPuzzleMode && !inTutorialMode && proofSteps && proofSteps.length > 0) {
+  if (
+    !inPuzzleMode &&
+    !inTutorialMode &&
+    gamestate.proofSteps &&
+    gamestate.proofSteps.length > 0
+  ) {
     showProofReviewButton();
   }
 }
