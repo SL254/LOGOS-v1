@@ -1678,7 +1678,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   document.body.classList.remove("thinking-time-night");
 
   gamestate.socratesDisabledProps = []; // 소크라테스 능력으로 비활성화된 명제 목록 초기화
-  victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
+  gamestate.victorySoundPlayed = false; // 승리 효과음 재생 플래그 초기화
 
   // 승리 스타일 초기화
   document.querySelectorAll(".player-title-box").forEach((titleBox) => {
@@ -2392,9 +2392,9 @@ function declareEureka(player) {
 }
 
 function endGame(winner, winningProposition) {
-  if (!victorySoundPlayed) {
+  if (!gamestate.victorySoundPlayed) {
     audioManager.playSfx("victory");
-    victorySoundPlayed = true;
+    gamestate.victorySoundPlayed = true;
   }
   audioManager.fadeOut("game-play");
   audioManager.fadeOut("thinking-time");
