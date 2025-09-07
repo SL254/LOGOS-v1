@@ -124,14 +124,14 @@ function autoInitializeGame() {
 // --- PROOF RECORDING FUNCTIONS ---
 
 function startProofRecording() {
-  isRecordingProof = true;
+  gamestate.isRecordingProof = true;
   gamestate.proofSteps = [];
   stepCounter = 0;
   victoryProposition = null;
 }
 
 function stopProofRecording() {
-  isRecordingProof = false;
+  gamestate.isRecordingProof = false;
 }
 
 function recordProofStep(
@@ -141,7 +141,7 @@ function recordProofStep(
   rule,
   assumption = null
 ) {
-  if (!isRecordingProof) return;
+  if (!gamestate.isRecordingProof) return;
 
   stepCounter++;
 
@@ -1342,7 +1342,7 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   // 논증 기록 시스템 초기화
   gamestate.proofSteps = [];
-  isRecordingProof = false;
+  gamestate.isRecordingProof = false;
   stepCounter = 0;
   victoryProposition = null;
   hideProofReviewButton();

@@ -89,7 +89,7 @@ function setupEventListeners() {
       gamestate.currentAssumption = null;
 
       // 논증 로그 초기화 (논증 다시보기를 위한 데이터 정리)
-      if (isRecordingProof) {
+      if (gamestate.isRecordingProof) {
         stopProofRecording();
       }
       gamestate.proofSteps = [];

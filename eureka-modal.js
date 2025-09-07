@@ -446,7 +446,7 @@ function addAssumption() {
           gamestate.currentAssumption = parsedProp;
 
           // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
-          if (isRecordingProof) {
+          if (gamestate.isRecordingProof) {
             const stepId = recordProofStep(
               "assumption",
               [],
@@ -610,7 +610,7 @@ function applyRule() {
     });
 
     // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
-    if (isRecordingProof) {
+    if (gamestate.isRecordingProof) {
       const premiseIds = sourcePremisesForCI
         .map((p) => {
           if (!p) return null;
@@ -680,7 +680,7 @@ function applyRule() {
     );
     if (result) {
       // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - 삭제하기 전에 먼저 기록
-      if (isRecordingProof) {
+      if (gamestate.isRecordingProof) {
         const premiseIds = sourcePremisesForRAA
           .map((p) => {
             if (!p) return null;
@@ -807,7 +807,7 @@ function applyRule() {
       });
 
       // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
-      if (isRecordingProof) {
+      if (gamestate.isRecordingProof) {
         const premiseIds = premisesData
           .map((p) => {
             // 1. 전제 데이터에서 proofStepId 찾기
@@ -1169,7 +1169,7 @@ function proveVictory() {
     }
 
     // 논증 기록 완료 및 승리 명제 기록
-    if (isRecordingProof) {
+    if (gamestate.isRecordingProof) {
       const victoryProp = isMyVictoryProven
         ? myUltimateTarget
         : opponentLossCondition;
