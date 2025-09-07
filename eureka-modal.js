@@ -469,7 +469,7 @@ function addAssumption() {
 
           // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
           if (inPuzzleMode) {
-            inferenceStepCount++;
+            gamestate.inferenceStepCount++;
           }
 
           renderModal();
@@ -875,7 +875,7 @@ function applyRule() {
 
     // 퍼즐 모드에서 추론 규칙 사용 횟수 증가
     if (inPuzzleMode) {
-      inferenceStepCount++;
+      gamestate.inferenceStepCount++;
     }
   } else if (
     rule !== "reductioAdAbsurdum" &&
@@ -1014,14 +1014,14 @@ function proveVictory() {
       // Calculate star rating based on proof steps
       const stars = calculateStarRating(
         gamestate.currentPuzzleLevel,
-        inferenceStepCount
+        gamestate.inferenceStepCount
       );
 
       try {
         // Record puzzle completion with star rating
         recordPuzzleCompletion(
           gamestate.currentPuzzleLevel,
-          inferenceStepCount,
+          gamestate.inferenceStepCount,
           stars
         );
 
@@ -1040,7 +1040,7 @@ function proveVictory() {
       // Create star display for the alert message
       const starDisplay = "★".repeat(stars) + "☆".repeat(3 - stars);
       const alertMessage = gamestate.currentLang.alerts.puzzleCleared
-        .replace("{steps}", inferenceStepCount)
+        .replace("{steps}", gamestate.inferenceStepCount)
         .replace("{stars}", `${starDisplay} (${stars}/3)`);
 
       showAlert(alertMessage, () => {
