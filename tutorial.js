@@ -375,7 +375,7 @@ function handleTutorialStepLogic() {
           highlightElement(cardToClick);
           document.getElementById("tutorial-next-btn").classList.add("hidden");
           waitForInteraction(cardToClick, "click", () => {
-            const cardData = playerA_Hand.find(
+            const cardData = gamestate.playerA_Hand.find(
               (c) => c.text === gamestate.currentLang.keywords.socrates
             );
             playCardTutorial(cardData);
@@ -1130,7 +1130,7 @@ function handleTutorialRuleApplication(ruleValue) {
 }
 
 function playCardTutorial(cardToPlay) {
-  const hand = currentPlayer === "A" ? playerA_Hand : playerB_Hand;
+  const hand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
   const cardIndex = hand.findIndex(
     (c) => c.text === cardToPlay.text && c.type === cardToPlay.type
   );
@@ -1742,7 +1742,7 @@ function clearHighlights() {
     ) {
       const cardText = el.textContent;
       const player = el.parentElement.id === "player-a-hand" ? "A" : "B";
-      const hand = player === "A" ? playerA_Hand : playerB_Hand;
+      const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
       const cardData = hand.find((c) => c.text === cardText);
 
       if (cardData) {
@@ -1841,7 +1841,7 @@ function setupTutorialScenario(step) {
     audioManager.play("game-play");
   }
   if (step === 1) {
-    playerA_Hand = [];
+    gamestate.playerA_Hand = [];
     playerB_Hand = [];
     truePropositions = [];
 
@@ -1957,7 +1957,7 @@ function setupTutorialScenario(step) {
       gamestate.currentLang.keywords.universal_q,
       gamestate.currentLang.keywords.existential_q,
     ];
-    playerA_Hand = gamestate.fullDeck.filter((c) =>
+    gamestate.playerA_Hand = gamestate.fullDeck.filter((c) =>
       requiredA_CardTexts.includes(c.text)
     );
 
@@ -1998,7 +1998,7 @@ function setupTutorialScenario(step) {
     }
   } else if (step === 4) {
     currentProposition = [];
-    playerA_Hand = gamestate.fullDeck.filter(
+    gamestate.playerA_Hand = gamestate.fullDeck.filter(
       (c) =>
         c.type ===
           (gamestate.currentLang.langCode === "ko" ? "연산자" : "Operator") &&

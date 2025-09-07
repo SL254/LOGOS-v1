@@ -1493,7 +1493,7 @@ function confirmKuhnAbility() {
   render();
 }
 function renderKantModal(player) {
-  const hand = player === "A" ? playerA_Hand : playerB_Hand;
+  const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
   const handDisplay = document.getElementById("kant-hand-display");
   const propDisplay = document.getElementById("kant-proposition-display");
 
@@ -1634,7 +1634,7 @@ function activateKantAbility(player) {
       event.stopPropagation();
       audioManager.playSfx("undo");
       const cardToReturn = kantProposition.pop();
-      const hand = player === "A" ? playerA_Hand : playerB_Hand;
+      const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
       hand.push(cardToReturn);
       // 손패 정렬을 다시 해주는 것이 좋습니다.
       hand.sort(
@@ -1651,7 +1651,7 @@ function activateKantAbility(player) {
   document.getElementById("close-kant-modal-btn").onclick = () => {
     audioManager.playSfx("hover");
     if (kantProposition.length > 0) {
-      const hand = player === "A" ? playerA_Hand : playerB_Hand;
+      const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
       hand.push(...kantProposition);
       kantProposition = [];
       hand.sort(

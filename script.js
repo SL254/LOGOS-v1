@@ -1415,7 +1415,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   // 3. 손패 분배 (마르크스 플레이 불가능 카드 제거 포함)
   if (testConfig && testConfig.handA) {
     const handATexts = testConfig.handA.split(",").map((s) => s.trim());
-    playerA_Hand = handATexts
+    gamestate.playerA_Hand = handATexts
       .map((text) => gamestate.fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
@@ -1425,7 +1425,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       "자본가이다",
       "is a capitalist",
     ];
-    playerA_Hand = JSON.parse(
+    gamestate.playerA_Hand = JSON.parse(
       JSON.stringify(
         gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
       )
@@ -1455,7 +1455,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       revolutionSubjectCard.text,
       revolutionPredicateCard.text,
     ];
-    playerA_Hand = playerA_Hand.filter(
+    gamestate.playerA_Hand = gamestate.playerA_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     );
     playerB_Hand = playerB_Hand.filter(
@@ -1671,7 +1671,7 @@ function resetGame(selectedCharacters, testConfig = null) {
     titleBox.classList.remove("winner");
   });
 
-  playerA_Hand = [];
+  gamestate.playerA_Hand = [];
   playerB_Hand = [];
   truePropositions = [];
   currentProposition = [];
@@ -2116,7 +2116,7 @@ function playCard(player, cardToPlay) {
     return;
   }
   if (currentProposition.length === 0) propositionStarter = player;
-  const hand = player === "A" ? playerA_Hand : playerB_Hand;
+  const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
   const cardIndex = hand.findIndex(
     (card) => card.text === cardToPlay.text && card.type === cardToPlay.type
   );
@@ -2234,7 +2234,8 @@ function undoProposition() {
       currentProposition.push(lastPlayedInfo);
       return;
     }
-    const hand = lastPlayedInfo.player === "A" ? playerA_Hand : playerB_Hand;
+    const hand =
+      lastPlayedInfo.player === "A" ? gamestate.playerA_Hand : playerB_Hand;
 
     // hand.push 대신 splice를 사용하여 원래 위치에 카드를 삽입합니다.
     if (typeof lastPlayedInfo.originalIndex !== "undefined") {
@@ -2471,7 +2472,7 @@ function checkRoundEndConditions() {
   if (gameIsOver || isThinkingTime || cardsPlayedThisTurn[currentPlayer] > 0)
     return;
 
-  const hand = currentPlayer === "A" ? playerA_Hand : playerB_Hand;
+  const hand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
   const hasValidCardMove = hand.some((card) =>
     isValidPlay(card, currentProposition)
   );
@@ -2559,7 +2560,7 @@ function endThinkingTime() {
     gamestate.currentLang.keywords.wins,
     gamestate.currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
   ]; // 기존 코드
-  playerA_Hand = JSON.parse(
+  gamestate.playerA_Hand = JSON.parse(
     JSON.stringify(
       gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
     )
@@ -2582,7 +2583,7 @@ function endThinkingTime() {
       gamestate.currentLang.langCode === "ko" ? "일어난다" : "occurs",
     ]; // 제거할 카드 목록 정의
 
-    playerA_Hand = playerA_Hand.filter(
+    gamestate.playerA_Hand = gamestate.playerA_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     ); // 손패 A에서 필터링
     playerB_Hand = playerB_Hand.filter(
@@ -2631,7 +2632,7 @@ function render() {
     handB_El = document.getElementById("player-b-hand");
   handA_El.innerHTML = "";
   handB_El.innerHTML = "";
-  playerA_Hand.sort(
+  gamestate.playerA_Hand.sort(
     (a, b) =>
       gamestate.cardTypeOrder.indexOf(a.type) -
       gamestate.cardTypeOrder.indexOf(b.type)
@@ -2642,7 +2643,7 @@ function render() {
       gamestate.cardTypeOrder.indexOf(b.type)
   );
   let lastTypeA = null;
-  playerA_Hand.forEach((card) => {
+  gamestate.playerA_Hand.forEach((card) => {
     if (card.type !== lastTypeA) {
       if (lastTypeA !== null) {
         const br = document.createElement("div");
