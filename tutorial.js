@@ -1130,7 +1130,8 @@ function handleTutorialRuleApplication(ruleValue) {
 }
 
 function playCardTutorial(cardToPlay) {
-  const hand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const hand =
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const cardIndex = hand.findIndex(
     (c) => c.text === cardToPlay.text && c.type === cardToPlay.type
   );
@@ -1742,7 +1743,8 @@ function clearHighlights() {
     ) {
       const cardText = el.textContent;
       const player = el.parentElement.id === "player-a-hand" ? "A" : "B";
-      const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
+      const hand =
+        player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
       const cardData = hand.find((c) => c.text === cardText);
 
       if (cardData) {
@@ -1842,7 +1844,7 @@ function setupTutorialScenario(step) {
   }
   if (step === 1) {
     gamestate.playerA_Hand = [];
-    playerB_Hand = [];
+    gamestate.playerB_Hand = [];
     truePropositions = [];
 
     const socratesSubject = gamestate.currentLang.keywords.socrates;
@@ -1967,10 +1969,10 @@ function setupTutorialScenario(step) {
       wiseCardText,
       gamestate.currentLang.keywords.plato,
     ];
-    playerB_Hand = gamestate.fullDeck.filter((c) =>
+    gamestate.playerB_Hand = gamestate.fullDeck.filter((c) =>
       requiredB_CardTexts.includes(c.text)
     );
-    playerB_Hand.push(
+    gamestate.playerB_Hand.push(
       ...gamestate.fullDeck
         .filter(
           (c) =>
@@ -1986,12 +1988,12 @@ function setupTutorialScenario(step) {
     );
     const wiseCardText =
       gamestate.currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
-    const wiseCardIndex = playerB_Hand.findIndex(
+    const wiseCardIndex = gamestate.playerB_Hand.findIndex(
       (c) => c.text === wiseCardText
     );
 
     if (socratesCardInfo && wiseCardIndex > -1) {
-      const [wiseCard] = playerB_Hand.splice(wiseCardIndex, 1);
+      const [wiseCard] = gamestate.playerB_Hand.splice(wiseCardIndex, 1);
       currentProposition = [socratesCardInfo, { card: wiseCard, player: "B" }];
       lastCardPlayer = "B";
       currentPlayer = "A";
@@ -2004,7 +2006,7 @@ function setupTutorialScenario(step) {
           (gamestate.currentLang.langCode === "ko" ? "연산자" : "Operator") &&
         c.text !== gamestate.currentLang.keywords.not
     );
-    playerB_Hand = gamestate.fullDeck.filter(
+    gamestate.playerB_Hand = gamestate.fullDeck.filter(
       (c) =>
         c.type ===
           (gamestate.currentLang.langCode === "ko" ? "서술어" : "Predicate") &&

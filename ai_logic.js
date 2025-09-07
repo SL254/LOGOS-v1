@@ -595,9 +595,10 @@ function checkForGuaranteedWinMove() {
 
   // 2. '는 거짓이다' 카드 보유 상황 대칭성 확인
   const { not: notKeyword } = gamestate.currentLang.keywords;
-  const aiHand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const aiHand =
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const opponentHand =
-    currentPlayer === "A" ? playerB_Hand : gamestate.playerA_Hand;
+    currentPlayer === "A" ? gamestate.playerB_Hand : gamestate.playerA_Hand;
 
   const aiHasNot = aiHand.some((card) => card.text === notKeyword);
   const opponentHasNot = opponentHand.some((card) => card.text === notKeyword);
@@ -774,7 +775,7 @@ function generateWinningPlan() {
   // 각 계획의 점수를 계산합니다.
   const scoredPlans = scorePlans(
     allPossiblePlans,
-    currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand
   );
 
   if (scoredPlans.length === 0) return null;
@@ -796,7 +797,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // 기저 조건 2: 목표를 현재 손패의 카드로 만들 수 있다면, 계획으로 간주합니다.
   const cardsNeededForGoal = propositionToNaturalText(goal).split(" ");
   const aiHand = (
-    currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand
   ).map((c) => c.text);
   if (cardsNeededForGoal.every((card) => aiHand.includes(card))) {
     allPlans.push({ steps: [...path, goal] });
@@ -975,7 +976,8 @@ function aiTurn() {
   const myVictoryData = truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
-  const aiHand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const aiHand =
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const notKeyword = gamestate.currentLang.keywords.not;
   const notCardInHand = aiHand.find((c) => c.text === notKeyword);
 
@@ -1288,7 +1290,9 @@ function aiTurn() {
         (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         const opponentHand =
-          currentPlayer === "A" ? playerB_Hand : gamestate.playerA_Hand;
+          currentPlayer === "A"
+            ? gamestate.playerB_Hand
+            : gamestate.playerA_Hand;
         const { not: notKeyword } = gamestate.currentLang.keywords;
         const aiHasNot = aiHand.some((card) => card.text === notKeyword);
         const opponentHasNot = opponentHand.some(
@@ -1511,7 +1515,9 @@ function aiTurn() {
 
           if (!opponentAbilityState.used) {
             const opponentHand =
-              currentPlayer === "A" ? playerB_Hand : gamestate.playerA_Hand;
+              currentPlayer === "A"
+                ? gamestate.playerB_Hand
+                : gamestate.playerA_Hand;
             const myName =
               currentPlayer === "A"
                 ? typeof gamestate.playerA_Data.name === "string"
@@ -1651,7 +1657,9 @@ function aiTurn() {
         )
       ) {
         const opponentHand =
-          currentPlayer === "A" ? playerB_Hand : gamestate.playerA_Hand;
+          currentPlayer === "A"
+            ? gamestate.playerB_Hand
+            : gamestate.playerA_Hand;
         if (isImmediateWinSecure(opponentHand, aiHand, gamestate.currentLang)) {
           score += 1000000;
         }
@@ -3794,7 +3802,7 @@ function executeKantAbilityCheck(player) {
   // --- 1단계: 기본 조건 검사 및 후보 생성 ---
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   if (hand.length === 0) return null;
 
   const candidatePropositions = [];
@@ -3943,7 +3951,7 @@ function executeKantAbilityCheck(player) {
     if (cardIndex > -1) tempHand.splice(cardIndex, 1);
   });
   if (player === "A") gamestate.playerA_Hand = tempHand;
-  else playerB_Hand = tempHand;
+  else gamestate.playerB_Hand = tempHand;
 
   truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,

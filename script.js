@@ -1433,7 +1433,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   }
   if (testConfig && testConfig.handB) {
     const handBTexts = testConfig.handB.split(",").map((s) => s.trim());
-    playerB_Hand = handBTexts
+    gamestate.playerB_Hand = handBTexts
       .map((text) => gamestate.fullDeck.find((c) => c.text === text))
       .filter(Boolean);
   } else {
@@ -1443,7 +1443,7 @@ function setupGame(selectedCharacters, testConfig = null) {
       "자본가이다",
       "is a capitalist",
     ];
-    playerB_Hand = JSON.parse(
+    gamestate.playerB_Hand = JSON.parse(
       JSON.stringify(
         gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
       )
@@ -1458,7 +1458,7 @@ function setupGame(selectedCharacters, testConfig = null) {
     gamestate.playerA_Hand = gamestate.playerA_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     );
-    playerB_Hand = playerB_Hand.filter(
+    gamestate.playerB_Hand = gamestate.playerB_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     );
   }
@@ -1672,7 +1672,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   });
 
   gamestate.playerA_Hand = [];
-  playerB_Hand = [];
+  gamestate.playerB_Hand = [];
   truePropositions = [];
   currentProposition = [];
   currentPlayer = "A";
@@ -2116,7 +2116,7 @@ function playCard(player, cardToPlay) {
     return;
   }
   if (currentProposition.length === 0) propositionStarter = player;
-  const hand = player === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const cardIndex = hand.findIndex(
     (card) => card.text === cardToPlay.text && card.type === cardToPlay.type
   );
@@ -2235,7 +2235,9 @@ function undoProposition() {
       return;
     }
     const hand =
-      lastPlayedInfo.player === "A" ? gamestate.playerA_Hand : playerB_Hand;
+      lastPlayedInfo.player === "A"
+        ? gamestate.playerA_Hand
+        : gamestate.playerB_Hand;
 
     // hand.push 대신 splice를 사용하여 원래 위치에 카드를 삽입합니다.
     if (typeof lastPlayedInfo.originalIndex !== "undefined") {
@@ -2472,7 +2474,8 @@ function checkRoundEndConditions() {
   if (gameIsOver || isThinkingTime || cardsPlayedThisTurn[currentPlayer] > 0)
     return;
 
-  const hand = currentPlayer === "A" ? gamestate.playerA_Hand : playerB_Hand;
+  const hand =
+    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const hasValidCardMove = hand.some((card) =>
     isValidPlay(card, currentProposition)
   );
@@ -2565,7 +2568,7 @@ function endThinkingTime() {
       gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
     )
   ); // 기존 코드
-  playerB_Hand = JSON.parse(
+  gamestate.playerB_Hand = JSON.parse(
     JSON.stringify(
       gamestate.fullDeck.filter((c) => !nonPlayerCards.includes(c.text))
     )
@@ -2586,7 +2589,7 @@ function endThinkingTime() {
     gamestate.playerA_Hand = gamestate.playerA_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     ); // 손패 A에서 필터링
-    playerB_Hand = playerB_Hand.filter(
+    gamestate.playerB_Hand = gamestate.playerB_Hand.filter(
       (card) => !unplayableCardTexts.includes(card.text)
     ); // 손패 B에서 필터링
   }
@@ -2637,7 +2640,7 @@ function render() {
       gamestate.cardTypeOrder.indexOf(a.type) -
       gamestate.cardTypeOrder.indexOf(b.type)
   );
-  playerB_Hand.sort(
+  gamestate.playerB_Hand.sort(
     (a, b) =>
       gamestate.cardTypeOrder.indexOf(a.type) -
       gamestate.cardTypeOrder.indexOf(b.type)
@@ -2682,7 +2685,7 @@ function render() {
     handA_El.appendChild(cardEl);
   });
   let lastTypeB = null;
-  playerB_Hand.forEach((card) => {
+  gamestate.playerB_Hand.forEach((card) => {
     if (card.type !== lastTypeB) {
       if (lastTypeB !== null) {
         const br = document.createElement("div");
