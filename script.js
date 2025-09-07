@@ -1111,7 +1111,7 @@ function showMainMenu() {
   audioManager.stopAll();
 
   // 사용자가 상호작용한 경우에만 BGM 재생
-  if (hasUserInteracted) {
+  if (gamestate.hasUserInteracted) {
     audioManager.play("main-menu"); // 볼륨 60%로 메인 메뉴 음악 재생
   }
 
@@ -1136,7 +1136,7 @@ function showMainMenu() {
 
 function showPressAnyKeyScreen() {
   // 이미 사용자가 상호작용했다면 Press any key 화면을 표시하지 않음
-  if (hasUserInteracted) {
+  if (gamestate.hasUserInteracted) {
     activateMainMenu();
     return;
   }
@@ -1175,7 +1175,7 @@ function activateMainMenu() {
   // 논증 다시보기 버튼은 의도적으로 제외 (게임 종료 시에만 표시)
 
   // BGM 재생 시작
-  hasUserInteracted = true;
+  gamestate.hasUserInteracted = true;
   audioManager.play("main-menu");
 
   // 사용자 상호작용 이벤트 리스너 제거
@@ -1232,7 +1232,7 @@ function handleFirstUserInteraction(event) {
   }
 
   // 이미 처리되었다면 중복 실행 방지
-  if (hasUserInteracted) {
+  if (gamestate.hasUserInteracted) {
     devLog("Already interacted, skipping");
     return;
   }
