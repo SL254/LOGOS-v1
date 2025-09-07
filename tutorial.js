@@ -1174,10 +1174,12 @@ function completePropositionTutorial() {
 
     audioManager.playSfx("complete");
 
-    lastPropositionMaker =
-      gamestate.currentProposition[gamestate.currentProposition.length - 1]
-        .player;
-    gamestate.currentPlayer = lastPropositionMaker === "A" ? "B" : "A";
+    gamestate.lastPropositionMaker =
+      gamestate.currentProposition[
+        gamestate.currentProposition.length - 1
+      ].player;
+    gamestate.currentPlayer =
+      gamestate.lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
@@ -1937,7 +1939,7 @@ function setupTutorialScenario(step) {
     gamestate.gameIsOver = false;
     gamestate.currentRound = 1;
     gamestate.isThinkingTime = false;
-    lastPropositionMaker = null;
+    gamestate.lastPropositionMaker = null;
     currentAssumption = null;
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
