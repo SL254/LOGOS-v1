@@ -323,17 +323,17 @@ function populatePuzzleLevels() {
 function startPuzzle(levelNum, levelData) {
   currentPuzzleLevel = levelNum;
 
-  const masterDeck = currentLang.cards;
+  const masterDeck = gamestate.currentLang.cards;
   // '소크라테스는', '플라톤은' 카드를 기본 덱에서 찾습니다.
   const socratesCard = masterDeck.find(
-    (c) => c.text === currentLang.keywords.socrates
+    (c) => c.text === gamestate.currentLang.keywords.socrates
   );
   const platoCard = masterDeck.find(
-    (c) => c.text === currentLang.keywords.plato
+    (c) => c.text === gamestate.currentLang.keywords.plato
   );
   // 모든 철학자 이름을 제외한 기본 카드 목록을 만듭니다.
   const allPhilosopherCardTexts = Object.values(PHILOSOPHERS).map(
-    (p) => p.cardText[currentLang.langCode]
+    (p) => p.cardText[gamestate.currentLang.langCode]
   );
   const baseDeck = masterDeck.filter(
     (card) => !allPhilosopherCardTexts.includes(card.text)
@@ -342,9 +342,13 @@ function startPuzzle(levelNum, levelData) {
   fullDeck = [...baseDeck, socratesCard, platoCard];
 
   // 1. 퍼즐에 필요한 공리를 먼저 생성합니다. (튜토리얼 로직 재활용)
-  const socratesSubject = currentLang.keywords.socrates;
-  const platoSubject = currentLang.keywords.plato;
-  currentAxioms = generateAxioms(socratesSubject, platoSubject, currentLang);
+  const socratesSubject = gamestate.currentLang.keywords.socrates;
+  const platoSubject = gamestate.currentLang.keywords.plato;
+  currentAxioms = generateAxioms(
+    socratesSubject,
+    platoSubject,
+    gamestate.currentLang
+  );
   parsedAxioms = currentAxioms
     .map((str) => ({
       type: "axiom",
@@ -362,7 +366,8 @@ function startPuzzle(levelNum, levelData) {
   const goalBox = document.getElementById("puzzle-goal-box");
   const goalText = document.getElementById("puzzle-goal-text"); // p 태그를 선택
 
-  goalText.innerHTML = levelData.goalDescription[currentLang.langCode]; // p 태그에 텍스트 설정
+  goalText.innerHTML =
+    levelData.goalDescription[gamestate.currentLang.langCode]; // p 태그에 텍스트 설정
   goalBox.classList.remove("hidden"); // 전체 박스를 보이게 함
 
   // 퍼즐 데이터로 게임 상태 설정
@@ -370,7 +375,7 @@ function startPuzzle(levelNum, levelData) {
 
   // 1. 승리 조건 설정
   const socratesVC_Text =
-    levelData.victoryConditions.socrates[currentLang.langCode];
+    levelData.victoryConditions.socrates[gamestate.currentLang.langCode];
   const socratesVC_Parsed = parsePropositionFromString(socratesVC_Text);
   if (socratesVC_Parsed) {
     truePropositions.push({
@@ -380,13 +385,14 @@ function startPuzzle(levelNum, levelData) {
       proposition: socratesVC_Parsed,
       ultimate_target: {
         type: "atomic",
-        subject: currentLang.keywords.socrates,
-        predicate: currentLang.keywords.wins,
+        subject: gamestate.currentLang.keywords.socrates,
+        predicate: gamestate.currentLang.keywords.wins,
       },
     });
   }
 
-  const platoVC_Text = levelData.victoryConditions.plato[currentLang.langCode];
+  const platoVC_Text =
+    levelData.victoryConditions.plato[gamestate.currentLang.langCode];
   const platoVC_Parsed = parsePropositionFromString(platoVC_Text);
   if (platoVC_Parsed) {
     truePropositions.push({
@@ -396,14 +402,14 @@ function startPuzzle(levelNum, levelData) {
       proposition: platoVC_Parsed,
       ultimate_target: {
         type: "atomic",
-        subject: currentLang.keywords.plato,
-        predicate: currentLang.keywords.wins,
+        subject: gamestate.currentLang.keywords.plato,
+        predicate: gamestate.currentLang.keywords.wins,
       },
     });
   }
 
   // 2. 전제 명제 설정
-  const premises = levelData.premises[currentLang.langCode];
+  const premises = levelData.premises[gamestate.currentLang.langCode];
   premises.forEach((pText) => {
     const parsed = parsePropositionFromString(pText);
     if (parsed) {

@@ -260,7 +260,7 @@ let temporaryListener = null;
 function startTutorial(startStep = 0) {
   const exitBtn = document.getElementById("emergency-exit-tutorial-btn");
   exitBtn.classList.remove("hidden");
-  exitBtn.textContent = currentLang.ui.endTutorialButton;
+  exitBtn.textContent = gamestate.currentLang.ui.endTutorialButton;
   audioManager.fadeOut("main-menu");
   audioManager.play("game-play");
 
@@ -273,14 +273,14 @@ function startTutorial(startStep = 0) {
   abilityUsedState["A"] = { used: false }; // 소크라테스는 1회 사용 가능
   abilityUsedState["B"] = { used: false }; // 플라톤은 1회 사용 가능
 
-  fullDeck = currentLang.cards;
+  fullDeck = gamestate.currentLang.cards;
 
   inTutorialMode = true;
   tutorialStep = startStep;
   tutorialSubStep = 0;
 
   const tutorialBtn = document.getElementById("tutorial-btn");
-  tutorialBtn.textContent = currentLang.ui.endTutorialButton;
+  tutorialBtn.textContent = gamestate.currentLang.ui.endTutorialButton;
   tutorialBtn.removeEventListener("click", startTutorial);
   tutorialBtn.addEventListener("click", endTutorial);
 
@@ -307,7 +307,7 @@ function startTutorial(startStep = 0) {
 
   document.getElementById("tutorial-guide").classList.remove("hidden");
   document.getElementById("tutorial-next-btn").textContent =
-    currentLang.ui.nextButton;
+    gamestate.currentLang.ui.nextButton;
 
   setupTutorialScenario(startStep + 1);
   advanceTutorial();
@@ -323,18 +323,18 @@ function advanceTutorial() {
     temporaryListener = null;
   }
 
-  const script = currentLang.tutorial[tutorialStep];
+  const script = gamestate.currentLang.tutorial[tutorialStep];
   if (!script || tutorialSubStep >= script.length) {
     tutorialStep++;
     tutorialSubStep = 0;
-    if (tutorialStep >= currentLang.tutorial.length) {
+    if (tutorialStep >= gamestate.currentLang.tutorial.length) {
       endTutorial();
       return;
     }
     setupTutorialScenario(tutorialStep + 1); // Setup for the *next* stage
   }
 
-  const newScript = currentLang.tutorial[tutorialStep];
+  const newScript = gamestate.currentLang.tutorial[tutorialStep];
   if (!newScript || tutorialSubStep >= newScript.length) {
     endTutorial();
     return;
@@ -368,13 +368,15 @@ function handleTutorialStepLogic() {
       case 7:
         const cardToClick = Array.from(
           document.querySelectorAll("#player-a-hand .card")
-        ).find((c) => c.textContent === currentLang.keywords.socrates);
+        ).find(
+          (c) => c.textContent === gamestate.currentLang.keywords.socrates
+        );
         if (cardToClick) {
           highlightElement(cardToClick);
           document.getElementById("tutorial-next-btn").classList.add("hidden");
           waitForInteraction(cardToClick, "click", () => {
             const cardData = playerA_Hand.find(
-              (c) => c.text === currentLang.keywords.socrates
+              (c) => c.text === gamestate.currentLang.keywords.socrates
             );
             playCardTutorial(cardData);
             advanceTutorial();
@@ -387,13 +389,17 @@ function handleTutorialStepLogic() {
           document.querySelectorAll("#player-a-hand .card")
         ).filter((c) => {
           const cardData = fullDeck.find((card) => card.text === c.textContent);
-          return cardData && cardData.type === currentLang.cardTypes[2]; // 개체 or Entity
+          return (
+            cardData && cardData.type === gamestate.currentLang.cardTypes[2]
+          ); // 개체 or Entity
         });
         const quantifierCards = Array.from(
           document.querySelectorAll("#player-a-hand .card")
         ).filter((c) => {
           const cardData = fullDeck.find((card) => card.text === c.textContent);
-          return cardData && cardData.type === currentLang.cardTypes[1]; // 양화사 or Quantifier
+          return (
+            cardData && cardData.type === gamestate.currentLang.cardTypes[1]
+          ); // 양화사 or Quantifier
         });
         entityCards.forEach((card) => {
           card.classList.add("tutorial-highlight");
@@ -432,9 +438,9 @@ function handleTutorialStepLogic() {
           document.querySelectorAll("#player-a-hand .card")
         ).filter(
           (c) =>
-            c.textContent === currentLang.keywords.and ||
-            c.textContent === currentLang.keywords.or ||
-            c.textContent === currentLang.keywords.if
+            c.textContent === gamestate.currentLang.keywords.and ||
+            c.textContent === gamestate.currentLang.keywords.or ||
+            c.textContent === gamestate.currentLang.keywords.if
         );
         connectiveCards.forEach((card) => {
           card.classList.add("tutorial-highlight");
@@ -444,7 +450,7 @@ function handleTutorialStepLogic() {
       case 8:
         const negationCard = Array.from(
           document.querySelectorAll("#player-a-hand .card")
-        ).find((c) => c.textContent === currentLang.keywords.not);
+        ).find((c) => c.textContent === gamestate.currentLang.keywords.not);
         if (negationCard) highlightElement(negationCard);
         break;
     }
@@ -498,7 +504,7 @@ function handleTutorialStepLogic() {
         break;
       case 6: // "전제 목록에서..."
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["소크라테스는 개이다", "모든 개는 지혜롭다"]
             : ["Socrates is a dog", "Every dog is wise"]
         );
@@ -509,7 +515,7 @@ function handleTutorialStepLogic() {
       case 8: // "좋습니다! ... 이제 이 정리를 선택하고..."
         const confirmBtn = document.getElementById("modal-confirm-btn");
         const newTheoremText =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? "소크라테스는 지혜롭다"
             : "Socrates is wise";
         const newTheoremProp = parsePropositionFromString(newTheoremText);
@@ -538,7 +544,7 @@ function handleTutorialStepLogic() {
               advanceTutorial();
             } else {
               showAlert(
-                currentLang.langCode === "ko"
+                gamestate.currentLang.langCode === "ko"
                   ? "새로 도출된 정리를 먼저 선택해주세요."
                   : "Please select the newly derived theorem first."
               );
@@ -582,7 +588,7 @@ function handleTutorialStepLogic() {
       // Modus Ponens
       case 2:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "소크라테스는 선하다",
                 "(소크라테스는 선하다) 라면 (소크라테스는 승리한다)",
@@ -596,7 +602,7 @@ function handleTutorialStepLogic() {
       // Modus Tollens
       case 5:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "플라톤은 지혜롭다 는 거짓이다",
                 "(플라톤은 승리한다) 라면 (플라톤은 지혜롭다)",
@@ -610,7 +616,7 @@ function handleTutorialStepLogic() {
       // Disjunctive Syllogism
       case 8:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "(어떤 새는 물고기이다) 또는 (어떤 새는 새이다)",
                 "어떤 새는 물고기이다 는 거짓이다",
@@ -627,7 +633,7 @@ function handleTutorialStepLogic() {
       // Hypothetical Syllogism
       case 11:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "(플라톤은 개이다) 라면 (플라톤은 선하다)",
                 "(플라톤은 선하다) 라면 (플라톤은 승리한다)",
@@ -644,7 +650,7 @@ function handleTutorialStepLogic() {
       // Conjunction Elimination
       case 14:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["(소크라테스는 지혜롭다) 그리고 (플라톤은 어리석다)"]
             : ["(Socrates is wise) and (Plato is foolish)"]
         );
@@ -655,7 +661,7 @@ function handleTutorialStepLogic() {
       // Double Negation
       case 17:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["어떤 물고기는 선하다 는 거짓이다 는 거짓이다"]
             : ["Some fish is good is false is false"]
         );
@@ -666,7 +672,7 @@ function handleTutorialStepLogic() {
       // Universal Application
       case 20:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["모든 새는 선하다", "플라톤은 새이다"]
             : ["Every bird is good", "Plato is a bird"]
         );
@@ -677,7 +683,7 @@ function handleTutorialStepLogic() {
       // Existential Instantiation
       case 23:
         handleTutorialRuleInteraction(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["모든 개는 선하다"]
             : ["Every dog is good"]
         );
@@ -692,7 +698,7 @@ function handleTutorialStepLogic() {
     switch (tutorialSubStep) {
       case 1:
         const premises =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "플라톤은 선하다 또는 플라톤은 악하다",
                 "(플라톤은 선하다) 라면 (플라톤은 지혜롭다)",
@@ -717,7 +723,7 @@ function handleTutorialStepLogic() {
         highlightElement("#add-assumption-btn");
         document.getElementById("tutorial-next-btn").classList.add("hidden");
         const correctAssumptionCI =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? "소크라테스는 지혜롭다"
             : "Socrates is wise";
         const originalShowPrompt = window.showPrompt;
@@ -729,7 +735,7 @@ function handleTutorialStepLogic() {
               advanceTutorial();
             } else {
               showAlert(
-                currentLang.langCode === "ko"
+                gamestate.currentLang.langCode === "ko"
                   ? "올바른 명제를 입력해 주십시오."
                   : "Please enter a valid proposition.",
                 () => {
@@ -744,7 +750,7 @@ function handleTutorialStepLogic() {
         break;
       case 2: // Select premises for 1st MP
         const premisesCI_1 =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "소크라테스는 지혜롭다",
                 "(소크라테스는 지혜롭다) 라면 (플라톤은 개이다)",
@@ -757,7 +763,7 @@ function handleTutorialStepLogic() {
         break;
       case 4: // Select premises for 2nd MP
         const premisesCI_2 =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["플라톤은 개이다", "(플라톤은 개이다) 라면 (플라톤은 선하다)"]
             : ["Plato is a dog", "(Plato is a dog) then (Plato is good)"];
         handleTutorialRuleInteraction(premisesCI_2);
@@ -767,7 +773,9 @@ function handleTutorialStepLogic() {
         break;
       case 6: // Select final result
         const conclusionTextCI =
-          currentLang.langCode === "ko" ? "플라톤은 선하다" : "Plato is good";
+          gamestate.currentLang.langCode === "ko"
+            ? "플라톤은 선하다"
+            : "Plato is good";
         const conclusionPropCI = parsePropositionFromString(conclusionTextCI);
         const conclusionLi = Array.from(
           document.querySelectorAll("#premise-list li")
@@ -811,7 +819,7 @@ function handleTutorialStepLogic() {
         highlightElement("#add-assumption-btn");
         document.getElementById("tutorial-next-btn").classList.add("hidden");
         const correctAssumptionRAA =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? "소크라테스는 악하다 는 거짓이다"
             : "Socrates is evil is false";
         const originalShowPrompt = window.showPrompt;
@@ -823,7 +831,7 @@ function handleTutorialStepLogic() {
               advanceTutorial();
             } else {
               showAlert(
-                currentLang.langCode === "ko"
+                gamestate.currentLang.langCode === "ko"
                   ? "올바른 명제를 입력해 주십시오."
                   : "Please enter a valid proposition.",
                 () => {
@@ -838,7 +846,7 @@ function handleTutorialStepLogic() {
         break;
       case 2:
         const premisesRAA_texts =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? [
                 "소크라테스는 악하다 는 거짓이다",
                 "(소크라테스는 악하다 는 거짓이다) 라면 (플라톤은 지혜롭다)",
@@ -884,7 +892,7 @@ function handleTutorialStepLogic() {
             premiseList_mp.querySelectorAll("input:checked").length;
           if (!allChecked || totalChecked !== premiseLis_mp.length) {
             showAlert(
-              currentLang.langCode === "ko"
+              gamestate.currentLang.langCode === "ko"
                 ? "먼저 가정과 다른 전제를 선택해주세요."
                 : "Please select the assumption and the other premise first."
             );
@@ -895,7 +903,7 @@ function handleTutorialStepLogic() {
             applyRuleTutorial();
             advanceTutorial(); // Advances to subStep 3
           } else {
-            showAlert(currentLang.alerts.ruleFailed);
+            showAlert(gamestate.currentLang.alerts.ruleFailed);
           }
         };
         waitForInteraction(applyBtn_mp, "click", applyRuleHandler_mp);
@@ -908,7 +916,7 @@ function handleTutorialStepLogic() {
         break;
       case 4: // This case now handles both selection and application for RAA.
         const contradictionPairTexts =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? ["플라톤은 지혜롭다", "플라톤은 지혜롭다 는 거짓이다"]
             : ["Plato is wise", "Plato is wise is false"];
 
@@ -946,7 +954,7 @@ function handleTutorialStepLogic() {
             premiseList.querySelectorAll("input:checked").length;
           if (!allChecked || totalChecked !== premiseLis.length) {
             showAlert(
-              currentLang.langCode === "ko"
+              gamestate.currentLang.langCode === "ko"
                 ? "먼저 모순되는 두 전제를 선택해주세요."
                 : "Please select the two contradictory premises first."
             );
@@ -957,7 +965,7 @@ function handleTutorialStepLogic() {
             applyRuleTutorial();
             advanceTutorial(); // Advances to subStep 5
           } else {
-            showAlert(currentLang.alerts.ruleFailed);
+            showAlert(gamestate.currentLang.alerts.ruleFailed);
           }
         };
         waitForInteraction(applyBtn, "click", applyRuleHandler);
@@ -967,7 +975,7 @@ function handleTutorialStepLogic() {
         document.getElementById("tutorial-next-btn").classList.add("hidden"); // Hide the "Next" button
 
         const raaResultText =
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? "소크라테스는 악하다 는 거짓이다 는 거짓이다"
             : "Socrates is evil is false is false";
         const raaResultProp = parsePropositionFromString(raaResultText);
@@ -983,7 +991,7 @@ function handleTutorialStepLogic() {
           // Check if it's a theorem derived from RAA and matches the expected proposition
           return (
             data.type === "theorem" &&
-            data.label === currentLang.labels.raa_theorem &&
+            data.label === gamestate.currentLang.labels.raa_theorem &&
             arePropositionsEqual(data.proposition, raaResultProp)
           );
         });
@@ -1015,7 +1023,7 @@ function handleTutorialStepLogic() {
               applyRuleTutorial(); // Apply the rule
               advanceTutorial(); // Proceed to the next tutorial step
             } else {
-              showAlert(currentLang.alerts.ruleFailed); // Show error if conditions not met
+              showAlert(gamestate.currentLang.alerts.ruleFailed); // Show error if conditions not met
             }
           };
           waitForInteraction(applyBtnDNE, "click", applyRuleHandlerDNE);
@@ -1101,7 +1109,7 @@ function handleTutorialRuleApplication(ruleValue) {
       );
       if (selectedPremises.length === 0) {
         showAlert(
-          currentLang.langCode === "ko"
+          gamestate.currentLang.langCode === "ko"
             ? "전제를 선택해주세요."
             : "Please select premises."
         );
@@ -1111,7 +1119,7 @@ function handleTutorialRuleApplication(ruleValue) {
       applyRuleTutorial();
       advanceTutorial();
     } else {
-      showAlert(currentLang.alerts.ruleFailed);
+      showAlert(gamestate.currentLang.alerts.ruleFailed);
     }
   };
   waitForInteraction(applyBtn, "click", applyRuleHandler);
@@ -1185,7 +1193,7 @@ function openEurekaModalTutorial() {
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
   if (currentAxioms.groups && axioms.length > 0) {
     const groups = currentAxioms.groups;
-    const templates = currentLang.axiom_templates;
+    const templates = gamestate.currentLang.axiom_templates;
     let axiomIndex = 0;
 
     // 정체성 공리 그룹
@@ -1197,7 +1205,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1222,7 +1230,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1244,7 +1252,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1266,7 +1274,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1288,7 +1296,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1313,7 +1321,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1335,7 +1343,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1357,7 +1365,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1379,7 +1387,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1401,7 +1409,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1423,7 +1431,7 @@ function openEurekaModalTutorial() {
             type: axioms[axiomIndex].type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -1451,7 +1459,7 @@ function openEurekaModalTutorial() {
             type: axiomData.type,
             dependsOnAssumption: false,
             isAssumption: false,
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         });
@@ -1473,7 +1481,7 @@ function openEurekaModalTutorial() {
         type: propData.type,
         dependsOnAssumption: false,
         isAssumption: false,
-        label: currentLang.labels.axiom,
+        label: gamestate.currentLang.labels.axiom,
       });
     });
 
@@ -1493,13 +1501,13 @@ function openEurekaModalTutorial() {
     let label;
     switch (propData.type) {
       case "victory":
-        label = currentLang.labels.victory_condition;
+        label = gamestate.currentLang.labels.victory_condition;
         break;
       case "theorem":
-        label = currentLang.labels.theorem;
+        label = gamestate.currentLang.labels.theorem;
         break;
       default:
-        label = currentLang.labels.proposition;
+        label = gamestate.currentLang.labels.proposition;
     }
     addPremiseToWorkbench({
       proposition: propData.proposition,
@@ -1513,11 +1521,11 @@ function openEurekaModalTutorial() {
   const modalTitle = document.getElementById("eureka-title");
   const confirmBtn = document.getElementById("modal-confirm-btn");
   modalTitle.textContent = isThinkingTime
-    ? currentLang.modals.eurekaTitleTheorem
-    : currentLang.modals.eurekaTitleVictory;
+    ? gamestate.currentLang.modals.eurekaTitleTheorem
+    : gamestate.currentLang.modals.eurekaTitleVictory;
   confirmBtn.textContent = isThinkingTime
-    ? currentLang.modals.confirmTheoremButton
-    : currentLang.modals.confirmVictoryButton;
+    ? gamestate.currentLang.modals.confirmTheoremButton
+    : gamestate.currentLang.modals.confirmVictoryButton;
 
   confirmBtn.onclick = isThinkingTime ? addTheoremsToList : proveVictory;
 
@@ -1595,7 +1603,7 @@ function applyRuleTutorial() {
         type: "theorem",
         dependsOnAssumption: false,
         isAssumption: false,
-        label: currentLang.labels.ci_theorem,
+        label: gamestate.currentLang.labels.ci_theorem,
       });
       // 튜토리얼 조건부 도입 성공 시 사운드 재생
       audioManager.playSfx("pop");
@@ -1616,7 +1624,7 @@ function applyRuleTutorial() {
         type: "theorem",
         dependsOnAssumption: false,
         isAssumption: false,
-        label: currentLang.labels.raa_theorem,
+        label: gamestate.currentLang.labels.raa_theorem,
       });
       // 튜토리얼 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
@@ -1643,7 +1651,7 @@ function applyRuleTutorial() {
         type: "theorem",
         dependsOnAssumption: isDependent,
         isAssumption: false,
-        label: currentLang.labels.theorem,
+        label: gamestate.currentLang.labels.theorem,
       });
     });
     // 튜토리얼 추론 규칙 적용 성공 시 사운드 재생
@@ -1796,12 +1804,12 @@ function endTutorial() {
 
   document.getElementById("tutorial-guide").classList.add("hidden");
   clearHighlights();
-  
+
   // 튜토리얼 완료 표시
   markTutorialCompleted();
 
   const tutorialBtn = document.getElementById("tutorial-btn");
-  tutorialBtn.textContent = currentLang.ui.tutorialButton;
+  tutorialBtn.textContent = gamestate.currentLang.ui.tutorialButton;
   tutorialBtn.removeEventListener("click", endTutorial);
   tutorialBtn.addEventListener("click", startTutorial);
 
@@ -1833,9 +1841,13 @@ function setupTutorialScenario(step) {
     playerB_Hand = [];
     truePropositions = [];
 
-    const socratesSubject = currentLang.keywords.socrates;
-    const platoSubject = currentLang.keywords.plato;
-    currentAxioms = generateAxioms(socratesSubject, platoSubject, currentLang);
+    const socratesSubject = gamestate.currentLang.keywords.socrates;
+    const platoSubject = gamestate.currentLang.keywords.plato;
+    currentAxioms = generateAxioms(
+      socratesSubject,
+      platoSubject,
+      gamestate.currentLang
+    );
 
     parsedAxioms = currentAxioms
       .map((str) => ({
@@ -1851,10 +1863,12 @@ function setupTutorialScenario(step) {
       wins: winsKeyword,
       socrates: socratesKeyword,
       plato: platoKeyword,
-    } = currentLang.keywords;
+    } = gamestate.currentLang.keywords;
 
-    const goodPredicate = currentLang.langCode === "ko" ? "선하다" : "is good";
-    const evilPredicate = currentLang.langCode === "ko" ? "악하다" : "is evil";
+    const goodPredicate =
+      gamestate.currentLang.langCode === "ko" ? "선하다" : "is good";
+    const evilPredicate =
+      gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil";
 
     // 소크라테스 승리 조건
     const socratesVCText = `((${socratesKeyword} ${goodPredicate}) ${ifKeyword} (${socratesKeyword} ${winsKeyword})) ${andKeyword} ((${socratesKeyword} ${winsKeyword}) ${ifKeyword} (${socratesKeyword} ${goodPredicate}))`;
@@ -1926,38 +1940,44 @@ function setupTutorialScenario(step) {
       portraitB_El.style.backgroundImage = `url('${playerB_Data.image.p2}')`;
     }
 
-    const socratesCardText = currentLang.keywords.socrates;
+    const socratesCardText = gamestate.currentLang.keywords.socrates;
     const requiredA_CardTexts = [
       socratesCardText,
-      currentLang.keywords.and,
-      currentLang.keywords.or,
-      currentLang.keywords.if,
-      currentLang.keywords.not,
-      currentLang.langCode === "ko" ? "개는" : "dog",
-      currentLang.langCode === "ko" ? "새는" : "bird",
-      currentLang.langCode === "ko" ? "물고기는" : "fish",
-      currentLang.keywords.universal_q,
-      currentLang.keywords.existential_q,
+      gamestate.currentLang.keywords.and,
+      gamestate.currentLang.keywords.or,
+      gamestate.currentLang.keywords.if,
+      gamestate.currentLang.keywords.not,
+      gamestate.currentLang.langCode === "ko" ? "개는" : "dog",
+      gamestate.currentLang.langCode === "ko" ? "새는" : "bird",
+      gamestate.currentLang.langCode === "ko" ? "물고기는" : "fish",
+      gamestate.currentLang.keywords.universal_q,
+      gamestate.currentLang.keywords.existential_q,
     ];
     playerA_Hand = fullDeck.filter((c) => requiredA_CardTexts.includes(c.text));
 
-    const wiseCardText = currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
-    const requiredB_CardTexts = [wiseCardText, currentLang.keywords.plato];
+    const wiseCardText =
+      gamestate.currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
+    const requiredB_CardTexts = [
+      wiseCardText,
+      gamestate.currentLang.keywords.plato,
+    ];
     playerB_Hand = fullDeck.filter((c) => requiredB_CardTexts.includes(c.text));
     playerB_Hand.push(
       ...fullDeck
         .filter(
           (c) =>
             !requiredB_CardTexts.includes(c.text) &&
-            c.type === (currentLang.langCode === "ko" ? "서술어" : "Predicate")
+            c.type ===
+              (gamestate.currentLang.langCode === "ko" ? "서술어" : "Predicate")
         )
         .slice(0, 2)
     );
   } else if (step === 2) {
     const socratesCardInfo = currentProposition.find(
-      (info) => info.card.text === currentLang.keywords.socrates
+      (info) => info.card.text === gamestate.currentLang.keywords.socrates
     );
-    const wiseCardText = currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
+    const wiseCardText =
+      gamestate.currentLang.langCode === "ko" ? "지혜롭다" : "is wise";
     const wiseCardIndex = playerB_Hand.findIndex(
       (c) => c.text === wiseCardText
     );
@@ -1972,23 +1992,26 @@ function setupTutorialScenario(step) {
     currentProposition = [];
     playerA_Hand = fullDeck.filter(
       (c) =>
-        c.type === (currentLang.langCode === "ko" ? "연산자" : "Operator") &&
-        c.text !== currentLang.keywords.not
+        c.type ===
+          (gamestate.currentLang.langCode === "ko" ? "연산자" : "Operator") &&
+        c.text !== gamestate.currentLang.keywords.not
     );
     playerB_Hand = fullDeck.filter(
       (c) =>
-        c.type === (currentLang.langCode === "ko" ? "서술어" : "Predicate") &&
-        c.text !== (currentLang.langCode === "ko" ? "개이다" : "is a dog")
+        c.type ===
+          (gamestate.currentLang.langCode === "ko" ? "서술어" : "Predicate") &&
+        c.text !==
+          (gamestate.currentLang.langCode === "ko" ? "개이다" : "is a dog")
     );
 
     truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
 
     const premises = [
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "소크라테스는 개이다"
         : "Socrates is a dog",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "모든 개는 지혜롭다"
         : "Every dog is wise",
     ];
@@ -2013,39 +2036,45 @@ function setupTutorialScenario(step) {
     document.getElementById("thinking-time-controls").style.display = "none";
 
     const premises = [
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "소크라테스는 선하다"
         : "Socrates is good",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(소크라테스는 선하다) 라면 (소크라테스는 승리한다)"
         : "(Socrates is good) then (Socrates wins)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "플라톤은 지혜롭다 는 거짓이다"
         : "Plato is wise is false",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(플라톤은 승리한다) 라면 (플라톤은 지혜롭다)"
         : "(Plato wins) then (Plato is wise)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(어떤 새는 물고기이다) 또는 (어떤 새는 새이다)"
         : "(Some bird is a fish) or (Some bird is a bird)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "어떤 새는 물고기이다 는 거짓이다"
         : "Some bird is a fish is false",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(플라톤은 개이다) 라면 (플라톤은 선하다)"
         : "(Plato is a dog) then (Plato is good)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(플라톤은 선하다) 라면 (플라톤은 승리한다)"
         : "(Plato is good) then (Plato wins)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(소크라테스는 지혜롭다) 그리고 (플라톤은 어리석다)"
         : "(Socrates is wise) and (Plato is foolish)",
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "어떤 물고기는 선하다 는 거짓이다 는 거짓이다"
         : "Some fish is good is false is false",
-      currentLang.langCode === "ko" ? "모든 새는 선하다" : "Every bird is good",
-      currentLang.langCode === "ko" ? "플라톤은 새이다" : "Plato is a bird",
-      currentLang.langCode === "ko" ? "모든 개는 선하다" : "Every dog is good",
+      gamestate.currentLang.langCode === "ko"
+        ? "모든 새는 선하다"
+        : "Every bird is good",
+      gamestate.currentLang.langCode === "ko"
+        ? "플라톤은 새이다"
+        : "Plato is a bird",
+      gamestate.currentLang.langCode === "ko"
+        ? "모든 개는 선하다"
+        : "Every dog is good",
     ];
 
     premises.forEach((pText) => {
@@ -2071,7 +2100,7 @@ function setupTutorialScenario(step) {
     document.getElementById("thinking-time-controls").style.display = "none";
 
     const premises =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? [
             "플라톤은 선하다 또는 플라톤은 악하다",
             "(플라톤은 선하다) 라면 (플라톤은 지혜롭다)",
@@ -2106,7 +2135,7 @@ function setupTutorialScenario(step) {
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? [
             "(소크라테스는 지혜롭다) 라면 (플라톤은 개이다)",
             "(플라톤은 개이다) 라면 (플라톤은 선하다)",
@@ -2136,7 +2165,7 @@ function setupTutorialScenario(step) {
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? [
             "(소크라테스는 악하다 는 거짓이다) 라면 (플라톤은 지혜롭다)",
             "플라톤은 지혜롭다 는 거짓이다",
@@ -2166,9 +2195,13 @@ function setupTutorialScenario(step) {
     // Stage 9 - Final Puzzle
     truePropositions = [];
 
-    const socratesSubject = currentLang.keywords.socrates;
-    const platoSubject = currentLang.keywords.plato;
-    currentAxioms = generateAxioms(socratesSubject, platoSubject, currentLang);
+    const socratesSubject = gamestate.currentLang.keywords.socrates;
+    const platoSubject = gamestate.currentLang.keywords.plato;
+    currentAxioms = generateAxioms(
+      socratesSubject,
+      platoSubject,
+      gamestate.currentLang
+    );
     parsedAxioms = currentAxioms
       .map((str) => ({
         type: "axiom",
@@ -2183,7 +2216,7 @@ function setupTutorialScenario(step) {
 
     // 승리 조건 설정
     const socratesVC_Text =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(소크라테스는 선하다 라면 소크라테스는 승리한다) 그리고 (소크라테스는 승리한다 라면 소크라테스는 선하다)"
         : "(Socrates is good then Socrates wins) and (Socrates wins then Socrates is good)";
     const socratesVC_Parsed = parsePropositionFromString(socratesVC_Text);
@@ -2195,20 +2228,21 @@ function setupTutorialScenario(step) {
         proposition: socratesVC_Parsed,
         ultimate_target: {
           type: "atomic",
-          subject: currentLang.keywords.socrates,
-          predicate: currentLang.keywords.wins,
+          subject: gamestate.currentLang.keywords.socrates,
+          predicate: gamestate.currentLang.keywords.wins,
         },
         core_goal: {
           type: "atomic",
-          subject: currentLang.keywords.socrates,
-          predicate: currentLang.langCode === "ko" ? "선하다" : "is good",
+          subject: gamestate.currentLang.keywords.socrates,
+          predicate:
+            gamestate.currentLang.langCode === "ko" ? "선하다" : "is good",
         },
       });
       internalTruthSet.push(socratesVC_Parsed);
     }
 
     const platoVC_Text =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "(플라톤은 어리석다 라면 플라톤은 승리한다) 그리고 (플라톤은 승리한다 라면 플라톤은 어리석다)"
         : "(Plato is foolish then Plato wins) and (Plato wins then Plato is foolish)";
     const platoVC_Parsed = parsePropositionFromString(platoVC_Text);
@@ -2220,13 +2254,14 @@ function setupTutorialScenario(step) {
         proposition: platoVC_Parsed,
         ultimate_target: {
           type: "atomic",
-          subject: currentLang.keywords.plato,
-          predicate: currentLang.keywords.wins,
+          subject: gamestate.currentLang.keywords.plato,
+          predicate: gamestate.currentLang.keywords.wins,
         },
         core_goal: {
           type: "atomic",
-          subject: currentLang.keywords.plato,
-          predicate: currentLang.langCode === "ko" ? "어리석다" : "is foolish",
+          subject: gamestate.currentLang.keywords.plato,
+          predicate:
+            gamestate.currentLang.langCode === "ko" ? "어리석다" : "is foolish",
         },
       });
       internalTruthSet.push(platoVC_Parsed);
@@ -2234,7 +2269,7 @@ function setupTutorialScenario(step) {
 
     // 전제 명제 설정
     const premises =
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? [
             "소크라테스는 악하다 라면 모든 개는 어리석다",
             "어떤 개는 지혜롭다 라면 플라톤은 개이다",

@@ -87,7 +87,7 @@ function setupEventListeners() {
       // ▼▼▼ [수정] 아래 줄들을 추가하여 모달의 내부 상태를 초기화합니다. ▼▼▼
       derivedPropositionsInModal = [];
       currentAssumption = null;
-      
+
       // 논증 로그 초기화 (논증 다시보기를 위한 데이터 정리)
       if (isRecordingProof) {
         stopProofRecording();
@@ -102,7 +102,9 @@ function setupEventListeners() {
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
         populatePuzzleLevels();
-        const puzzleModal = document.getElementById("puzzle-level-select-modal");
+        const puzzleModal = document.getElementById(
+          "puzzle-level-select-modal"
+        );
         puzzleModal.classList.remove("animate");
         puzzleModal.classList.add("visible");
         return;
@@ -164,15 +166,20 @@ function setupEventListeners() {
     });
 
   // Proof Review Modal Events
-  document
-    .getElementById("proof-review-btn")
-    .addEventListener("click", () => {
-      showProofReviewModal();
-    });
+  document.getElementById("proof-review-btn").addEventListener("click", () => {
+    showProofReviewModal();
+  });
 
   document
     .getElementById("close-proof-review-modal-btn")
     .addEventListener("click", () => {
       hideProofReviewModal();
     });
+  document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
+    if (inTutorialMode) return;
+    isTestMode = true;
+    audioManager.fadeOut("main-menu");
+    audioManager.play("character-select");
+    startCharacterSelection("AI");
+  });
 }

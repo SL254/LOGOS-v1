@@ -28,11 +28,11 @@ function startCharacterSelection(mode) {
     // 기존 1P vs AI 모드 로직 (수정 없음)
     const turnModal = document.getElementById("turn-order-modal");
     document.getElementById("turn-order-title").textContent =
-      currentLang.ui.turnOrderTitle;
+      gamestate.currentLang.ui.turnOrderTitle;
     document.getElementById("select-first-player").textContent =
-      currentLang.ui.selectFirstPlayer;
+      gamestate.currentLang.ui.selectFirstPlayer;
     document.getElementById("select-second-player").textContent =
-      currentLang.ui.selectSecondPlayer;
+      gamestate.currentLang.ui.selectSecondPlayer;
 
     turnModal.classList.add("visible");
 
@@ -85,7 +85,7 @@ function startCharacterSelection(mode) {
 
 function beginPlayerSelectionTurn(player) {
   characterSelectionTurn = player;
-  const lang = currentLang.ui;
+  const lang = gamestate.currentLang.ui;
   let instruction; // instruction 변수 선언
 
   // 턴에 따라 표시할 안내 문구를 결정하는 부분 (기존과 동일)
@@ -111,7 +111,8 @@ function beginPlayerSelectionTurn(player) {
   charIndicator.classList.remove("hidden");
 
   // 확인 버튼 텍스트를 현재 언어에 맞게 설정 및 비활성화
-  document.getElementById("confirm-selection-btn").textContent = currentLang.ui.confirmSelectionButton;
+  document.getElementById("confirm-selection-btn").textContent =
+    gamestate.currentLang.ui.confirmSelectionButton;
   document.getElementById("confirm-selection-btn").disabled = true;
 
   // [수정된 부분 2] 누락되었던 캐릭터 아이콘 생성 코드가 여기에 다시 포함되었습니다.
@@ -177,9 +178,9 @@ function updatePlayerDisplay(player, philosopherId) {
     // player('p1' 또는 'p2')에 따라 p.image 객체에서 알맞은 경로를 가져옵니다.
     const imageUrl = p.image[player];
     portraitEl.style.backgroundImage = `url('${imageUrl}')`;
-    nameEl.textContent = p.name[currentLang.langCode];
+    nameEl.textContent = p.name[gamestate.currentLang.langCode];
     nameEl.style.opacity = "1";
-    skillDescEl.textContent = p.skill[currentLang.langCode];
+    skillDescEl.textContent = p.skill[gamestate.currentLang.langCode];
   } else {
     portraitEl.style.backgroundImage = "none";
     nameEl.textContent = "철학자를 선택하세요";
@@ -203,7 +204,7 @@ function handleConfirmClick() {
 
 function finalizeSelection() {
   const charIndicator = document.getElementById("character-select-indicator");
-  charIndicator.textContent = currentLang.ui.gameStartingSoon;
+  charIndicator.textContent = gamestate.currentLang.ui.gameStartingSoon;
 
   document.querySelector(".shared-selection-area").style.pointerEvents = "none";
 
@@ -212,16 +213,16 @@ function finalizeSelection() {
   setTimeout(() => {
     charIndicator.classList.add("hidden");
     const charScreen = document.getElementById("character-selection-screen");
-    
+
     // 게임 시작 시에만 애니메이션 적용
     charScreen.classList.add("closing");
-    
+
     // 애니메이션이 끝난 후 완전히 숨김
     setTimeout(() => {
       charScreen.classList.add("hidden");
       charScreen.classList.remove("closing");
     }, 150); // 0.15초 애니메이션 시간
-    
+
     document.getElementById("turn-order-modal").classList.remove("visible");
     resetGame(tempSelections);
     updateMainMenuBtnVisibility();

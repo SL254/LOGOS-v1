@@ -15,53 +15,48 @@ function devLog(...args) {
 
 // --- GLOBAL STATE ---
 
-document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
-  isTestMode = true;
-  audioManager.fadeOut("main-menu");
-  audioManager.play("character-select");
-  startCharacterSelection("AI");
-});
-let bgmVolume = 0.4; // 배경음악 기본 볼륨 40%
-let sfxVolume = 0.6; // 효과음 기본 볼륨 100%
-let currentLang;
-let currentPuzzleLevel = null;
-let isPlayerAI = { A: false, B: false };
-let fullDeck, cardTypeOrder;
-let playerA_Hand = [],
-  playerB_Hand = [];
-let truePropositions = [];
-let parsedAxioms = [];
-let currentProposition = [];
-let currentPlayer = "A";
-let propositionStarter = "A";
-let gameIsOver = false;
-let currentRound = 1;
-let isThinkingTime = false;
-let lastPropositionMaker = null;
-let internalTruthSet = [];
-let derivedPropositionsInModal = [];
-let currentAssumption = null;
-let inferenceStepCount = 0;
-let lastCardPlayer = null;
-let cardsPlayedThisTurn = { A: 0, B: 0 };
-let eurekaUsedInRound = { A: false, B: false };
-let thinkingTimeTurn = null;
-let abilityUsedState = {};
-let socratesDisabledProps = [];
-let kantProposition = [];
-
-let currentAxioms = []; // 현재 게임의 공리를 저장할 배열
-
-// Proof recording system
-let proofSteps = []; // 논증 과정을 기록하는 배열
-let isRecordingProof = false; // 논증 기록 중인지 여부
-let stepCounter = 0; // 논증 단계 카운터
-let victoryProposition = null; // 승리 명제 저장
-
-let aiTimeoutId = null;
-let victorySoundPlayed = false; // 승리 효과음 재생 여부 플래그
-let hasUserInteracted = false; // 사용자 상호작용 여부 플래그
+let gameState = {
+  bgmVolume: 0.4,
+  sfxVolume: 0.6,
+  currentLang: null,
+  currentPuzzleLevel: null,
+  isPlayerAI: { A: false, B: false },
+  fullDeck: [],
+  cardTypeOrder: [],
+  playerA_Data: null,
+  playerB_Data: null,
+  playerA_Hand: [],
+  playerB_Hand: [],
+  truePropositions: [],
+  parsedAxioms: [],
+  currentProposition: [],
+  currentPlayer: "A",
+  propositionStarter: "A",
+  gameIsOver: false,
+  currentRound: 1,
+  isThinkingTime: false,
+  lastPropositionMaker: null,
+  internalTruthSet: [],
+  derivedPropositionsInModal: [],
+  currentAssumption: null,
+  inferenceStepCount: 0,
+  lastCardPlayer: null,
+  cardsPlayedThisTurn: { A: 0, B: 0 },
+  eurekaUsedInRound: { A: false, B: false },
+  thinkingTimeTurn: null,
+  abilityUsedState: {},
+  socratesDisabledProps: [],
+  kantProposition: [],
+  currentAxioms: [],
+  proofSteps: [],
+  isRecordingProof: false,
+  stepCounter: 0,
+  victoryProposition: null,
+  aiTimeoutId: null,
+  victorySoundPlayed: false,
+  hasUserInteracted: false,
+  isTestMode: false, // isTestMode도 게임 상태의 일부로 간주하여 포함
+};
 
 // --- TUTORIAL STATUS FUNCTIONS ---
 
@@ -180,8 +175,8 @@ function isVictoryProposition(proposition) {
   if (!proposition) return false;
 
   // "X는 승리한다" 또는 "X wins" 패턴 확인
-  const winTexts = currentLang.keywords.wins
-    ? [currentLang.keywords.wins]
+  const winTexts = gamestate.currentLang.keywords.wins
+    ? [gamestate.currentLang.keywords.wins]
     : ["승리한다", "wins"];
 
   if (proposition.type === "atomic") {
@@ -321,30 +316,39 @@ function traceVictoryProof() {
 }
 
 function getRuleNameInLanguage(ruleKey) {
-  if (!currentLang || !currentLang.inferenceRules) return ruleKey;
+  if (!gamestate.currentLang || !gamestate.currentLang.inferenceRules)
+    return ruleKey;
 
   const ruleNames = {
-    modusPonens: currentLang.inferenceRules.modusPonens || "전건 긍정",
-    modusTollens: currentLang.inferenceRules.modusTollens || "후건 부정",
+    modusPonens:
+      gamestate.currentLang.inferenceRules.modusPonens || "전건 긍정",
+    modusTollens:
+      gamestate.currentLang.inferenceRules.modusTollens || "후건 부정",
     hypotheticalSyllogism:
-      currentLang.inferenceRules.hypotheticalSyllogism || "가언적 삼단논법",
+      gamestate.currentLang.inferenceRules.hypotheticalSyllogism ||
+      "가언적 삼단논법",
     disjunctiveSyllogism:
-      currentLang.inferenceRules.disjunctiveSyllogism || "선언적 삼단논법",
+      gamestate.currentLang.inferenceRules.disjunctiveSyllogism ||
+      "선언적 삼단논법",
     conjunctionElimination:
-      currentLang.inferenceRules.conjunctionElimination || "단순화",
+      gamestate.currentLang.inferenceRules.conjunctionElimination || "단순화",
     conjunctionIntroduction:
-      currentLang.inferenceRules.conjunctionIntroduction || "연언 도입",
+      gamestate.currentLang.inferenceRules.conjunctionIntroduction ||
+      "연언 도입",
     doubleNegationElimination:
-      currentLang.inferenceRules.doubleNegationElimination || "이중 부정 제거",
+      gamestate.currentLang.inferenceRules.doubleNegationElimination ||
+      "이중 부정 제거",
     universalApplication:
-      currentLang.inferenceRules.universalApplication || "보편 적용",
+      gamestate.currentLang.inferenceRules.universalApplication || "보편 적용",
     existentialInstantiation:
-      currentLang.inferenceRules.existentialInstantiation || "존재화",
+      gamestate.currentLang.inferenceRules.existentialInstantiation || "존재화",
     conditionalIntroduction:
-      currentLang.inferenceRules.conditionalIntroduction || "조건문 도입",
+      gamestate.currentLang.inferenceRules.conditionalIntroduction ||
+      "조건문 도입",
     reductioAdAbsurdum:
-      currentLang.inferenceRules.reductioAdAbsurdum || "귀류법",
-    proofByCases: currentLang.inferenceRules.proofByCases || "경우 논증",
+      gamestate.currentLang.inferenceRules.reductioAdAbsurdum || "귀류법",
+    proofByCases:
+      gamestate.currentLang.inferenceRules.proofByCases || "경우 논증",
   };
 
   return ruleNames[ruleKey] || ruleKey;
@@ -362,24 +366,24 @@ function convertProofStepsToNaturalLanguage(steps) {
 
     switch (step.type) {
       case "premise":
-        stepType = currentLang.labels?.axiom || "[명제]";
+        stepType = gamestate.currentLang.labels?.axiom || "[명제]";
         stepText = propositionToPlainText(step.conclusion);
         break;
 
       case "assumption":
-        stepType = currentLang.labels?.assumption || "[가정]";
+        stepType = gamestate.currentLang.labels?.assumption || "[가정]";
         stepText = propositionToPlainText(step.conclusion);
         isAssumptionDependent = true;
         break;
 
       case "inference":
-        stepType = currentLang.labels?.theorem || "[정리]";
+        stepType = gamestate.currentLang.labels?.theorem || "[정리]";
         stepText = propositionToPlainText(step.conclusion);
         isAssumptionDependent = step.assumption !== null;
         break;
 
       case "victory":
-        stepType = currentLang.labels?.victory || "[승리]";
+        stepType = gamestate.currentLang.labels?.victory || "[승리]";
         stepText = propositionToPlainText(step.conclusion);
         break;
 
@@ -465,7 +469,7 @@ function showProofReviewModal() {
   const title = document.getElementById("proof-review-title");
   const content = document.getElementById("proof-review-content");
 
-  title.textContent = currentLang.modals.proofReviewTitle;
+  title.textContent = gamestate.currentLang.modals.proofReviewTitle;
 
   content.innerHTML = "";
 
@@ -483,7 +487,8 @@ function showProofReviewModal() {
       assumptionDiv.className = `proof-step assumption`;
       assumptionDiv.classList.add("assumption-dependent");
 
-      const assumptionTypeLabel = currentLang.labels?.assumption || "[가정]";
+      const assumptionTypeLabel =
+        gamestate.currentLang.labels?.assumption || "[가정]";
       assumptionDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
         assumptionStep.conclusion
       )}`;
@@ -565,7 +570,7 @@ function showProofReviewModal() {
 
         if (premise.type === "assumption") {
           const assumptionTypeLabel =
-            currentLang.labels?.assumption || "[가정]";
+            gamestate.currentLang.labels?.assumption || "[가정]";
           premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
             premise.conclusion
           )}`;
@@ -643,7 +648,7 @@ function showProofReviewModal() {
 
         if (premise.type === "assumption") {
           const assumptionTypeLabel =
-            currentLang.labels?.assumption || "[가정]";
+            gamestate.currentLang.labels?.assumption || "[가정]";
           premiseDiv.innerHTML = `<span class="proof-step-type">${assumptionTypeLabel}</span> ${propositionToNaturalText(
             premise.conclusion
           )}`;
@@ -674,7 +679,8 @@ function showProofReviewModal() {
       const conclusionDiv = document.createElement("div");
       conclusionDiv.className = `proof-step conclusion`;
 
-      const conclusionTypeLabel = currentLang.labels?.victory || "[승리]";
+      const conclusionTypeLabel =
+        gamestate.currentLang.labels?.victory || "[승리]";
       conclusionDiv.innerHTML = `<span class="proof-step-type">${conclusionTypeLabel}</span> ${propositionToNaturalText(
         step.conclusion
       )}`;
@@ -695,7 +701,7 @@ function showProofReviewButton() {
   const button = document.getElementById("proof-review-btn");
   if (button) {
     button.classList.remove("hidden");
-    button.textContent = currentLang.ui.proofReviewButton;
+    button.textContent = gamestate.currentLang.ui.proofReviewButton;
   }
 }
 
@@ -727,7 +733,7 @@ function parseTokensToProposition(tokens) {
   for (let i = tokens.length - 1; i >= 0; i--) {
     if (tokens[i] === ")") balance++;
     else if (tokens[i] === "(") balance--;
-    if (balance === 0 && tokens[i] === currentLang.keywords.if) {
+    if (balance === 0 && tokens[i] === gamestate.currentLang.keywords.if) {
       const left = parseTokensToProposition(tokens.slice(0, i));
       const right = parseTokensToProposition(tokens.slice(i + 1));
       if (!left || !right) return null;
@@ -738,7 +744,7 @@ function parseTokensToProposition(tokens) {
   for (let i = tokens.length - 1; i >= 0; i--) {
     if (tokens[i] === ")") balance++;
     else if (tokens[i] === "(") balance--;
-    if (balance === 0 && tokens[i] === currentLang.keywords.or) {
+    if (balance === 0 && tokens[i] === gamestate.currentLang.keywords.or) {
       const left = parseTokensToProposition(tokens.slice(0, i));
       const right = parseTokensToProposition(tokens.slice(i + 1));
       if (!left || !right) return null;
@@ -749,7 +755,7 @@ function parseTokensToProposition(tokens) {
   for (let i = tokens.length - 1; i >= 0; i--) {
     if (tokens[i] === ")") balance++;
     else if (tokens[i] === "(") balance--;
-    if (balance === 0 && tokens[i] === currentLang.keywords.and) {
+    if (balance === 0 && tokens[i] === gamestate.currentLang.keywords.and) {
       const left = parseTokensToProposition(tokens.slice(0, i));
       const right = parseTokensToProposition(tokens.slice(i + 1));
       if (!left || !right) return null;
@@ -758,7 +764,7 @@ function parseTokensToProposition(tokens) {
   }
   if (
     tokens.length > 1 &&
-    tokens[tokens.length - 1] === currentLang.keywords.not
+    tokens[tokens.length - 1] === gamestate.currentLang.keywords.not
   ) {
     const prop = parseTokensToProposition(tokens.slice(0, -1));
     if (!prop) return null;
@@ -766,7 +772,8 @@ function parseTokensToProposition(tokens) {
   }
   const cardInfo = tokens.map((t) => fullDeck.find((c) => c.text === t));
   if (cardInfo.some((c) => !c)) {
-    const [properNoun, quantifier, entity, predicate] = currentLang.cardTypes;
+    const [properNoun, quantifier, entity, predicate] =
+      gamestate.currentLang.cardTypes;
     const types = tokens.map((t) => {
       const card = fullDeck.find((c) => c.text === t);
       return card ? card.type : null;
@@ -777,7 +784,7 @@ function parseTokensToProposition(tokens) {
     if (types.length === 3 && types[0] === quantifier) {
       return {
         type:
-          tokens[0] === currentLang.keywords.universal_q
+          tokens[0] === gamestate.currentLang.keywords.universal_q
             ? "universal"
             : "existential",
         entity: tokens[1],
@@ -787,14 +794,15 @@ function parseTokensToProposition(tokens) {
     return null;
   }
   const types = cardInfo.map((c) => c.type);
-  const [properNoun, quantifier, entity, predicate] = currentLang.cardTypes;
+  const [properNoun, quantifier, entity, predicate] =
+    gamestate.currentLang.cardTypes;
   if (types.length === 2 && types[0] === properNoun) {
     return { type: "atomic", subject: tokens[0], predicate: tokens[1] };
   }
   if (types.length === 3 && types[0] === quantifier) {
     return {
       type:
-        tokens[0] === currentLang.keywords.universal_q
+        tokens[0] === gamestate.currentLang.keywords.universal_q
           ? "universal"
           : "existential",
       entity: tokens[1],
@@ -866,9 +874,9 @@ function propositionToText(prop) {
     case "atomic":
       return `${prop.subject} ${prop.predicate}`;
     case "universal":
-      return `${currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
     case "existential":
-      return `${currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
     case "negation":
       return `~(${propositionToText(prop.proposition)})`;
     case "conjunction":
@@ -894,13 +902,13 @@ function propositionToNaturalText(prop) {
     case "atomic":
       return `${prop.subject} ${prop.predicate}`;
     case "universal":
-      return `${currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
     case "existential":
-      return `${currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
     case "negation": {
       const innerProp = prop.proposition;
       const innerText = propositionToNaturalText(innerProp);
-      const notKeyword = `<span class="op-not">${currentLang.keywords.not}</span>`;
+      const notKeyword = `<span class="op-not">${gamestate.currentLang.keywords.not}</span>`;
 
       // 핵심 수정 1: 부정 대상이 단일 명제(atomic, universal, existential)일 때만 괄호로 감쌉니다.
       if (
@@ -928,7 +936,7 @@ function propositionToNaturalText(prop) {
         rightText = `(${rightText})`;
       }
 
-      const andKeyword = `<span class="op-and">${currentLang.keywords.and}</span>`;
+      const andKeyword = `<span class="op-and">${gamestate.currentLang.keywords.and}</span>`;
       return `${leftText} ${andKeyword} ${rightText}`;
     }
     case "disjunction": {
@@ -945,7 +953,7 @@ function propositionToNaturalText(prop) {
         rightText = `(${rightText})`;
       }
 
-      const orKeyword = `<span class="op-or">${currentLang.keywords.or}</span>`;
+      const orKeyword = `<span class="op-or">${gamestate.currentLang.keywords.or}</span>`;
       return `${leftText} ${orKeyword} ${rightText}`;
     }
     case "conditional": {
@@ -962,7 +970,7 @@ function propositionToNaturalText(prop) {
         rightText = `(${rightText})`;
       }
 
-      const ifKeyword = `<span class="op-if">${currentLang.keywords.if}</span>`;
+      const ifKeyword = `<span class="op-if">${gamestate.currentLang.keywords.if}</span>`;
       return `${leftText} ${ifKeyword} ${rightText}`;
     }
     default:
@@ -976,14 +984,14 @@ function propositionToPlainText(prop) {
     case "atomic":
       return `${prop.subject} ${prop.predicate}`;
     case "universal":
-      return `${currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.universal_q} ${prop.entity} ${prop.predicate}`;
     case "existential":
-      return `${currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
+      return `${gamestate.currentLang.keywords.existential_q} ${prop.entity} ${prop.predicate}`;
 
     case "negation": {
       const innerProp = prop.proposition;
       const innerText = propositionToPlainText(innerProp); // 재귀 호출 시에도 새 함수 사용
-      const notKeyword = currentLang.keywords.not;
+      const notKeyword = gamestate.currentLang.keywords.not;
       if (
         innerProp.type === "conjunction" ||
         innerProp.type === "disjunction" ||
@@ -998,7 +1006,7 @@ function propositionToPlainText(prop) {
       let leftText;
       if (prop.left.type === "negation") {
         const innerText = propositionToPlainText(prop.left.proposition);
-        leftText = `(${innerText}) ${currentLang.keywords.not}`;
+        leftText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         leftText = `(${propositionToPlainText(prop.left)})`;
       }
@@ -1006,12 +1014,12 @@ function propositionToPlainText(prop) {
       let rightText;
       if (prop.right.type === "negation") {
         const innerText = propositionToPlainText(prop.right.proposition);
-        rightText = `(${innerText}) ${currentLang.keywords.not}`;
+        rightText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         rightText = `(${propositionToPlainText(prop.right)})`;
       }
 
-      const andKeyword = currentLang.keywords.and;
+      const andKeyword = gamestate.currentLang.keywords.and;
       return `${leftText} ${andKeyword} ${rightText}`;
     }
 
@@ -1019,7 +1027,7 @@ function propositionToPlainText(prop) {
       let leftText;
       if (prop.left.type === "negation") {
         const innerText = propositionToPlainText(prop.left.proposition);
-        leftText = `(${innerText}) ${currentLang.keywords.not}`;
+        leftText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         leftText = `(${propositionToPlainText(prop.left)})`;
       }
@@ -1027,12 +1035,12 @@ function propositionToPlainText(prop) {
       let rightText;
       if (prop.right.type === "negation") {
         const innerText = propositionToPlainText(prop.right.proposition);
-        rightText = `(${innerText}) ${currentLang.keywords.not}`;
+        rightText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         rightText = `(${propositionToPlainText(prop.right)})`;
       }
 
-      const orKeyword = currentLang.keywords.or;
+      const orKeyword = gamestate.currentLang.keywords.or;
       return `${leftText} ${orKeyword} ${rightText}`;
     }
 
@@ -1040,7 +1048,7 @@ function propositionToPlainText(prop) {
       let leftText;
       if (prop.left.type === "negation") {
         const innerText = propositionToPlainText(prop.left.proposition);
-        leftText = `(${innerText}) ${currentLang.keywords.not}`;
+        leftText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         leftText = `(${propositionToPlainText(prop.left)})`;
       }
@@ -1048,12 +1056,12 @@ function propositionToPlainText(prop) {
       let rightText;
       if (prop.right.type === "negation") {
         const innerText = propositionToPlainText(prop.right.proposition);
-        rightText = `(${innerText}) ${currentLang.keywords.not}`;
+        rightText = `(${innerText}) ${gamestate.currentLang.keywords.not}`;
       } else {
         rightText = `(${propositionToPlainText(prop.right)})`;
       }
 
-      const ifKeyword = currentLang.keywords.if;
+      const ifKeyword = gamestate.currentLang.keywords.if;
       return `${leftText} ${ifKeyword} ${rightText}`;
     }
 
@@ -1063,15 +1071,15 @@ function propositionToPlainText(prop) {
 }
 
 function initializeGame(lang) {
-  currentLang = TEXTS[lang];
-  document.documentElement.lang = currentLang.langCode;
-  document.title = currentLang.ui.title;
+  gamestate.currentLang = TEXTS[lang];
+  document.documentElement.lang = gamestate.currentLang.langCode;
+  document.title = gamestate.currentLang.ui.title;
 
   TEXTS.ko.tutorial = TUTORIAL_TEXTS.ko;
   TEXTS.en.tutorial = TUTORIAL_TEXTS.en;
 
-  fullDeck = currentLang.cards;
-  cardTypeOrder = currentLang.cardTypes;
+  fullDeck = gamestate.currentLang.cards;
+  cardTypeOrder = gamestate.currentLang.cardTypes;
 
   // 언어 모달은 이제 기본적으로 숨겨져 있음
   setupUI();
@@ -1119,7 +1127,7 @@ function showPressAnyKeyScreen() {
 
   // Press any key 텍스트 설정
   document.getElementById("press-any-key-text").textContent =
-    currentLang.ui.pressAnyKeyText;
+    gamestate.currentLang.ui.pressAnyKeyText;
 
   // Press any key 화면 표시 (메인 버튼들은 자리를 차지하되 보이지 않게)
   document.getElementById("press-any-key").classList.remove("hidden");
@@ -1236,7 +1244,7 @@ document.getElementById("vs-ai-battle-btn").addEventListener("click", () => {
 
 document.getElementById("exit-game-btn").addEventListener("click", () => {
   if (inTutorialMode) return;
-  showConfirm(currentLang.alerts.confirmExit, () => {
+  showConfirm(gamestate.currentLang.alerts.confirmExit, () => {
     // '예'를 눌렀을 때의 동작
     window.close();
   });
@@ -1328,12 +1336,12 @@ function setupGame(selectedCharacters, testConfig = null) {
   let p1_card_obj, p2_card_obj;
   let subjectA, subjectB;
 
-  subjectA = playerA_Data.cardText[currentLang.langCode];
-  subjectB = playerB_Data.cardText[currentLang.langCode];
+  subjectA = playerA_Data.cardText[gamestate.currentLang.langCode];
+  subjectB = playerB_Data.cardText[gamestate.currentLang.langCode];
 
   // 1. 미러전(동일 철학자 선택) 처리
   if (p1_id === p2_id) {
-    if (currentLang.langCode === "ko") {
+    if (gamestate.currentLang.langCode === "ko") {
       const fullName = playerA_Data.name.ko;
       const nameParts = fullName.split(" ");
       const lastName = nameParts[nameParts.length - 1];
@@ -1348,29 +1356,29 @@ function setupGame(selectedCharacters, testConfig = null) {
       subjectB = `Black ${lastName}`;
     }
     document.getElementById("player-a-title").innerHTML = `⚪️ ${
-      playerA_Data.name[currentLang.langCode]
+      playerA_Data.name[gamestate.currentLang.langCode]
     }(백)`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
-      playerB_Data.name[currentLang.langCode]
+      playerB_Data.name[gamestate.currentLang.langCode]
     }(흑)`;
   } else {
     document.getElementById("player-a-title").innerHTML = `⚪️ ${
-      playerA_Data.name[currentLang.langCode]
+      playerA_Data.name[gamestate.currentLang.langCode]
     }`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
-      playerB_Data.name[currentLang.langCode]
+      playerB_Data.name[gamestate.currentLang.langCode]
     }`;
   }
 
   const properNounType =
-    currentLang.langCode === "ko" ? "고유명사" : "Proper Noun";
+    gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun";
   p1_card_obj = { type: properNounType, text: subjectA };
   p2_card_obj = { type: properNounType, text: subjectB };
 
   // 2. 게임 덱 구성 (마르크스 카드 포함)
-  const masterDeck = currentLang.cards;
+  const masterDeck = gamestate.currentLang.cards;
   const allPhilosopherCardTexts = Object.values(PHILOSOPHERS).map(
-    (p) => p.cardText[currentLang.langCode]
+    (p) => p.cardText[gamestate.currentLang.langCode]
   );
   const baseDeck = masterDeck.filter(
     (card) => !allPhilosopherCardTexts.includes(card.text)
@@ -1380,16 +1388,16 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   const isMarxInGame = p1_id === "marx" || p2_id === "marx";
   const capitalistCard = {
-    type: currentLang.langCode === "ko" ? "개체" : "Entity",
-    text: currentLang.langCode === "ko" ? "자본가는" : "capitalist",
+    type: gamestate.currentLang.langCode === "ko" ? "개체" : "Entity",
+    text: gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist",
   };
   const revolutionSubjectCard = {
-    type: currentLang.langCode === "ko" ? "고유명사" : "Proper Noun",
-    text: currentLang.langCode === "ko" ? "혁명이" : "A revolution",
+    type: gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun",
+    text: gamestate.currentLang.langCode === "ko" ? "혁명이" : "A revolution",
   };
   const revolutionPredicateCard = {
-    type: currentLang.langCode === "ko" ? "서술어" : "Predicate",
-    text: currentLang.langCode === "ko" ? "일어난다" : "occurs",
+    type: gamestate.currentLang.langCode === "ko" ? "서술어" : "Predicate",
+    text: gamestate.currentLang.langCode === "ko" ? "일어난다" : "occurs",
   };
 
   if (isMarxInGame) {
@@ -1450,7 +1458,12 @@ function setupGame(selectedCharacters, testConfig = null) {
   }
 
   // 4. 공리 및 승리 조건 설정
-  currentAxioms = generateAxioms(subjectA, subjectB, currentLang, isMarxInGame);
+  currentAxioms = generateAxioms(
+    subjectA,
+    subjectB,
+    gamestate.currentLang,
+    isMarxInGame
+  );
   parsedAxioms = currentAxioms
     .map((str) => ({
       type: "axiom",
@@ -1459,12 +1472,12 @@ function setupGame(selectedCharacters, testConfig = null) {
     .filter((a) => a.proposition);
   internalTruthSet = parsedAxioms.map((a) => a.proposition);
 
-  const { if: ifKeyword, wins, and } = currentLang.keywords;
+  const { if: ifKeyword, wins, and } = gamestate.currentLang.keywords;
 
   const predicateA =
     testConfig?.victoryA ||
-    currentLang.victoryPredicates[
-      Math.floor(Math.random() * currentLang.victoryPredicates.length)
+    gamestate.currentLang.victoryPredicates[
+      Math.floor(Math.random() * gamestate.currentLang.victoryPredicates.length)
     ];
   const victoryTextA = `((${subjectA} ${predicateA}) ${ifKeyword} (${subjectA} ${wins})) ${and} ((${subjectA} ${wins}) ${ifKeyword} (${subjectA} ${predicateA}))`;
   const parsedVictoryA = parsePropositionFromString(victoryTextA);
@@ -1488,8 +1501,8 @@ function setupGame(selectedCharacters, testConfig = null) {
 
   const predicateB =
     testConfig?.victoryB ||
-    currentLang.victoryPredicates[
-      Math.floor(Math.random() * currentLang.victoryPredicates.length)
+    gamestate.currentLang.victoryPredicates[
+      Math.floor(Math.random() * gamestate.currentLang.victoryPredicates.length)
     ];
   const victoryTextB = `((${subjectB} ${predicateB}) ${ifKeyword} (${subjectB} ${wins})) ${and} ((${subjectB} ${wins}) ${ifKeyword} (${subjectB} ${predicateB}))`;
   const parsedVictoryB = parsePropositionFromString(victoryTextB);
@@ -1514,9 +1527,9 @@ function setupGame(selectedCharacters, testConfig = null) {
   // 5. 마르크스 특별 승리 조건 추가
   const setupMarxVictory = (player, subject) => {
     const revolutionPropText = `${revolutionSubjectCard.text} ${revolutionPredicateCard.text}`;
-    const firstClause = `(${currentLang.keywords.universal_q} ${
+    const firstClause = `(${gamestate.currentLang.keywords.universal_q} ${
       capitalistCard.text
-    } ${currentLang.langCode === "ko" ? "악하다" : "is evil"})`;
+    } ${gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil"})`;
     const secondClause = `(${revolutionPropText})`;
     const thirdClause = `(${subject} ${wins})`;
     const marxVictoryString = `(${firstClause} ${ifKeyword} ${secondClause}) ${and} (${secondClause} ${ifKeyword} ${thirdClause})`;
@@ -1699,10 +1712,10 @@ function isValidPlay(cardToPlay, proposition) {
   }
 
   const propLength = proposition.length;
-  const { if: ifKeyword, and, or, not } = currentLang.keywords;
+  const { if: ifKeyword, and, or, not } = gamestate.currentLang.keywords;
   const isConnective = (card) => [ifKeyword, and, or].includes(card.text);
   const [properNoun, quantifier, entity, predicate, operator] =
-    currentLang.cardTypes;
+    gamestate.currentLang.cardTypes;
 
   if (propLength === 0) {
     return cardToPlay.type === properNoun || cardToPlay.type === quantifier;
@@ -1833,7 +1846,7 @@ function activateAbility(player) {
     // 흄의 경우 usedCount가 maxUses 이상인지 확인
     if (philosopherId === "hume" && state.usedCount >= state.maxUses) {
       showAlert(
-        currentLang.langCode === "ko"
+        gamestate.currentLang.langCode === "ko"
           ? "이미 능력을 모두 사용했습니다."
           : "Ability has already been used up."
       );
@@ -1842,7 +1855,7 @@ function activateAbility(player) {
     // 그 외 철학자는 기존 방식대로 used 플래그 확인
     else if (philosopherId !== "hume" && state.used) {
       showAlert(
-        currentLang.langCode === "ko"
+        gamestate.currentLang.langCode === "ko"
           ? "이미 능력을 사용했습니다."
           : "Ability has already been used."
       );
@@ -1880,7 +1893,7 @@ function activateAbility(player) {
     // ... 다른 모든 철학자들의 능력 호출 ...
     default:
       showAlert(
-        currentLang.langCode === "ko"
+        gamestate.currentLang.langCode === "ko"
           ? "이 철학자는 사용할 수 있는 능력이 없습니다."
           : "This philosopher has no active ability."
       );
@@ -1908,7 +1921,7 @@ function getAbilityButtonStateFor(player) {
   const defaultState = {
     visible: true,
     disabled: true,
-    text: currentLang.ui.useAbilityButton,
+    text: gamestate.currentLang.ui.useAbilityButton,
   };
 
   // 현재 게임이 진행 중이 아니거나, 해당 플레이어의 철학자 정보가 없으면 기본 상태 반환
@@ -1941,7 +1954,7 @@ function getAbilityButtonStateFor(player) {
               abilityUsedState[player].maxUses ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
 
@@ -1957,7 +1970,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -1987,7 +2000,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2002,7 +2015,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2017,7 +2030,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2031,7 +2044,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2051,7 +2064,7 @@ function getAbilityButtonStateFor(player) {
             userMadePropsCount < 15 ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2065,7 +2078,7 @@ function getAbilityButtonStateFor(player) {
             abilityUsedState[player]?.used ||
             thinkingTimeTurn !== player ||
             (isPlayerAI[player] && thinkingTimeTurn === player),
-          text: currentLang.ui.useAbilityButton,
+          text: gamestate.currentLang.ui.useAbilityButton,
         };
       }
       break;
@@ -2084,13 +2097,13 @@ function playCard(player, cardToPlay) {
   if (player !== currentPlayer || gameIsOver || isThinkingTime) return;
 
   if (cardsPlayedThisTurn[player] >= 1) {
-    showAlert(currentLang.alerts.oneCardPerTurn);
+    showAlert(gamestate.currentLang.alerts.oneCardPerTurn);
     return;
   }
 
   if (!isValidPlay(cardToPlay, currentProposition)) {
     if (player !== aiPlayer) {
-      showAlert(currentLang.alerts.invalidCard);
+      showAlert(gamestate.currentLang.alerts.invalidCard);
     }
     return;
   }
@@ -2121,7 +2134,7 @@ function completeProposition() {
   const parsedProp = parsePropositionFromCards([...currentProposition]);
   if (!parsedProp) {
     if (currentPlayer !== aiPlayer) {
-      showAlert(currentLang.alerts.incompleteProposition);
+      showAlert(gamestate.currentLang.alerts.incompleteProposition);
     }
     return false;
   }
@@ -2142,7 +2155,7 @@ function completeProposition() {
   // 현재 플레이어가 니체가 "아닌데" 중복 명제를 완성하려는 경우 -> 거부
   if ((isAxiom || isAlreadyProven) && currentPlayerId !== "nietzsche") {
     if (currentPlayer !== aiPlayer) {
-      showAlert(currentLang.alerts.duplicateProposition);
+      showAlert(gamestate.currentLang.alerts.duplicateProposition);
     }
     return false;
   }
@@ -2194,7 +2207,7 @@ function completeProposition() {
   } else {
     // 4. 모순이 발견된 경우
     if (currentPlayer !== aiPlayer) {
-      showAlert(currentLang.alerts.contradictionFound);
+      showAlert(gamestate.currentLang.alerts.contradictionFound);
     }
     return false;
   }
@@ -2243,7 +2256,7 @@ function undoProposition() {
       const lastMaker =
         propToUndo.original_cards[propToUndo.original_cards.length - 1].player;
       if (gameMode === "AI" && lastMaker === aiPlayer) {
-        showAlert(currentLang.alerts.nothingToUndo);
+        showAlert(gamestate.currentLang.alerts.nothingToUndo);
         return;
       }
       audioManager.playSfx("undo");
@@ -2267,7 +2280,7 @@ function undoProposition() {
             "Critical error: Inconsistency found while rebuilding truth set after undo.",
             prop
           );
-          showAlert(currentLang.alerts.criticalErrorUndo);
+          showAlert(gamestate.currentLang.alerts.criticalErrorUndo);
           truePropositions.splice(lastUserMadePropIndex, 0, propToUndo);
           return;
         }
@@ -2277,10 +2290,10 @@ function undoProposition() {
       currentPlayer = currentProposition[currentProposition.length - 1].player;
       lastCardPlayer = currentProposition[currentProposition.length - 1].player;
       cardsPlayedThisTurn = { A: 0, B: 0 };
-      showAlert(currentLang.alerts.undoLastProposition);
+      showAlert(gamestate.currentLang.alerts.undoLastProposition);
       render();
     } else {
-      showAlert(currentLang.alerts.nothingToUndo);
+      showAlert(gamestate.currentLang.alerts.nothingToUndo);
     }
   }
 }
@@ -2297,7 +2310,7 @@ function declareEureka(player) {
       return;
     }
 
-    showConfirm(currentLang.alerts.confirmDeclareEureka, (event) => {
+    showConfirm(gamestate.currentLang.alerts.confirmDeclareEureka, (event) => {
       // 💡 변경점: event 객체를 받도록 수정
       event.stopPropagation(); // 💡 변경점: 이벤트 전파를 막아 중복 소리를 제거
 
@@ -2326,20 +2339,22 @@ function endGame(winner, winningProposition) {
   const isMirrorMatch = playerA_Data.id === playerB_Data.id;
 
   if (winner === "A") {
-    winnerName = getLastName(playerA_Data.name[currentLang.langCode]);
+    winnerName = getLastName(playerA_Data.name[gamestate.currentLang.langCode]);
     if (isMirrorMatch) {
       // 미러전일 경우, A플레이어(선공)에게 색상 식별자를 추가합니다.
-      winnerName += currentLang.langCode === "ko" ? "(백)" : " (White)";
+      winnerName +=
+        gamestate.currentLang.langCode === "ko" ? "(백)" : " (White)";
     }
   } else {
     // winner === 'B'
-    winnerName = getLastName(playerB_Data.name[currentLang.langCode]);
+    winnerName = getLastName(playerB_Data.name[gamestate.currentLang.langCode]);
     if (isMirrorMatch) {
       // 미러전일 경우, B플레이어(후공)에게 색상 식별자를 추가합니다.
-      winnerName += currentLang.langCode === "ko" ? "(흑)" : " (Black)";
+      winnerName +=
+        gamestate.currentLang.langCode === "ko" ? "(흑)" : " (Black)";
     }
   }
-  const victoryText = `${winnerName} ${currentLang.ui.victoryMessage}<br>${currentLang.ui.victorySubMessage}`;
+  const victoryText = `${winnerName} ${gamestate.currentLang.ui.victoryMessage}<br>${gamestate.currentLang.ui.victorySubMessage}`;
   statusEl.innerHTML = `<span class="turn-indicator">${victoryText}</span>`;
 
   // 승리한 플레이어의 타이틀 박스에 승리 스타일 적용
@@ -2372,19 +2387,21 @@ function endGame(winner, winningProposition) {
 
   // 3. '승리'를 제외한 나머지 상태 오버레이들은 기존처럼 논리적 참/거짓에 따라 표시합니다.
   const characters = [
-    currentLang.keywords.socrates,
-    currentLang.keywords.plato,
+    gamestate.currentLang.keywords.socrates,
+    gamestate.currentLang.keywords.plato,
   ];
   const predicates = [
-    ...currentLang.cards
+    ...gamestate.currentLang.cards
       .filter(
         (card) =>
-          card.type === currentLang.cardTypes[3] || card.type === "Predicate"
+          card.type === gamestate.currentLang.cardTypes[3] ||
+          card.type === "Predicate"
       )
       // ★★★ '승리한다' 서술어는 위에서 수동으로 처리했으므로, 반복문에서 제외합니다.
       .filter(
         (card) =>
-          card.text !== currentLang.keywords.wins && card.text !== "승리한다"
+          card.text !== gamestate.currentLang.keywords.wins &&
+          card.text !== "승리한다"
       )
       .map((card) => card.text),
   ];
@@ -2399,7 +2416,9 @@ function endGame(winner, winningProposition) {
 
       if (aiFindProof(targetProposition, internalTruthSet)) {
         const subjectId =
-          subjectText === currentLang.keywords.socrates ? "socrates" : "plato";
+          subjectText === gamestate.currentLang.keywords.socrates
+            ? "socrates"
+            : "plato";
         const predicateMap = {
           선하다: "good",
           "is good": "good",
@@ -2457,8 +2476,8 @@ function checkRoundEndConditions() {
   if (!hasValidCardMove && !canComplete) {
     const playerName =
       currentPlayer === "A"
-        ? playerA_Data.name[currentLang.langCode]
-        : playerB_Data.name[currentLang.langCode];
+        ? playerA_Data.name[gamestate.currentLang.langCode]
+        : playerB_Data.name[gamestate.currentLang.langCode];
 
     // 'AI vs AI' 모드일 경우에만 경고창을 건너뜁니다.
     if (gameMode === "AI_VS_AI") {
@@ -2469,7 +2488,10 @@ function checkRoundEndConditions() {
     } else {
       // 그 외의 모든 모드(사람 vs AI 포함)에서는 경고창을 띄웁니다.
       showAlert(
-        currentLang.alerts.roundEndNoMoves.replace("{player}", playerName),
+        gamestate.currentLang.alerts.roundEndNoMoves.replace(
+          "{player}",
+          playerName
+        ),
         () => startThinkingTime()
       );
     }
@@ -2520,8 +2542,8 @@ function endThinkingTime() {
 
   // 손패를 새로 분배하는 부분 (기존 코드)
   const nonPlayerCards = [
-    currentLang.keywords.wins,
-    currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
+    gamestate.currentLang.keywords.wins,
+    gamestate.currentLang.langCode === "ko" ? "자본가이다" : "is a capitalist",
   ]; // 기존 코드
   playerA_Hand = JSON.parse(
     JSON.stringify(fullDeck.filter((c) => !nonPlayerCards.includes(c.text)))
@@ -2536,8 +2558,8 @@ function endThinkingTime() {
   // 마르크스가 있다면, 새로 분배된 손패에서 플레이 불가능한 카드들을 제거합니다.
   if (isMarxInGame) {
     const unplayableCardTexts = [
-      currentLang.langCode === "ko" ? "혁명이" : "A revolution",
-      currentLang.langCode === "ko" ? "일어난다" : "occurs",
+      gamestate.currentLang.langCode === "ko" ? "혁명이" : "A revolution",
+      gamestate.currentLang.langCode === "ko" ? "일어난다" : "occurs",
     ]; // 제거할 카드 목록 정의
 
     playerA_Hand = playerA_Hand.filter(
@@ -2567,23 +2589,23 @@ function render() {
     if (isMirrorMatch) {
       // 미러전일 경우
       document.getElementById("player-a-title").innerHTML = `⚪️ ${
-        playerA_Data.name[currentLang.langCode]
+        playerA_Data.name[gamestate.currentLang.langCode]
       }(백)`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
-        playerB_Data.name[currentLang.langCode]
+        playerB_Data.name[gamestate.currentLang.langCode]
       }(흑)`;
     } else {
       // 일반 대전일 경우
       document.getElementById("player-a-title").innerHTML = `⚪️ ${
-        playerA_Data.name[currentLang.langCode]
+        playerA_Data.name[gamestate.currentLang.langCode]
       }`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
-        playerB_Data.name[currentLang.langCode]
+        playerB_Data.name[gamestate.currentLang.langCode]
       }`;
     }
   }
   document.getElementById("round-display").textContent =
-    currentLang.ui.roundDisplay.replace("{round}", currentRound);
+    gamestate.currentLang.ui.roundDisplay.replace("{round}", currentRound);
   const handA_El = document.getElementById("player-a-hand"),
     handB_El = document.getElementById("player-b-hand");
   handA_El.innerHTML = "";
@@ -2687,7 +2709,7 @@ function render() {
   liAxiom.className = "axiom-wrapper";
   const details = document.createElement("details");
   const summary = document.createElement("summary");
-  summary.textContent = currentLang.ui.axiomTitle;
+  summary.textContent = gamestate.currentLang.ui.axiomTitle;
   details.appendChild(summary);
   const axiomContainer = document.createElement("div");
   axiomContainer.className = "axiom-list";
@@ -2713,12 +2735,12 @@ function render() {
 
     // 개체별 속성 대립 - 세부 그룹으로 나누기
     if (groups.subjectOpposition.length > 0) {
-      const templates = currentLang.axiom_templates;
+      const templates = gamestate.currentLang.axiom_templates;
       const subjectA = playerA_Data
-        ? playerA_Data.cardText[currentLang.langCode]
+        ? playerA_Data.cardText[gamestate.currentLang.langCode]
         : "";
       const subjectB = playerB_Data
-        ? playerB_Data.cardText[currentLang.langCode]
+        ? playerB_Data.cardText[gamestate.currentLang.langCode]
         : "";
 
       // 첫 번째 철학자 선악 공리
@@ -2780,7 +2802,7 @@ function render() {
 
     // 집단별 속성 대립 - 세부 그룹으로 나누기
     if (groups.quantifierOpposition.length > 0) {
-      const templates = currentLang.axiom_templates;
+      const templates = gamestate.currentLang.axiom_templates;
 
       // 새 집단 순방향
       templates.bird_good_evil_forward.forEach((axiomText) => {
@@ -2928,12 +2950,12 @@ function render() {
       }
       const ownerName = getLastName(
         propData.owner === "A"
-          ? playerA_Data.name[currentLang.langCode]
-          : playerB_Data.name[currentLang.langCode]
+          ? playerA_Data.name[gamestate.currentLang.langCode]
+          : playerB_Data.name[gamestate.currentLang.langCode]
       );
       const ownerPrefix =
         propData.owner === "A" ? `⚪️ ${ownerName}` : `⚫️ ${ownerName}`;
-      li.innerHTML = currentLang.labels.victory_text
+      li.innerHTML = gamestate.currentLang.labels.victory_text
         .replace("{owner}", ownerPrefix)
         .replace("{text}", propData.text);
     } else if (propData.type === "user-made") {
@@ -2953,7 +2975,7 @@ function render() {
       if (propData.source === "nietzsche_ability") {
         li.classList.add("nietzsche-theorem"); // [추가] 니체 명제에 전용 클래스 추가
 
-        const rawLabel = currentLang.labels.nietzsche_ability_source;
+        const rawLabel = gamestate.currentLang.labels.nietzsche_ability_source;
         const labelText = rawLabel.replace("{text}", "").trim();
 
         const labelSpan = document.createElement("span");
@@ -2969,44 +2991,50 @@ function render() {
       // 3. 능력의 종류에 따라 적절한 라벨을 붙여 최종 텍스트를 완성합니다.
       if (propData.source === "plato_ability") {
         li.classList.add("plato-theorem");
-        li.textContent = currentLang.labels.plato_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.plato_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else if (propData.source === "wittgenstein_ability") {
         li.classList.add("wittgenstein-theorem");
-        li.textContent = currentLang.labels.wittgenstein_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.wittgenstein_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else if (propData.source === "derrida_ability") {
         li.classList.add("derrida-theorem");
-        li.textContent = currentLang.labels.derrida_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.derrida_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else if (propData.source === "hume_ability") {
         li.classList.add("hume-theorem");
-        li.textContent = currentLang.labels.hume_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.hume_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else if (propData.source === "kuhn_ability") {
         li.classList.add("kuhn-theorem");
-        li.textContent = currentLang.labels.kuhn_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.kuhn_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else if (propData.source === "kant_ability") {
         li.classList.add("kant-theorem");
-        li.textContent = currentLang.labels.kant_ability_source.replace(
-          "{text}",
-          strippedText // 괄호가 모두 제거된 텍스트 사용
-        );
+        li.textContent =
+          gamestate.currentLang.labels.kant_ability_source.replace(
+            "{text}",
+            strippedText // 괄호가 모두 제거된 텍스트 사용
+          );
       } else {
         // 일반적인 정리일 경우
         li.classList.add("theorem");
-        li.textContent = currentLang.labels.theorem_source
+        li.textContent = gamestate.currentLang.labels.theorem_source
           .replace("{text}", strippedText) // 괄호가 모두 제거된 텍스트 사용
           .replace("{round}", propData.round);
       }
@@ -3014,7 +3042,7 @@ function render() {
 
     if (isDisabled) {
       li.textContent +=
-        currentLang.langCode === "ko"
+        gamestate.currentLang.langCode === "ko"
           ? " (무지의 지)"
           : " (Awareness of Ignorance)";
     }
@@ -3071,18 +3099,18 @@ function render() {
     } else if (isThinkingTime) {
       // 1. 전용 UI의 제목과 설명을 업데이트합니다.
       document.getElementById("thinking-time-title").textContent =
-        currentLang.ui.thinkingTimeTitle;
+        gamestate.currentLang.ui.thinkingTimeTitle;
       document.getElementById("thinking-time-desc").innerHTML =
-        currentLang.ui.thinkingTimeDesc;
+        gamestate.currentLang.ui.thinkingTimeDesc;
 
       // 2. 하단 상태바에 현재 턴인 플레이어를 표시합니다.
       const thinkingPlayerName = getLastName(
         thinkingTimeTurn === "A"
-          ? playerA_Data.name[currentLang.langCode]
-          : playerB_Data.name[currentLang.langCode]
+          ? playerA_Data.name[gamestate.currentLang.langCode]
+          : playerB_Data.name[gamestate.currentLang.langCode]
       );
       const thinkingPlayerColor = thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
-      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${currentLang.ui.thinkingTimeTurnMessage}</span>`;
+      statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gamestate.currentLang.ui.thinkingTimeTurnMessage}</span>`;
 
       // 3. 현재 턴인 플레이어의 영역만 활성화합니다.
       if (thinkingTimeTurn === "A") {
@@ -3099,8 +3127,8 @@ function render() {
       }
 
       // '유레카!' 버튼 텍스트를 '정리 추가'로 변경합니다.
-      eurekaBtnA.textContent = currentLang.ui.addTheoremButton;
-      eurekaBtnB.textContent = currentLang.ui.addTheoremButton;
+      eurekaBtnA.textContent = gamestate.currentLang.ui.addTheoremButton;
+      eurekaBtnB.textContent = gamestate.currentLang.ui.addTheoremButton;
 
       // 4. 중앙 하단의 컨트롤 버튼 상태를 설정합니다.
       // '명제 완성', '되돌리기' 버튼은 비활성화하고, '턴 종료' 버튼은 활성화합니다.
@@ -3111,15 +3139,15 @@ function render() {
         (inTutorialMode && thinkingTimeTurn !== "A");
     } else {
       statusEl.style.color = "#333";
-      eurekaBtnA.textContent = currentLang.ui.eurekaButton;
-      eurekaBtnB.textContent = currentLang.ui.eurekaButton;
+      eurekaBtnA.textContent = gamestate.currentLang.ui.eurekaButton;
+      eurekaBtnB.textContent = gamestate.currentLang.ui.eurekaButton;
       const isAITurn = gameMode === "AI" && currentPlayer === aiPlayer;
       const isCompletable =
         currentProposition.length > 0 &&
         parsePropositionFromCards(currentProposition) !== null;
 
       if (isAITurn) {
-        statusEl.innerHTML = `<span class="turn-indicator">${currentLang.ui.statusAITurn}</span>`;
+        statusEl.innerHTML = `<span class="turn-indicator">${gamestate.currentLang.ui.statusAITurn}</span>`;
         playerAreaA.classList.add("disabled");
         playerAreaB.classList.add("disabled");
         eurekaBtnA.disabled = true;
@@ -3130,9 +3158,9 @@ function render() {
       } else {
         if (currentPlayer === "A") {
           const playerAName = playerA_Data
-            ? getLastName(playerA_Data.name[currentLang.langCode])
-            : currentLang.ui.playerAName;
-          statusEl.innerHTML = `<span class="turn-indicator">⚪️ ${playerAName}${currentLang.ui.statusTurn}</span>`;
+            ? getLastName(playerA_Data.name[gamestate.currentLang.langCode])
+            : gamestate.currentLang.ui.playerAName;
+          statusEl.innerHTML = `<span class="turn-indicator">⚪️ ${playerAName}${gamestate.currentLang.ui.statusTurn}</span>`;
           playerAreaA.classList.remove("disabled");
           playerAreaB.classList.add("disabled");
           // ⭐️ 핵심 수정: eurekaUsedInRound['A']가 true이면 버튼 비활성화
@@ -3140,9 +3168,9 @@ function render() {
           eurekaBtnB.disabled = true;
         } else {
           const playerBName = playerB_Data
-            ? getLastName(playerB_Data.name[currentLang.langCode])
-            : currentLang.ui.playerBName;
-          statusEl.innerHTML = `<span class="turn-indicator">⚫️ ${playerBName}${currentLang.ui.statusTurn}</span>`;
+            ? getLastName(playerB_Data.name[gamestate.currentLang.langCode])
+            : gamestate.currentLang.ui.playerBName;
+          statusEl.innerHTML = `<span class="turn-indicator">⚫️ ${playerBName}${gamestate.currentLang.ui.statusTurn}</span>`;
           playerAreaB.classList.remove("disabled");
           playerAreaA.classList.add("disabled");
           eurekaBtnA.disabled = true;

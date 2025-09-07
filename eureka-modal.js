@@ -1,8 +1,13 @@
 function openEurekaModal() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
-  
-  devLog("Opening Eureka Modal, currentPuzzleLevel:", currentPuzzleLevel, "type:", typeof currentPuzzleLevel);
+
+  devLog(
+    "Opening Eureka Modal, currentPuzzleLevel:",
+    currentPuzzleLevel,
+    "type:",
+    typeof currentPuzzleLevel
+  );
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
   if (!isThinkingTime) {
@@ -43,7 +48,7 @@ function openEurekaModal() {
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
   if (currentAxioms.groups && axioms.length > 0) {
     const groups = currentAxioms.groups;
-    const templates = currentLang.axiom_templates;
+    const templates = gamestate.currentLang.axiom_templates;
     let axiomIndex = 0;
 
     // 정체성 공리 그룹
@@ -52,7 +57,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -74,7 +79,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -93,7 +98,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -112,7 +117,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -131,7 +136,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -153,7 +158,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -172,7 +177,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -191,7 +196,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -210,7 +215,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -229,7 +234,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -248,7 +253,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: currentLang.labels.axiom,
+            label: gamestate.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -286,7 +291,7 @@ function openEurekaModal() {
               if (text.includes("자본가") || text.includes("capitalist")) {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: currentLang.labels.axiom,
+                  label: gamestate.currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
@@ -313,7 +318,7 @@ function openEurekaModal() {
               if (text.includes("자본가") || text.includes("capitalist")) {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: currentLang.labels.axiom,
+                  label: gamestate.currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
@@ -335,7 +340,7 @@ function openEurekaModal() {
     axioms.forEach((propData) => {
       addPremiseToWorkbench({
         ...propData,
-        label: currentLang.labels.axiom,
+        label: gamestate.currentLang.labels.axiom,
       });
     });
 
@@ -355,13 +360,13 @@ function openEurekaModal() {
     let label;
     switch (propData.type) {
       case "victory":
-        label = currentLang.labels.victory_condition;
+        label = gamestate.currentLang.labels.victory_condition;
         break;
       case "theorem":
-        label = currentLang.labels.theorem;
+        label = gamestate.currentLang.labels.theorem;
         break;
       default:
-        label = currentLang.labels.proposition;
+        label = gamestate.currentLang.labels.proposition;
     }
     addPremiseToWorkbench({
       proposition: propData.proposition,
@@ -374,12 +379,12 @@ function openEurekaModal() {
   const modalTitle = document.getElementById("eureka-title");
   const confirmBtn = document.getElementById("modal-confirm-btn");
   if (isThinkingTime) {
-    modalTitle.textContent = currentLang.modals.eurekaTitleTheorem;
-    confirmBtn.textContent = currentLang.modals.confirmTheoremButton;
+    modalTitle.textContent = gamestate.currentLang.modals.eurekaTitleTheorem;
+    confirmBtn.textContent = gamestate.currentLang.modals.confirmTheoremButton;
     confirmBtn.onclick = addTheoremsToList;
   } else {
-    modalTitle.textContent = currentLang.modals.eurekaTitleVictory;
-    confirmBtn.textContent = currentLang.modals.confirmVictoryButton;
+    modalTitle.textContent = gamestate.currentLang.modals.eurekaTitleVictory;
+    confirmBtn.textContent = gamestate.currentLang.modals.confirmVictoryButton;
     confirmBtn.onclick = proveVictory;
   }
   renderModal();
@@ -390,7 +395,6 @@ function openEurekaModal() {
   document.getElementById("inference-rule-select").value = "modusPonens";
 
   updateConclusionPreview(); // Initialize preview
-
 
   modal.classList.add("visible");
 
@@ -411,85 +415,91 @@ function openEurekaModal() {
 
 function addAssumption() {
   if (currentAssumption) {
-    showAlert(currentLang.alerts.oneAssumptionOnly, () => {
+    showAlert(gamestate.currentLang.alerts.oneAssumptionOnly, () => {
       // 경고창을 닫은 후 다시 가정 입력창 열기
       addAssumption();
     });
     return;
   }
-  showPrompt(currentLang.modals.promptInputPlaceholder, (propositionText) => {
-    if (propositionText) {
-      const parsedProp = parsePropositionFromString(propositionText);
-      if (parsedProp) {
-        // 복합 명제 (연결사가 포함된 명제) 검증
-        if (isCompoundProposition(parsedProp)) {
-          showAlert(currentLang.alerts.onlyAtomicAssumptions, () => {
+  showPrompt(
+    gamestate.currentLang.modals.promptInputPlaceholder,
+    (propositionText) => {
+      if (propositionText) {
+        const parsedProp = parsePropositionFromString(propositionText);
+        if (parsedProp) {
+          // 복합 명제 (연결사가 포함된 명제) 검증
+          if (isCompoundProposition(parsedProp)) {
+            showAlert(
+              gamestate.currentLang.alerts.onlyAtomicAssumptions,
+              () => {
+                // 경고창을 닫은 후 다시 가정 입력창 열기
+                addAssumption();
+              }
+            );
+            return;
+          }
+
+          currentAssumption = parsedProp;
+
+          // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
+          if (isRecordingProof) {
+            const stepId = recordProofStep(
+              "assumption",
+              [],
+              parsedProp,
+              null,
+              null
+            );
+            parsedProp.proofStepId = stepId;
+          }
+
+          addPremiseToWorkbench({
+            proposition: parsedProp,
+            type: "assumption",
+            dependsOnAssumption: true,
+            isAssumption: true,
+            label: gamestate.currentLang.labels.assumption,
+            proofStepId: parsedProp.proofStepId, // proofStepId 명시적으로 전달
+          });
+
+          // 가정 추가 성공 시 pop 사운드 재생
+          audioManager.playSfx("pop");
+
+          // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
+          if (inPuzzleMode) {
+            inferenceStepCount++;
+          }
+
+          renderModal();
+          updateConclusionPreview();
+
+          // 가정 추가 성공 시 스크롤을 맨 아래로 부드럽게 이동
+          setTimeout(() => {
+            const premiseList = document.getElementById("premise-list");
+            if (premiseList) {
+              const lastChild = premiseList.lastElementChild;
+              if (lastChild) {
+                lastChild.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                });
+              } else {
+                premiseList.scrollTo({
+                  top: premiseList.scrollHeight,
+                  behavior: "smooth",
+                });
+              }
+            }
+          }, 100);
+        } else {
+          showAlert(gamestate.currentLang.alerts.parsingFailed, () => {
             // 경고창을 닫은 후 다시 가정 입력창 열기
             addAssumption();
           });
-          return;
         }
-
-        currentAssumption = parsedProp;
-
-        // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
-        if (isRecordingProof) {
-          const stepId = recordProofStep(
-            "assumption",
-            [],
-            parsedProp,
-            null,
-            null
-          );
-          parsedProp.proofStepId = stepId;
-        }
-
-        addPremiseToWorkbench({
-          proposition: parsedProp,
-          type: "assumption",
-          dependsOnAssumption: true,
-          isAssumption: true,
-          label: currentLang.labels.assumption,
-          proofStepId: parsedProp.proofStepId, // proofStepId 명시적으로 전달
-        });
-
-        // 가정 추가 성공 시 pop 사운드 재생
-        audioManager.playSfx("pop");
-
-        // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
-        if (inPuzzleMode) {
-          inferenceStepCount++;
-        }
-
-        renderModal();
-        updateConclusionPreview();
-
-        // 가정 추가 성공 시 스크롤을 맨 아래로 부드럽게 이동
-        setTimeout(() => {
-          const premiseList = document.getElementById("premise-list");
-          if (premiseList) {
-            const lastChild = premiseList.lastElementChild;
-            if (lastChild) {
-              lastChild.scrollIntoView({
-                behavior: "smooth",
-                block: "end",
-              });
-            } else {
-              premiseList.scrollTo({
-                top: premiseList.scrollHeight,
-                behavior: "smooth",
-              });
-            }
-          }
-        }, 100);
-      } else {
-        showAlert(currentLang.alerts.parsingFailed, () => {
-          // 경고창을 닫은 후 다시 가정 입력창 열기
-          addAssumption();
-        });
       }
     }
-  });
+  );
 }
 
 function cancelAssumption() {
@@ -552,16 +562,16 @@ function applyRule() {
 
   if (rule === "conditionalIntroduction") {
     if (premises.length !== 1) {
-      showAlert(currentLang.alerts.premiseNeededForIntro);
+      showAlert(gamestate.currentLang.alerts.premiseNeededForIntro);
       return;
     }
     if (!currentAssumption) {
-      showAlert(currentLang.alerts.assumptionNeededForIntro);
+      showAlert(gamestate.currentLang.alerts.assumptionNeededForIntro);
       return;
     }
     const conclusionData = premisesData[0];
     if (!conclusionData.dependsOnAssumption) {
-      showAlert(currentLang.alerts.premiseNotFromAssumption);
+      showAlert(gamestate.currentLang.alerts.premiseNotFromAssumption);
       return;
     }
     const newConditional = {
@@ -588,7 +598,7 @@ function applyRule() {
       type: "theorem",
       dependsOnAssumption: false,
       isAssumption: false,
-      label: currentLang.labels.ci_theorem,
+      label: gamestate.currentLang.labels.ci_theorem,
       sourcePremises: sourcePremisesForCI, // source 정보 추가
     });
 
@@ -642,11 +652,11 @@ function applyRule() {
     audioManager.playSfx("pop");
   } else if (rule === "reductioAdAbsurdum") {
     if (premises.length !== 2) {
-      showAlert(currentLang.alerts.contradictionNeededForRAA);
+      showAlert(gamestate.currentLang.alerts.contradictionNeededForRAA);
       return;
     }
     if (!currentAssumption) {
-      showAlert(currentLang.alerts.assumptionNeededForRAA);
+      showAlert(gamestate.currentLang.alerts.assumptionNeededForRAA);
       return;
     }
 
@@ -732,32 +742,38 @@ function applyRule() {
         type: "theorem",
         dependsOnAssumption: false,
         isAssumption: false,
-        label: currentLang.labels.raa_theorem,
+        label: gamestate.currentLang.labels.raa_theorem,
         sourcePremises: sourcePremisesForRAA, // source 정보 추가
       });
 
       // 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
     } else {
-      showAlert(currentLang.alerts.notAContradiction);
+      showAlert(gamestate.currentLang.alerts.notAContradiction);
     }
   } else if (threePremiseRules.includes(rule)) {
     if (premises.length !== 3) {
-      showAlert(currentLang.alerts.premiseCountError.replace("{count}", 3));
+      showAlert(
+        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 3)
+      );
       return;
     }
     const result = window[rule](premises[0], premises[1], premises[2]);
     if (result) conclusions.push(result);
   } else if (twoPremiseRules.includes(rule)) {
     if (premises.length !== 2) {
-      showAlert(currentLang.alerts.premiseCountError.replace("{count}", 2));
+      showAlert(
+        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 2)
+      );
       return;
     }
     const result = window[rule](premises[0], premises[1]);
     if (result) conclusions.push(result);
   } else if (onePremiseRules.includes(rule)) {
     if (premises.length !== 1) {
-      showAlert(currentLang.alerts.premiseCountError.replace("{count}", 1));
+      showAlert(
+        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 1)
+      );
       return;
     }
     const result = window[rule](premises[0]);
@@ -775,7 +791,7 @@ function applyRule() {
         type: "theorem",
         dependsOnAssumption: isDependent,
         isAssumption: false,
-        label: currentLang.labels.theorem,
+        label: gamestate.currentLang.labels.theorem,
         sourcePremises: premisesData, // source 정보 추가
       });
 
@@ -854,7 +870,7 @@ function applyRule() {
     rule !== "conditionalIntroduction" &&
     conclusions.length === 0
   ) {
-    showAlert(currentLang.alerts.ruleFailed);
+    showAlert(gamestate.currentLang.alerts.ruleFailed);
   }
 
   renderModal();
@@ -884,7 +900,7 @@ function addTheoremsToList() {
     document.querySelectorAll('#premise-list input[type="checkbox"]:checked')
   );
   if (selectedLis.length === 0) {
-    showAlert(currentLang.alerts.noTheoremsToAdd);
+    showAlert(gamestate.currentLang.alerts.noTheoremsToAdd);
     return;
   }
 
@@ -898,7 +914,7 @@ function addTheoremsToList() {
   );
 
   if (hasAssumptionRelated) {
-    showAlert(currentLang.alerts.assumptionDependentNotAllowed);
+    showAlert(gamestate.currentLang.alerts.assumptionDependentNotAllowed);
     return;
   }
 
@@ -919,7 +935,7 @@ function addTheoremsToList() {
   });
 
   if (trulyNewTheorems.length === 0) {
-    showAlert(currentLang.alerts.duplicateProposition);
+    showAlert(gamestate.currentLang.alerts.duplicateProposition);
     return;
   }
 
@@ -941,7 +957,7 @@ function addTheoremsToList() {
         "Contradiction detected while adding a new theorem.",
         theoremData.proposition
       );
-      showAlert(currentLang.alerts.contradictionFound);
+      showAlert(gamestate.currentLang.alerts.contradictionFound);
       break;
     }
   }
@@ -1004,7 +1020,7 @@ function proveVictory() {
 
       // Create star display for the alert message
       const starDisplay = "★".repeat(stars) + "☆".repeat(3 - stars);
-      const alertMessage = currentLang.alerts.puzzleCleared
+      const alertMessage = gamestate.currentLang.alerts.puzzleCleared
         .replace("{steps}", inferenceStepCount)
         .replace("{stars}", `${starDisplay} (${stars}/3)`);
 
@@ -1013,13 +1029,15 @@ function proveVictory() {
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
         populatePuzzleLevels();
-        const puzzleModal = document.getElementById("puzzle-level-select-modal");
+        const puzzleModal = document.getElementById(
+          "puzzle-level-select-modal"
+        );
         puzzleModal.classList.remove("animate");
         puzzleModal.classList.add("visible");
       });
     } else {
       showAlert(
-        currentLang.alerts.proofIncomplete
+        gamestate.currentLang.alerts.proofIncomplete
           .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
           .replace(
             "{opponentGoal}",
@@ -1061,11 +1079,11 @@ function proveVictory() {
 
     if (isMyVictoryProven || isOpponentLossProven) {
       // 성공 시, 새로 추가한 알림 메시지를 띄우고 확인을 누르면 튜토리얼을 종료합니다.
-      showAlert(currentLang.alerts.tutorialVictory, endTutorial);
+      showAlert(gamestate.currentLang.alerts.tutorialVictory, endTutorial);
     } else {
       // 실패 시, 기존처럼 증명 미완료 메시지를 띄웁니다.
       showAlert(
-        currentLang.alerts.proofIncomplete
+        gamestate.currentLang.alerts.proofIncomplete
           .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
           .replace(
             "{opponentGoal}",
@@ -1124,7 +1142,7 @@ function proveVictory() {
           "치명적 오류: 승리 증명에 사용된 정리가 기존 사실과 모순됩니다.",
           theoremData
         );
-        showAlert(currentLang.alerts.criticalErrorUndo);
+        showAlert(gamestate.currentLang.alerts.criticalErrorUndo);
         return;
       }
     }
@@ -1160,7 +1178,7 @@ function proveVictory() {
   }
 
   showAlert(
-    currentLang.alerts.proofIncomplete
+    gamestate.currentLang.alerts.proofIncomplete
       .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
       .replace("{opponentGoal}", propositionToPlainText(opponentLossCondition))
   );
@@ -1237,19 +1255,19 @@ function renderModal() {
 
   // 초기 sticky 위치 설정
   updateStickyPositions();
-  
+
   // 스크롤 이벤트 리스너 추가
-  premiseList.removeEventListener('scroll', handleScroll);
-  premiseList.removeEventListener('wheel', handleScroll);
-  
-  premiseList.addEventListener('scroll', handleScroll);
-  premiseList.addEventListener('wheel', handleScroll);
-  
+  premiseList.removeEventListener("scroll", handleScroll);
+  premiseList.removeEventListener("wheel", handleScroll);
+
+  premiseList.addEventListener("scroll", handleScroll);
+  premiseList.addEventListener("wheel", handleScroll);
+
   // 부모 모달에도 이벤트 추가
-  const modal = document.getElementById('eureka-modal');
+  const modal = document.getElementById("eureka-modal");
   if (modal) {
-    modal.addEventListener('scroll', handleScroll);
-    modal.addEventListener('wheel', handleScroll);
+    modal.addEventListener("scroll", handleScroll);
+    modal.addEventListener("wheel", handleScroll);
   }
 }
 
@@ -1266,57 +1284,64 @@ function handleScroll() {
 
   // premise-list의 실제 보이는 영역의 중간점 계산
   const containerRect = premiseList.getBoundingClientRect();
-  
+
   // 모달 또는 부모 컨테이너의 보이는 영역을 기준으로 계산
-  const modal = document.querySelector('.modal-content');
-  const modalRect = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-  
+  const modal = document.querySelector(".modal-content");
+  const modalRect = modal
+    ? modal.getBoundingClientRect()
+    : { top: 0, bottom: window.innerHeight };
+
   // 실제 보이는 영역 계산
   const visibleTop = Math.max(containerRect.top, modalRect.top);
   const visibleBottom = Math.min(containerRect.bottom, modalRect.bottom);
-  const containerMiddle = visibleTop + ((visibleBottom - visibleTop) / 2);
-  
-  
+  const containerMiddle = visibleTop + (visibleBottom - visibleTop) / 2;
+
   let needsUpdate = false;
   let checkedCount = 0;
-  
-  const allItems = premiseList.querySelectorAll('li');
+
+  const allItems = premiseList.querySelectorAll("li");
   allItems.forEach((li, index) => {
     const checkbox = li.querySelector('input[type="checkbox"]');
     if (checkbox && checkbox.checked) {
       checkedCount++;
       const itemRect = li.getBoundingClientRect();
-      const itemCenter = itemRect.top + (itemRect.height / 2);
+      const itemCenter = itemRect.top + itemRect.height / 2;
       const isTop = itemCenter < containerMiddle;
-      
+
       const previousState = previousPositionStates.get(index);
-      
+
       // 상태가 바뀐 경우만 (초기 상태는 제외)
       if (previousState !== undefined && previousState !== isTop) {
         needsUpdate = true;
         previousPositionStates.set(index, isTop);
-        const prevStateText = previousState ? 'top' : 'bottom';
-        devLog(`Item ${index} crossed center line: ${prevStateText} -> ${isTop ? 'top' : 'bottom'}`);
+        const prevStateText = previousState ? "top" : "bottom";
+        devLog(
+          `Item ${index} crossed center line: ${prevStateText} -> ${
+            isTop ? "top" : "bottom"
+          }`
+        );
       } else if (previousState === undefined) {
         // 초기 상태 설정 (업데이트는 하지 않음)
         previousPositionStates.set(index, isTop);
       }
     }
   });
-  
-  
+
   if (needsUpdate) {
     updateStickyPositions(containerRect, containerMiddle);
   }
 }
 
 // 선택된 전제들의 sticky 위치를 업데이트하는 함수
-function updateStickyPositions(passedContainerRect = null, passedContainerMiddle = null) {
+function updateStickyPositions(
+  passedContainerRect = null,
+  passedContainerMiddle = null
+) {
   const premiseList = document.getElementById("premise-list");
   if (!premiseList) return;
 
-  const allItems = premiseList.querySelectorAll('li');
-  
+  const allItems = premiseList.querySelectorAll("li");
+
   // 매개변수가 없으면 올바른 방식으로 계산
   let containerRect, containerMiddle;
   if (passedContainerRect && passedContainerMiddle) {
@@ -1325,38 +1350,40 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
   } else {
     containerRect = premiseList.getBoundingClientRect();
     // 모달 또는 부모 컨테이너의 보이는 영역을 기준으로 계산
-    const modal = document.querySelector('.modal-content');
-    const modalRect = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-    
+    const modal = document.querySelector(".modal-content");
+    const modalRect = modal
+      ? modal.getBoundingClientRect()
+      : { top: 0, bottom: window.innerHeight };
+
     // 실제 보이는 영역 계산
     const visibleTop = Math.max(containerRect.top, modalRect.top);
     const visibleBottom = Math.min(containerRect.bottom, modalRect.bottom);
-    containerMiddle = visibleTop + ((visibleBottom - visibleTop) / 2);
+    containerMiddle = visibleTop + (visibleBottom - visibleTop) / 2;
   }
-  
+
   // 선택된 항목들을 위치별로 분류
   const topItems = [];
   const bottomItems = [];
-  
+
   allItems.forEach((li, index) => {
     const checkbox = li.querySelector('input[type="checkbox"]');
     if (checkbox && checkbox.checked) {
       // 완전히 리셋
-      li.classList.remove('selected', 'stick-top', 'stick-bottom');
-      li.style.position = '';
-      li.style.top = '';
-      li.style.bottom = '';
-      
+      li.classList.remove("selected", "stick-top", "stick-bottom");
+      li.style.position = "";
+      li.style.top = "";
+      li.style.bottom = "";
+
       // DOM 강제 재계산 (reflow)
       li.offsetHeight;
-      
+
       // 각 항목의 현재 화면상 위치를 실시간 계산
       const itemRect = li.getBoundingClientRect();
-      const itemCenter = itemRect.top + (itemRect.height / 2);
-      
+      const itemCenter = itemRect.top + itemRect.height / 2;
+
       const isTop = itemCenter < containerMiddle;
       previousPositionStates.set(index, isTop); // 현재 상태 저장
-      
+
       if (isTop) {
         // 현재 화면 중심보다 위에 있음 → 위쪽 스티키
         topItems.push({ element: li, index });
@@ -1364,12 +1391,11 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
         // 현재 화면 중심보다 아래 있음 → 아래쪽 스티키
         bottomItems.push({ element: li, index });
       }
-      
     } else {
-      li.classList.remove('selected', 'stick-top', 'stick-bottom');
-      li.style.position = '';
-      li.style.top = '';
-      li.style.bottom = '';
+      li.classList.remove("selected", "stick-top", "stick-bottom");
+      li.style.position = "";
+      li.style.top = "";
+      li.style.bottom = "";
     }
   });
 
@@ -1378,38 +1404,40 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
   topItems.forEach((item, index) => {
     const { element, index: originalIndex } = item;
     // 강제로 bottom 관련 모든 것 제거
-    element.classList.remove('stick-bottom');
-    element.style.bottom = '';
-    element.style.position = '';
+    element.classList.remove("stick-bottom");
+    element.style.bottom = "";
+    element.style.position = "";
     element.offsetHeight; // reflow
-    
+
     // 이제 top sticky 적용
-    element.classList.add('selected', 'stick-top');
+    element.classList.add("selected", "stick-top");
     element.style.top = `${topAccumulatedHeight}px`;
-    
+
     // 다음 요소를 위해 현재 요소의 실제 높이를 누적
     topAccumulatedHeight += element.offsetHeight;
   });
-  
+
   // 아래쪽 항목들 처리 (아래부터 역순으로)
   let bottomAccumulatedHeight = 0;
   bottomItems.reverse().forEach((item, index) => {
     const { element, index: originalIndex } = item;
     // 강제로 top 관련 모든 것 제거
-    element.classList.remove('stick-top');
-    element.style.top = '';
-    element.style.position = '';
+    element.classList.remove("stick-top");
+    element.style.top = "";
+    element.style.position = "";
     element.offsetHeight; // reflow
-    
+
     // 이제 bottom sticky 적용
-    element.classList.add('selected', 'stick-bottom');
+    element.classList.add("selected", "stick-bottom");
     element.style.bottom = `${bottomAccumulatedHeight}px`;
-    
+
     // 다음 요소를 위해 현재 요소의 실제 높이를 누적
     bottomAccumulatedHeight += element.offsetHeight;
   });
-  
-  devLog(`Updated sticky positions: ${topItems.length} top, ${bottomItems.length} bottom`);
+
+  devLog(
+    `Updated sticky positions: ${topItems.length} top, ${bottomItems.length} bottom`
+  );
 }
 
 function updateConclusionPreview() {
@@ -1418,7 +1446,7 @@ function updateConclusionPreview() {
 
   // UI 텍스트 업데이트 (다국어 지원)
   titleEl.innerHTML =
-    currentLang.langCode === "ko"
+    gamestate.currentLang.langCode === "ko"
       ? "<strong>결론 미리보기</strong>"
       : "<strong>Conclusion Preview</strong>";
 
@@ -1497,7 +1525,7 @@ function updateConclusionPreview() {
     }
   } else {
     textEl.innerHTML = `<i>${
-      currentLang.langCode === "ko"
+      gamestate.currentLang.langCode === "ko"
         ? "규칙을 적용할 수 없습니다."
         : "Cannot apply rule."
     }</i>`;

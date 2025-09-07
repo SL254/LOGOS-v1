@@ -81,7 +81,7 @@ function generateAndScorePlans() {
       const entityText = universalProp.entity; // 예: '개는'
       let predicateText; // 서술어 텍스트를 담을 변수 선언
 
-      if (currentLang.langCode === "ko") {
+      if (gamestate.currentLang.langCode === "ko") {
         // 한국어 모드: 기존 로직을 유지 (완벽하진 않지만 의도는 보존)
         // "개는" -> "개이다"
         predicateText = entityText.replace(/는$/, "이다");
@@ -337,10 +337,11 @@ function scoreCandidateTheorems(candidates) {
   };
 
   const opponentDefeatPredicate =
-    currentLang.contradictoryPredicates[opponentCoreGoal.predicate] ||
-    Object.keys(currentLang.contradictoryPredicates).find(
+    gamestate.currentLang.contradictoryPredicates[opponentCoreGoal.predicate] ||
+    Object.keys(gamestate.currentLang.contradictoryPredicates).find(
       (key) =>
-        currentLang.contradictoryPredicates[key] === opponentCoreGoal.predicate
+        gamestate.currentLang.contradictoryPredicates[key] ===
+        opponentCoreGoal.predicate
     );
 
   const scored = candidates.map((candidate) => {
@@ -430,24 +431,24 @@ function showAITurnSummary(actions) {
 
   // 모달 내용 초기화
   contentEl.innerHTML = "";
-  okBtn.textContent = currentLang.ui.okButton;
+  okBtn.textContent = gamestate.currentLang.ui.okButton;
 
   // 제목 설정
-  titleEl.textContent = currentLang.ui.aiSummaryTitleDefault; // 기본 제목
+  titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleDefault; // 기본 제목
 
   // 행동 내역에 따라 내용 채우기 (확장성 고려)
   actions.forEach((action) => {
     const p = document.createElement("p");
     switch (action.type) {
       case "theorem":
-        titleEl.textContent = currentLang.ui.aiSummaryTitleTheorem;
+        titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleTheorem;
         p.innerHTML = `<strong>${
-          currentLang.ui.theoremLabel
+          gamestate.currentLang.ui.theoremLabel
         }</strong> ${propositionToNaturalText(action.proposition)}`;
         break;
       case "ability":
-        titleEl.textContent = currentLang.ui.aiSummaryTitleAbility;
-        p.innerHTML = `<strong>${currentLang.ui.abilityLabel}</strong> ${action.description}`;
+        titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleAbility;
+        p.innerHTML = `<strong>${gamestate.currentLang.ui.abilityLabel}</strong> ${action.description}`;
         break;
       // 향후 다른 행동 유형 추가 가능
     }
@@ -591,7 +592,7 @@ function checkForGuaranteedWinMove() {
   const secondLastCardInfo = currentProposition[propLength - 2];
 
   // 2. '는 거짓이다' 카드 보유 상황 대칭성 확인
-  const { not: notKeyword } = currentLang.keywords;
+  const { not: notKeyword } = gamestate.currentLang.keywords;
   const aiHand = currentPlayer === "A" ? playerA_Hand : playerB_Hand;
   const opponentHand = currentPlayer === "A" ? playerB_Hand : playerA_Hand;
 
@@ -617,7 +618,7 @@ function checkForGuaranteedWinMove() {
 
   if (
     lastCardInfo.card.type !==
-      (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun") ||
+      (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun") ||
     (lastCardInfo.card.text !== mySubject &&
       lastCardInfo.card.text !== opponentSubject)
   ) {
@@ -629,7 +630,7 @@ function checkForGuaranteedWinMove() {
     and: andKeyword,
     if: ifKeyword,
     or: orKeyword,
-  } = currentLang.keywords;
+  } = gamestate.currentLang.keywords;
   let isWinningOpportunity = false;
 
   // 패턴 1: ... 그리고 [이름]
@@ -678,7 +679,7 @@ function checkForGuaranteedWinMove() {
     else {
       // 상대의 승리 술어와 '반대'되는 술어를 찾는다.
       const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
-      const predicatePairs = currentLang.contradictoryPredicates;
+      const predicatePairs = gamestate.currentLang.contradictoryPredicates;
 
       predicateToPlay =
         predicatePairs[opponentWinPredicate] ||
@@ -859,7 +860,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
       // 새로운 하위 목표: "소크라테스는 철학자이다"
       let newPredicateText;
       const entityText = bridge.entity;
-      if (currentLang.langCode === "ko") {
+      if (gamestate.currentLang.langCode === "ko") {
         newPredicateText = entityText.slice(0, -1) + "이다"; // '철학자는' -> '철학자이다'
       } else {
         newPredicateText = `is a ${entityText}`; // 'philosopher' -> 'is a philosopher'
@@ -902,9 +903,10 @@ function assessSelfDisadvantage(proposition, myVictoryData) {
   const myPredicate = myCoreGoal.predicate;
 
   const oppositePredicate =
-    currentLang.contradictoryPredicates[myPredicate] ||
-    Object.keys(currentLang.contradictoryPredicates).find(
-      (key) => currentLang.contradictoryPredicates[key] === myPredicate
+    gamestate.currentLang.contradictoryPredicates[myPredicate] ||
+    Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+      (key) =>
+        gamestate.currentLang.contradictoryPredicates[key] === myPredicate
     );
 
   if (!oppositePredicate) return 0;
@@ -971,7 +973,7 @@ function aiTurn() {
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
   const aiHand = currentPlayer === "A" ? playerA_Hand : playerB_Hand;
-  const notKeyword = currentLang.keywords.not;
+  const notKeyword = gamestate.currentLang.keywords.not;
   const notCardInHand = aiHand.find((c) => c.text === notKeyword);
 
   if (notCardInHand && currentProposition.length > 0 && myVictoryData) {
@@ -1228,7 +1230,7 @@ function aiTurn() {
         if (move.text === myName) {
           const lastCardOnBoard =
             currentProposition[currentProposition.length - 1].card;
-          if (lastCardOnBoard.text === currentLang.keywords.if) {
+          if (lastCardOnBoard.text === gamestate.currentLang.keywords.if) {
             const propOnBoard = parsePropositionFromCards(
               currentProposition.slice(0, -1)
             );
@@ -1250,7 +1252,7 @@ function aiTurn() {
       // 흄 대응: '라면' 뒤에 고유명사 감점 (기존 방어 로직에 추가)
       if (
         move.type ===
-        (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
+        (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         // 상대가 흄이고 능력을 아직 사용하지 않았고, '라면' 뒤에 고유명사를 놓는 상황
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
@@ -1264,7 +1266,7 @@ function aiTurn() {
 
           if (!opponentAbilityState.used && currentProposition.length > 0) {
             const lastCard = currentProposition[currentProposition.length - 1];
-            if (lastCard.card.text === currentLang.keywords.if) {
+            if (lastCard.card.text === gamestate.currentLang.keywords.if) {
               if (IS_DEV_MODE) {
                 console.warn(
                   `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose conditional.`
@@ -1278,11 +1280,11 @@ function aiTurn() {
 
       if (
         move.type ===
-        (currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
+        (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         const opponentHand =
           currentPlayer === "A" ? playerB_Hand : playerA_Hand;
-        const { not: notKeyword } = currentLang.keywords;
+        const { not: notKeyword } = gamestate.currentLang.keywords;
         const aiHasNot = aiHand.some((card) => card.text === notKeyword);
         const opponentHasNot = opponentHand.some(
           (card) => card.text === notKeyword
@@ -1294,7 +1296,7 @@ function aiTurn() {
             and: andKeyword,
             if: ifKeyword,
             or: orKeyword,
-          } = currentLang.keywords;
+          } = gamestate.currentLang.keywords;
           let isTrap = false;
           if (lastCardInfo.card.text === andKeyword) {
             isTrap = true;
@@ -1332,12 +1334,14 @@ function aiTurn() {
       const opponentPhilosopherId =
         opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
       const capitalistText =
-        currentLang.langCode === "ko" ? "자본가는" : "capitalist";
-      const evilText = currentLang.langCode === "ko" ? "악하다" : "is evil";
-      const goodText = currentLang.langCode === "ko" ? "선하다" : "is good";
+        gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
+      const evilText =
+        gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil";
+      const goodText =
+        gamestate.currentLang.langCode === "ko" ? "선하다" : "is good";
       const existentialQuantifier =
-        currentLang.langCode === "ko" ? "어떤" : "Some";
-      const andKeyword = currentLang.keywords.and;
+        gamestate.currentLang.langCode === "ko" ? "어떤" : "Some";
+      const andKeyword = gamestate.currentLang.keywords.and;
       if (currentProposition.length > 0) {
         const lastCardText =
           currentProposition[currentProposition.length - 1].card.text;
@@ -1400,8 +1404,8 @@ function aiTurn() {
       }
 
       if (isRiskyToComplete) {
-        if (move.text === currentLang.keywords.and) score -= 5000;
-        if (move.text === currentLang.keywords.if) {
+        if (move.text === gamestate.currentLang.keywords.and) score -= 5000;
+        if (move.text === gamestate.currentLang.keywords.if) {
           // 기본적으로 위험한 상황에서는 '라면' 선호
           score += 200;
 
@@ -1426,7 +1430,7 @@ function aiTurn() {
           }
         }
       }
-      if (move.text === currentLang.keywords.and) {
+      if (move.text === gamestate.currentLang.keywords.and) {
         const propOnBoard = parsePropositionFromCards(currentProposition);
         if (propOnBoard) {
           if (opponentVictoryData) {
@@ -1437,7 +1441,8 @@ function aiTurn() {
             score -= opponentAdvantagePenalty;
             const opponentWinPredicate =
               opponentVictoryData.core_goal.predicate;
-            const predicatePairs = currentLang.contradictoryPredicates;
+            const predicatePairs =
+              gamestate.currentLang.contradictoryPredicates;
             let oppositePredicate =
               Object.keys(predicatePairs).find(
                 (key) => predicatePairs[key] === opponentWinPredicate
@@ -1465,7 +1470,7 @@ function aiTurn() {
       }
 
       // 칸트 대응: 상대가 칸트이고 능력을 아직 사용하지 않았을 때 '그리고' 카드에 가산점
-      if (move.text === currentLang.keywords.and) {
+      if (move.text === gamestate.currentLang.keywords.and) {
         if (IS_DEV_MODE) {
           console.warn(`[KANT DEBUG] Evaluating '그리고' card`);
         }
@@ -1513,12 +1518,12 @@ function aiTurn() {
 
             // 자신의 패배 술어 찾기
             const myDefeatPredicate = myVictoryData
-              ? currentLang.contradictoryPredicates[
+              ? gamestate.currentLang.contradictoryPredicates[
                   myVictoryData.core_goal.predicate
                 ] ||
-                Object.keys(currentLang.contradictoryPredicates).find(
+                Object.keys(gamestate.currentLang.contradictoryPredicates).find(
                   (key) =>
-                    currentLang.contradictoryPredicates[key] ===
+                    gamestate.currentLang.contradictoryPredicates[key] ===
                     myVictoryData.core_goal.predicate
                 )
               : null;
@@ -1630,7 +1635,7 @@ function aiTurn() {
       ) {
         const opponentHand =
           currentPlayer === "A" ? playerB_Hand : playerA_Hand;
-        if (isImmediateWinSecure(opponentHand, aiHand, currentLang)) {
+        if (isImmediateWinSecure(opponentHand, aiHand, gamestate.currentLang)) {
           score += 1000000;
         }
       }
@@ -1672,17 +1677,18 @@ function aiTurn() {
       const isNewClauseStart =
         currentProposition.length === 0 ||
         [
-          currentLang.keywords.and,
-          currentLang.keywords.or,
-          currentLang.keywords.if,
+          gamestate.currentLang.keywords.and,
+          gamestate.currentLang.keywords.or,
+          gamestate.currentLang.keywords.if,
         ].includes(
           currentProposition[currentProposition.length - 1]?.card.text
         );
       if (isNewClauseStart) {
-        if (move.type === currentLang.cardTypes[1]) {
-          if (move.text === currentLang.keywords.universal_q) score += 60;
+        if (move.type === gamestate.currentLang.cardTypes[1]) {
+          if (move.text === gamestate.currentLang.keywords.universal_q)
+            score += 60;
           else score += 30;
-        } else if (move.type === currentLang.cardTypes[0]) {
+        } else if (move.type === gamestate.currentLang.cardTypes[0]) {
           score -= 40;
         }
       }
@@ -1699,10 +1705,12 @@ function aiTurn() {
           if (myVictoryData) {
             const myCoreGoal = myVictoryData.core_goal;
             const contradictoryPredicate =
-              currentLang.contradictoryPredicates[myCoreGoal.predicate] ||
-              Object.keys(currentLang.contradictoryPredicates).find(
+              gamestate.currentLang.contradictoryPredicates[
+                myCoreGoal.predicate
+              ] ||
+              Object.keys(gamestate.currentLang.contradictoryPredicates).find(
                 (key) =>
-                  currentLang.contradictoryPredicates[key] ===
+                  gamestate.currentLang.contradictoryPredicates[key] ===
                   myCoreGoal.predicate
               );
             if (contradictoryPredicate) {
@@ -1816,7 +1824,8 @@ function aiTurn() {
           if (opponentVictoryData) {
             const opponentWinPredicate =
               opponentVictoryData.core_goal.predicate;
-            const predicatePairs = currentLang.contradictoryPredicates;
+            const predicatePairs =
+              gamestate.currentLang.contradictoryPredicates;
             let oppositePredicate =
               Object.keys(predicatePairs).find(
                 (key) => predicatePairs[key] === opponentWinPredicate
@@ -1836,10 +1845,12 @@ function aiTurn() {
           const opponentPhilosopherId =
             opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
           const capitalistText =
-            currentLang.langCode === "ko" ? "자본가는" : "capitalist";
-          const evilText = currentLang.langCode === "ko" ? "악하다" : "is evil";
-          const goodText = currentLang.langCode === "ko" ? "선하다" : "is good";
-          const notText = currentLang.keywords.not;
+            gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
+          const evilText =
+            gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil";
+          const goodText =
+            gamestate.currentLang.langCode === "ko" ? "선하다" : "is good";
+          const notText = gamestate.currentLang.keywords.not;
           const marxGoalProp = {
             type: "universal",
             entity: capitalistText,
@@ -2359,7 +2370,7 @@ function calculateStrategicValue(proposition, perspectivePlayer) {
   if (normalizedProp.type === "universal") {
     const myWinPredicate = myVictoryData.core_goal.predicate;
     const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
-    const predicatePairs = currentLang.contradictoryPredicates;
+    const predicatePairs = gamestate.currentLang.contradictoryPredicates;
     const opponentDefeatPredicate =
       predicatePairs[opponentWinPredicate] ||
       Object.keys(predicatePairs).find(
@@ -2440,10 +2451,11 @@ function executePlatoAbilityCheck(player) {
     : null;
 
   const opponentDefeatPredicate = opponentGoalPredicate
-    ? currentLang.contradictoryPredicates[opponentGoalPredicate] ||
-      Object.keys(currentLang.contradictoryPredicates).find(
+    ? gamestate.currentLang.contradictoryPredicates[opponentGoalPredicate] ||
+      Object.keys(gamestate.currentLang.contradictoryPredicates).find(
         (key) =>
-          currentLang.contradictoryPredicates[key] === opponentGoalPredicate
+          gamestate.currentLang.contradictoryPredicates[key] ===
+          opponentGoalPredicate
       )
     : null;
 
@@ -2507,10 +2519,11 @@ function executePlatoAbilityCheck(player) {
         score -= 999999;
       }
       const myOppositePredicate = myGoalPredicate
-        ? currentLang.contradictoryPredicates[myGoalPredicate] ||
-          Object.keys(currentLang.contradictoryPredicates).find(
+        ? gamestate.currentLang.contradictoryPredicates[myGoalPredicate] ||
+          Object.keys(gamestate.currentLang.contradictoryPredicates).find(
             (key) =>
-              currentLang.contradictoryPredicates[key] === myGoalPredicate
+              gamestate.currentLang.contradictoryPredicates[key] ===
+              myGoalPredicate
           )
         : null;
 
@@ -2579,7 +2592,7 @@ function executePlatoAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: currentLang.ui.platoAbilityDescription.replace(
+    description: gamestate.currentLang.ui.platoAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.newProp)
     ),
@@ -2620,14 +2633,15 @@ function executeSocratesAbilityCheck(player) {
   // 3. 제거할 후보 명제들의 위협 점수 계산
 
   // 3-1. 경계해야 할 '위험한 전칭 양화문' 목록 생성
-  const entities = currentLang.cards
+  const entities = gamestate.currentLang.cards
     .filter(
-      (c) => c.type === (currentLang.langCode === "ko" ? "개체" : "Entity")
+      (c) =>
+        c.type === (gamestate.currentLang.langCode === "ko" ? "개체" : "Entity")
     )
     .map((c) => c.text);
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = currentLang.contradictoryPredicates;
+  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -2784,7 +2798,7 @@ function executeSocratesAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: currentLang.ui.socratesAbilityDescription.replace(
+    description: gamestate.currentLang.ui.socratesAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -2817,7 +2831,7 @@ function executeDescartesAbilityCheck(player) {
 
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = currentLang.contradictoryPredicates;
+  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -2911,7 +2925,7 @@ function executeDescartesAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: currentLang.ui.descartesAbilityDescription.replace(
+    description: gamestate.currentLang.ui.descartesAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -3075,7 +3089,7 @@ function executeHumeAbilityCheck(player) {
   // 요약 정보 반환
   return {
     type: "ability",
-    description: currentLang.ui.humeAbilityDescription.replace(
+    description: gamestate.currentLang.ui.humeAbilityDescription.replace(
       // 👈 흄의 설명 텍스트 사용
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
@@ -3101,7 +3115,7 @@ function scoreThreat(
   let score = 0;
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = currentLang.contradictoryPredicates;
+  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -3296,10 +3310,11 @@ function executeWittgensteinAbilityCheck(player) {
 
         return {
           type: "ability",
-          description: currentLang.ui.wittgensteinAbilityDescription.replace(
-            "{newTheorem}",
-            propositionToNaturalText(newTheorem)
-          ),
+          description:
+            gamestate.currentLang.ui.wittgensteinAbilityDescription.replace(
+              "{newTheorem}",
+              propositionToNaturalText(newTheorem)
+            ),
         };
       }
     }
@@ -3309,7 +3324,7 @@ function executeWittgensteinAbilityCheck(player) {
   return null;
 }
 function getOppositePredicate(predicate) {
-  const predicatePairs = currentLang.contradictoryPredicates;
+  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
   for (const key in predicatePairs) {
     if (key === predicate) return predicatePairs[key];
     if (predicatePairs[key] === predicate) return key;
@@ -3424,7 +3439,7 @@ function executeKuhnsAbility(propIdToChange, player) {
   ).proposition;
   return {
     type: "ability",
-    description: currentLang.ui.kuhnAbilityDescription.replace(
+    description: gamestate.currentLang.ui.kuhnAbilityDescription.replace(
       "{newParadigm}",
       propositionToNaturalText(newParadigmProp)
     ),
@@ -3735,7 +3750,7 @@ function executeDerridaAbilityCheck(player) {
   // 요약 정보 반환
   return {
     type: "ability",
-    description: currentLang.ui.derridaAbilityDescription.replace(
+    description: gamestate.currentLang.ui.derridaAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -3766,9 +3781,9 @@ function executeKantAbilityCheck(player) {
     for (let i = 0; i < remainingHand.length; i++) {
       const nextCard = remainingHand[i];
       const connectiveKeywords = [
-        currentLang.keywords.if,
-        currentLang.keywords.and,
-        currentLang.keywords.or,
+        gamestate.currentLang.keywords.if,
+        gamestate.currentLang.keywords.and,
+        gamestate.currentLang.keywords.or,
       ];
       if (connectiveKeywords.includes(nextCard.text)) {
         continue;
@@ -3911,7 +3926,7 @@ function executeKantAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: currentLang.ui.kantAbilityDescription.replace(
+    description: gamestate.currentLang.ui.kantAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.proposition)
     ),
@@ -3920,7 +3935,7 @@ function executeKantAbilityCheck(player) {
 
 // 헬퍼 함수 (다른 AI 로직에서도 필요할 수 있으므로 전역에 정의)
 function getOppositePredicate(predicate) {
-  const predicatePairs = currentLang.contradictoryPredicates;
+  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
   for (const key in predicatePairs) {
     if (key === predicate) return predicatePairs[key];
     if (predicatePairs[key] === predicate) return key;
@@ -4091,7 +4106,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
     );
     // 승리 단계를 못찾으면 추적이 불가능하므로, 여기서 게임을 종료하고 오류를 알림
     audioManager.playSfx("eureka");
-    showAlert(currentLang.alerts.aiEurekaDeclared, () =>
+    showAlert(gamestate.currentLang.alerts.aiEurekaDeclared, () =>
       endGame(currentPlayer)
     );
     return;
@@ -4100,7 +4115,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
 
   // --- 3단계: 유레카 선언 알림 (기존과 동일) ---
   audioManager.playSfx("eureka");
-  showAlert(currentLang.alerts.aiEurekaDeclared, () => {
+  showAlert(gamestate.currentLang.alerts.aiEurekaDeclared, () => {
     // --- 4단계: 논증 다시보기 표시 (기존과 동일) ---
     showProofReviewModal();
 
