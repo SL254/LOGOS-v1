@@ -1324,7 +1324,7 @@ function getTopicParticle(name) {
 function setupGame(selectedCharacters, testConfig = null) {
   gamestate.playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
   gamestate.playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
-  truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
+  gamestate.truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
 
   // 논증 기록 시스템 초기화
   proofSteps = [];
@@ -1487,7 +1487,7 @@ function setupGame(selectedCharacters, testConfig = null) {
     ];
   const victoryTextA = `((${subjectA} ${predicateA}) ${ifKeyword} (${subjectA} ${wins})) ${and} ((${subjectA} ${wins}) ${ifKeyword} (${subjectA} ${predicateA}))`;
   const parsedVictoryA = parsePropositionFromString(victoryTextA);
-  truePropositions.push({
+  gamestate.truePropositions.push({
     type: "victory",
     text: victoryTextA,
     owner: "A",
@@ -1512,7 +1512,7 @@ function setupGame(selectedCharacters, testConfig = null) {
     ];
   const victoryTextB = `((${subjectB} ${predicateB}) ${ifKeyword} (${subjectB} ${wins})) ${and} ((${subjectB} ${wins}) ${ifKeyword} (${subjectB} ${predicateB}))`;
   const parsedVictoryB = parsePropositionFromString(victoryTextB);
-  truePropositions.push({
+  gamestate.truePropositions.push({
     type: "victory",
     text: victoryTextB,
     owner: "B",
@@ -1542,7 +1542,7 @@ function setupGame(selectedCharacters, testConfig = null) {
     const parsedMarxVictory = parsePropositionFromString(marxVictoryString);
 
     if (parsedMarxVictory) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         owner: player,
         type: "victory",
         source: "marx_revolution",
@@ -1589,7 +1589,7 @@ function setupGame(selectedCharacters, testConfig = null) {
           internalTruthSet
         );
         if (verificationResult.success) {
-          truePropositions.push({
+          gamestate.truePropositions.push({
             propId: `prop_${Date.now()}_${Math.random()}`,
             type: "user-made",
             round: 0,
@@ -1673,7 +1673,7 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   gamestate.playerA_Hand = [];
   gamestate.playerB_Hand = [];
-  truePropositions = [];
+  gamestate.truePropositions = [];
   currentProposition = [];
   currentPlayer = "A";
   gameIsOver = false;
@@ -2060,7 +2060,7 @@ function getAbilityButtonStateFor(player) {
       // 사유 시간일 때 항상 버튼 표시
       if (isThinkingTime) {
         // 플레이어가 카드를 놓아 생성한 명제만 카운트
-        const userMadePropsCount = truePropositions.filter(
+        const userMadePropsCount = gamestate.truePropositions.filter(
           (p) => p.type === "user-made"
         ).length;
 
@@ -2150,7 +2150,7 @@ function completeProposition() {
   const isAxiom = parsedAxioms.some((a) =>
     arePropositionsEqual(a.proposition, parsedProp)
   );
-  const isAlreadyInTrueList = truePropositions.some(
+  const isAlreadyInTrueList = gamestate.truePropositions.some(
     (p) => p.proposition && arePropositionsEqual(p.proposition, parsedProp)
   );
 
@@ -2196,7 +2196,7 @@ function completeProposition() {
 
     devLog("니체 명제 생성 시점: ", propToAdd);
 
-    truePropositions.push(propToAdd);
+    gamestate.truePropositions.push(propToAdd);
 
     // --- 명제 추가 성공 후 공통 로직 ---
     audioManager.playSfx("complete");
@@ -2208,8 +2208,8 @@ function completeProposition() {
     cardsPlayedThisTurn = { A: 0, B: 0 };
     render();
     const truePropositionsEl = document.getElementById("true-propositions");
-    truePropositionsEl.scrollTo({
-      top: truePropositionsEl.scrollHeight,
+    gamestate.truePropositionsEl.scrollTo({
+      top: gamestate.truePropositionsEl.scrollHeight,
       behavior: "smooth",
     });
     checkNextTurn();
@@ -2258,14 +2258,14 @@ function undoProposition() {
     render();
   } else {
     let lastUserMadePropIndex = -1;
-    for (let i = truePropositions.length - 1; i >= 0; i--) {
-      if (truePropositions[i].type === "user-made") {
+    for (let i = gamestate.truePropositions.length - 1; i >= 0; i--) {
+      if (gamestate.truePropositions[i].type === "user-made") {
         lastUserMadePropIndex = i;
         break;
       }
     }
     if (lastUserMadePropIndex !== -1) {
-      const propToUndo = truePropositions[lastUserMadePropIndex];
+      const propToUndo = gamestate.truePropositions[lastUserMadePropIndex];
       const lastMaker =
         propToUndo.original_cards[propToUndo.original_cards.length - 1].player;
       if (gameMode === "AI" && lastMaker === aiPlayer) {
@@ -2273,9 +2273,9 @@ function undoProposition() {
         return;
       }
       audioManager.playSfx("undo");
-      truePropositions.splice(lastUserMadePropIndex, 1);
+      gamestate.truePropositions.splice(lastUserMadePropIndex, 1);
       let newTruthSet = parsedAxioms.map((a) => a.proposition);
-      const propositionsToReverify = truePropositions
+      const propositionsToReverify = gamestate.truePropositions
         .filter(
           (p) =>
             p.type === "victory" ||
@@ -2294,7 +2294,11 @@ function undoProposition() {
             prop
           );
           showAlert(gamestate.currentLang.alerts.criticalErrorUndo);
-          truePropositions.splice(lastUserMadePropIndex, 0, propToUndo);
+          gamestate.truePropositions.splice(
+            lastUserMadePropIndex,
+            0,
+            propToUndo
+          );
           return;
         }
       }
@@ -2599,8 +2603,9 @@ function endThinkingTime() {
 
   // 새로운 라운드 시작 시 참 명제 목록을 맨 아래로 스크롤
   const truePropositionsElement = document.getElementById("true-propositions");
-  if (truePropositionsElement) {
-    truePropositionsElement.scrollTop = truePropositionsElement.scrollHeight;
+  if (gamestate.truePropositionsElement) {
+    gamestate.truePropositionsElement.scrollTop =
+      gamestate.truePropositionsElement.scrollHeight;
   }
 
   checkNextTurn(); // 기존 코드
@@ -2956,7 +2961,7 @@ function render() {
   liAxiom.appendChild(details);
   trueList_El.appendChild(liAxiom);
 
-  truePropositions.forEach((propData) => {
+  gamestate.truePropositions.forEach((propData) => {
     if (propData.source === "nietzsche_ability") {
       devLog("니체 명제 렌더링 시점: ", propData);
     }

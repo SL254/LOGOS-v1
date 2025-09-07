@@ -371,14 +371,14 @@ function startPuzzle(levelNum, levelData) {
   goalBox.classList.remove("hidden"); // 전체 박스를 보이게 함
 
   // 퍼즐 데이터로 게임 상태 설정
-  truePropositions = [];
+  gamestate.truePropositions = [];
 
   // 1. 승리 조건 설정
   const socratesVC_Text =
     levelData.victoryConditions.socrates[gamestate.currentLang.langCode];
   const socratesVC_Parsed = parsePropositionFromString(socratesVC_Text);
   if (socratesVC_Parsed) {
-    truePropositions.push({
+    gamestate.truePropositions.push({
       type: "victory",
       owner: "A",
       text: socratesVC_Text,
@@ -395,7 +395,7 @@ function startPuzzle(levelNum, levelData) {
     levelData.victoryConditions.plato[gamestate.currentLang.langCode];
   const platoVC_Parsed = parsePropositionFromString(platoVC_Text);
   if (platoVC_Parsed) {
-    truePropositions.push({
+    gamestate.truePropositions.push({
       type: "victory",
       owner: "B",
       text: platoVC_Text,
@@ -413,13 +413,18 @@ function startPuzzle(levelNum, levelData) {
   premises.forEach((pText) => {
     const parsed = parsePropositionFromString(pText);
     if (parsed) {
-      truePropositions.push({ type: "user-made", proposition: parsed });
+      gamestate.truePropositions.push({
+        type: "user-made",
+        proposition: parsed,
+      });
     }
   });
 
   // 3. 내부 진리 집합 재구성
   internalTruthSet = parsedAxioms.map((a) => a.proposition);
-  truePropositions.forEach((p) => internalTruthSet.push(p.proposition));
+  gamestate.truePropositions.forEach((p) =>
+    internalTruthSet.push(p.proposition)
+  );
   internalTruthSet = verifyAndExpandTruths(null, internalTruthSet).expandedSet;
 
   // 4. 유레카 모달 바로 열기

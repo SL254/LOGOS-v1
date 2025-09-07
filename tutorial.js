@@ -1158,7 +1158,7 @@ function endTurnTutorial() {
 function completePropositionTutorial() {
   const parsedProp = parsePropositionFromCards([...currentProposition]);
   if (parsedProp) {
-    truePropositions.push({
+    gamestate.truePropositions.push({
       type: "user-made",
       round: currentRound,
       proposition: parsedProp,
@@ -1186,7 +1186,7 @@ function openEurekaModalTutorial() {
 
   const allSelectablePropositions = [
     ...parsedAxioms,
-    ...truePropositions.filter(
+    ...gamestate.truePropositions.filter(
       (p) =>
         p.type === "user-made" || p.type === "theorem" || p.type === "victory"
     ),
@@ -1696,11 +1696,11 @@ function addTheoremsToListTutorial() {
     .filter((p) => p && p.type === "theorem" && !p.dependsOnAssumption);
 
   newTheorems.forEach((theoremData) => {
-    const isDuplicate = truePropositions.some((p) =>
+    const isDuplicate = gamestate.truePropositions.some((p) =>
       arePropositionsEqual(p.proposition, theoremData.proposition)
     );
     if (!isDuplicate) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`, // ✅ 이 줄이 추가되었습니다.
         type: "theorem",
         round: currentRound,
@@ -1845,7 +1845,7 @@ function setupTutorialScenario(step) {
   if (step === 1) {
     gamestate.playerA_Hand = [];
     gamestate.playerB_Hand = [];
-    truePropositions = [];
+    gamestate.truePropositions = [];
 
     const socratesSubject = gamestate.currentLang.keywords.socrates;
     const platoSubject = gamestate.currentLang.keywords.plato;
@@ -1880,7 +1880,7 @@ function setupTutorialScenario(step) {
     const socratesVCText = `((${socratesKeyword} ${goodPredicate}) ${ifKeyword} (${socratesKeyword} ${winsKeyword})) ${andKeyword} ((${socratesKeyword} ${winsKeyword}) ${ifKeyword} (${socratesKeyword} ${goodPredicate}))`;
     const parsedSocratesVC = parsePropositionFromString(socratesVCText);
     if (parsedSocratesVC) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         type: "victory",
         text: socratesVCText,
         owner: "A",
@@ -1903,7 +1903,7 @@ function setupTutorialScenario(step) {
     const platoVCText = `((${platoKeyword} ${evilPredicate}) ${ifKeyword} (${platoKeyword} ${winsKeyword})) ${andKeyword} ((${platoKeyword} ${winsKeyword}) ${ifKeyword} (${platoKeyword} ${evilPredicate}))`;
     const parsedPlatoVC = parsePropositionFromString(platoVCText);
     if (parsedPlatoVC) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         type: "victory",
         text: platoVCText,
         owner: "B",
@@ -2014,7 +2014,7 @@ function setupTutorialScenario(step) {
           (gamestate.currentLang.langCode === "ko" ? "개이다" : "is a dog")
     );
 
-    truePropositions = [];
+    gamestate.truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
 
     const premises = [
@@ -2028,7 +2028,7 @@ function setupTutorialScenario(step) {
     premises.forEach((pText) => {
       const parsed = parsePropositionFromString(pText);
       if (parsed) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: pText,
           proposition: parsed,
@@ -2039,7 +2039,7 @@ function setupTutorialScenario(step) {
     });
     startThinkingTime();
   } else if (step === 5) {
-    truePropositions = [];
+    gamestate.truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
@@ -2093,7 +2093,7 @@ function setupTutorialScenario(step) {
         parsed &&
         !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: pText,
           proposition: parsed,
@@ -2103,7 +2103,7 @@ function setupTutorialScenario(step) {
       }
     });
   } else if (step === 6) {
-    truePropositions = [];
+    gamestate.truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
@@ -2128,7 +2128,7 @@ function setupTutorialScenario(step) {
         parsed &&
         !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: pText,
           proposition: parsed,
@@ -2139,7 +2139,7 @@ function setupTutorialScenario(step) {
     });
     openEurekaModalTutorial();
   } else if (step === 7) {
-    truePropositions = [];
+    gamestate.truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
@@ -2158,7 +2158,7 @@ function setupTutorialScenario(step) {
     premises.forEach((pText) => {
       const parsed = parsePropositionFromString(pText);
       if (parsed) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: propositionToNaturalText(parsed),
           proposition: parsed,
@@ -2169,7 +2169,7 @@ function setupTutorialScenario(step) {
     });
     openEurekaModalTutorial();
   } else if (step === 8) {
-    truePropositions = [];
+    gamestate.truePropositions = [];
     internalTruthSet = parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
@@ -2191,7 +2191,7 @@ function setupTutorialScenario(step) {
         parsed &&
         !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: pText,
           proposition: parsed,
@@ -2203,7 +2203,7 @@ function setupTutorialScenario(step) {
     openEurekaModalTutorial();
   } else if (step === 9) {
     // Stage 9 - Final Puzzle
-    truePropositions = [];
+    gamestate.truePropositions = [];
 
     const socratesSubject = gamestate.currentLang.keywords.socrates;
     const platoSubject = gamestate.currentLang.keywords.plato;
@@ -2231,7 +2231,7 @@ function setupTutorialScenario(step) {
         : "(Socrates is good then Socrates wins) and (Socrates wins then Socrates is good)";
     const socratesVC_Parsed = parsePropositionFromString(socratesVC_Text);
     if (socratesVC_Parsed) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         type: "victory",
         owner: "A",
         text: propositionToPlainText(socratesVC_Parsed),
@@ -2257,7 +2257,7 @@ function setupTutorialScenario(step) {
         : "(Plato is foolish then Plato wins) and (Plato wins then Plato is foolish)";
     const platoVC_Parsed = parsePropositionFromString(platoVC_Text);
     if (platoVC_Parsed) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         type: "victory",
         owner: "B",
         text: propositionToPlainText(platoVC_Parsed),
@@ -2297,7 +2297,7 @@ function setupTutorialScenario(step) {
         parsed &&
         !internalTruthSet.some((p) => arePropositionsEqual(p, parsed))
       ) {
-        truePropositions.push({
+        gamestate.truePropositions.push({
           type: "user-made",
           text: pText,
           proposition: parsed,

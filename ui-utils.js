@@ -127,7 +127,7 @@ function setupUI() {
   document.getElementById("end-turn-btn").textContent =
     gamestate.currentLang.ui.endTurnButton;
   document.getElementById("true-propositions-title").textContent =
-    gamestate.currentLang.ui.truePropositionsTitle;
+    gamestate.currentLang.ui.gamestate.truePropositionsTitle;
   document.getElementById("thinking-time-title").textContent =
     gamestate.currentLang.ui.thinkingTimeTitle;
   document.getElementById("thinking-time-desc").innerHTML =

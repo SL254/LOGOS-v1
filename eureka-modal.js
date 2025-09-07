@@ -14,7 +14,7 @@ function openEurekaModal() {
     startProofRecording();
 
     // 기존 전제들(공리, 승리 조건 등)을 논증 기록에 추가
-    [...parsedAxioms, ...truePropositions].forEach((propData) => {
+    [...parsedAxioms, ...gamestate.truePropositions].forEach((propData) => {
       if (propData.proposition) {
         const stepId = recordProofStep(
           "premise",
@@ -31,7 +31,7 @@ function openEurekaModal() {
   premiseList.innerHTML = "";
   const allSelectablePropositions = [
     ...parsedAxioms,
-    ...truePropositions
+    ...gamestate.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
   ].filter(
@@ -519,7 +519,7 @@ function addPremiseToWorkbench(propObject) {
     propObject.proposition &&
     !propObject.isAssumption
   ) {
-    const existing = [...parsedAxioms, ...truePropositions].find(
+    const existing = [...parsedAxioms, ...gamestate.truePropositions].find(
       (existing) =>
         existing.proposition &&
         arePropositionsEqual(existing.proposition, propObject.proposition)
@@ -813,7 +813,10 @@ function applyRule() {
 
             // 3. 기존 전제들에서 찾기 (가정인 경우 제외)
             if (!p.isAssumption) {
-              const existing = [...parsedAxioms, ...truePropositions].find(
+              const existing = [
+                ...parsedAxioms,
+                ...gamestate.truePropositions,
+              ].find(
                 (existing) =>
                   existing.proposition &&
                   arePropositionsEqual(existing.proposition, p.proposition)
@@ -926,7 +929,7 @@ function addTheoremsToList() {
     const isAxiom = parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, theoremData.proposition)
     );
-    const isAlreadyProven = truePropositions.some(
+    const isAlreadyProven = gamestate.truePropositions.some(
       (p) =>
         p.proposition &&
         arePropositionsEqual(p.proposition, theoremData.proposition)
@@ -944,7 +947,7 @@ function addTheoremsToList() {
     const verificationResult = verifyAndExpandTruths(theoremData.proposition);
 
     if (verificationResult.success) {
-      truePropositions.push({
+      gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`, // ✅ 이 줄이 추가되었습니다.
         type: "theorem",
         round: currentRound,
@@ -972,10 +975,10 @@ function proveVictory() {
   if (isThinkingTime) return;
 
   if (inPuzzleMode) {
-    const myVictoryCondition = truePropositions.find(
+    const myVictoryCondition = gamestate.truePropositions.find(
       (p) => p.type === "victory" && p.owner === "A"
     );
-    const opponentVictoryCondition = truePropositions.find(
+    const opponentVictoryCondition = gamestate.truePropositions.find(
       (p) => p.type === "victory" && p.owner === "B"
     );
 
@@ -1057,11 +1060,11 @@ function proveVictory() {
 
   // --- 튜토리얼 마지막 단계 성공 처리 로직 (새로 추가된 부분) ---
   if (inTutorialMode && tutorialStep === 8) {
-    const myVictoryCondition = truePropositions.find(
+    const myVictoryCondition = gamestate.truePropositions.find(
       (p) => p.type === "victory" && p.owner === currentPlayer
     );
     const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-    const opponentVictoryCondition = truePropositions.find(
+    const opponentVictoryCondition = gamestate.truePropositions.find(
       (p) => p.type === "victory" && p.owner === opponentPlayer
     );
 
@@ -1103,14 +1106,14 @@ function proveVictory() {
   // --- 튜토리얼 로직 끝 ---
 
   // --- 이하 기존의 일반 게임 승리 증명 로직 ---
-  const myVictoryCondition = truePropositions.find(
+  const myVictoryCondition = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
   if (!myVictoryCondition) return;
   const myUltimateTarget = myVictoryCondition.ultimate_target;
 
   const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-  const opponentVictoryCondition = truePropositions.find(
+  const opponentVictoryCondition = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   if (!opponentVictoryCondition) return;
@@ -1135,7 +1138,7 @@ function proveVictory() {
       (p) =>
         p.type === "theorem" &&
         !p.dependsOnAssumption &&
-        !truePropositions.some((existing) =>
+        !gamestate.truePropositions.some((existing) =>
           arePropositionsEqual(p.proposition, existing.proposition)
         )
     );

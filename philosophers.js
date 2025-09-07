@@ -156,7 +156,7 @@ const PHILOSOPHERS = {
 };
 
 function activatePlatoAbility(player) {
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
 
@@ -217,7 +217,7 @@ function confirmPlatoAbility() {
   }
 
   const selectedIndex = parseInt(selectedRadio.value, 10);
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
   const selectedPropData = availablePropositions[selectedIndex];
@@ -254,7 +254,7 @@ function confirmPlatoAbility() {
       abilityUsedState[thinkingTimeTurn].used = true;
     }
 
-    truePropositions.push({
+    gamestate.truePropositions.push({
       propId: `prop_${Date.now()}_${Math.random()}`,
       type: "theorem", // 타입은 'theorem'으로 유지
       source: "plato_ability", // '이데아 회상' 출처 명시
@@ -289,7 +289,7 @@ function activateSocratesAbility(player) {
     );
     return;
   }
-  const availablePropositions = truePropositions.filter((p) => {
+  const availablePropositions = gamestate.truePropositions.filter((p) => {
     // 1. 타입이 'user-made' 또는 'theorem'이어야 함 (기존 조건)
     const isTargetType = p.type === "user-made" || p.type === "theorem";
     if (!isTargetType) return false;
@@ -378,7 +378,7 @@ function confirmSocratesAbility() {
 }
 function activateDescartesAbility(player) {
   // 삭제 가능한 명제 (공리, 승리조건 제외) 목록을 준비합니다.
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) => p.type === "user-made" || p.type === "theorem"
   );
 
@@ -441,8 +441,8 @@ function confirmDescartesAbility() {
 
   const selectedPropId = selectedRadio.value;
 
-  // 1. truePropositions 배열에서 삭제할 명제의 인덱스를 찾습니다.
-  const propIndex = truePropositions.findIndex(
+  // 1. gamestate.truePropositions 배열에서 삭제할 명제의 인덱스를 찾습니다.
+  const propIndex = gamestate.truePropositions.findIndex(
     (p) => p.propId === selectedPropId
   );
 
@@ -452,13 +452,13 @@ function confirmDescartesAbility() {
   }
 
   // 2. 해당 명제를 배열에서 제거합니다.
-  truePropositions.splice(propIndex, 1);
+  gamestate.truePropositions.splice(propIndex, 1);
 
   // 3. ★★★ 핵심 단계 ★★★
   //    명제 하나가 사라졌으므로, 전체 논리 체계에 모순이 생겼을 수 있습니다.
   //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(internalTruthSet)을 완전히 재구성합니다.
   let newTruthSet = parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = truePropositions
+  const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -502,7 +502,7 @@ function activateWittgensteinAbility(player) {
   // 유레카 모달과 똑같이 사용 가능한 모든 전제를 가져옵니다.
   const allSelectablePropositions = [
     ...parsedAxioms,
-    ...truePropositions
+    ...gamestate.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
   ].filter(
@@ -902,10 +902,12 @@ function confirmWittgensteinAbility() {
     }
   });
 
-  truePropositions = truePropositions.filter((p) => !idsToDelete.has(p.propId));
+  gamestate.truePropositions = gamestate.truePropositions.filter(
+    (p) => !idsToDelete.has(p.propId)
+  );
 
   // 4. 최종적으로 도출된 새로운 정리를 참 목록에 추가합니다.
-  truePropositions.push({
+  gamestate.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem",
     round: currentRound,
@@ -915,7 +917,7 @@ function confirmWittgensteinAbility() {
 
   // 5. 전체 진리 집합을 재구성하여 논리적 일관성을 유지합니다.
   let newTruthSet = parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = truePropositions
+  const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -944,7 +946,7 @@ function confirmWittgensteinAbility() {
 }
 function activateDerridaAbility(player) {
   // 1. 분해 가능한 명제(연결사로 이어진 명제)만 필터링합니다.
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) =>
       p.type !== "victory" &&
       p.proposition &&
@@ -1014,7 +1016,7 @@ function confirmDerridaAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const selectedPropData = truePropositions.find(
+  const selectedPropData = gamestate.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1028,7 +1030,7 @@ function confirmDerridaAbility() {
   // --- 핵심 로직: 삭제와 추가가 모두 가능한지 '미리' 검증하는 단계 ---
 
   // 1. 선택된 원본 명제를 '제외한' 나머지 명제 목록을 만듭니다.
-  const propositionsWithoutOriginal = truePropositions.filter(
+  const propositionsWithoutOriginal = gamestate.truePropositions.filter(
     (p) => p.propId !== selectedPropId
   );
 
@@ -1073,7 +1075,7 @@ function confirmDerridaAbility() {
 
   // 6. 검증이 모두 끝났으므로, 실제 게임 상태를 변경합니다.
   //    - 원본 복합 명제를 삭제합니다. (이미 만들어 둔 리스트 재활용)
-  truePropositions = propositionsWithoutOriginal;
+  gamestate.truePropositions = propositionsWithoutOriginal;
   //    - 분해된 두 명제를 추가합니다.
   const newProps = [
     {
@@ -1089,7 +1091,7 @@ function confirmDerridaAbility() {
       proposition: right,
     },
   ];
-  truePropositions.push(...newProps);
+  gamestate.truePropositions.push(...newProps);
 
   // 7. 최종적으로 검증된 진리 집합으로 내부 상태를 업데이트합니다.
   internalTruthSet = verification2.expandedSet;
@@ -1105,7 +1107,7 @@ function confirmDerridaAbility() {
 function activateHumeAbility(player) {
   // 함수 이름을 activateHumeAbility로 변경
   // 1. 분해 가능한 명제('라면'으로 이어진 명제만) 필터링합니다.
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) =>
       p.type !== "victory" &&
       p.proposition &&
@@ -1174,7 +1176,7 @@ function confirmHumeAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const selectedPropData = truePropositions.find(
+  const selectedPropData = gamestate.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1186,7 +1188,7 @@ function confirmHumeAbility() {
   const { left, right } = selectedPropData.proposition;
 
   // --- 핵심 로직: 데리다와 동일한 안전성 검증 로직 사용 ---
-  const propositionsWithoutOriginal = truePropositions.filter(
+  const propositionsWithoutOriginal = gamestate.truePropositions.filter(
     (p) => p.propId !== selectedPropId
   );
   let baseTruthSetForTest = parsedAxioms.map((a) => a.proposition);
@@ -1224,7 +1226,7 @@ function confirmHumeAbility() {
   abilityUsedState[thinkingTimeTurn].used = true; // 👈 '게임당 1회' 규칙으로 변경
 
   // 6. 실제 게임 상태를 변경합니다.
-  truePropositions = propositionsWithoutOriginal;
+  gamestate.truePropositions = propositionsWithoutOriginal;
   const newProps = [
     {
       propId: `prop_${Date.now()}_${Math.random()}`,
@@ -1239,7 +1241,7 @@ function confirmHumeAbility() {
       proposition: right,
     },
   ];
-  truePropositions.push(...newProps);
+  gamestate.truePropositions.push(...newProps);
 
   // 7. 최종 진리 집합으로 업데이트합니다.
   internalTruthSet = verification2.expandedSet;
@@ -1256,7 +1258,7 @@ function confirmHumeAbility() {
 function activateKuhnAbility(player) {
   // 1. '선하다/악하다' 또는 '지혜롭다/어리석다'를 가진 최소 단위 명제 확인
   // 2. getOppositePredicate 함수를 이용해 해당 명제의 술어에 반대 개념이 존재하는지 확인합니다.
-  const availablePropositions = truePropositions.filter((p) => {
+  const availablePropositions = gamestate.truePropositions.filter((p) => {
     if (!p.proposition) return false;
 
     // 최소 단위 명제 타입들: atomic, universal, existential, individual
@@ -1355,7 +1357,7 @@ function confirmKuhnAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const originalPropData = truePropositions.find(
+  const originalPropData = gamestate.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1426,7 +1428,7 @@ function confirmKuhnAbility() {
 
   // --- (2) 기반 진리 목록 생성 및 사전 검증 ---
   const axioms = parsedAxioms.map((a) => a.proposition);
-  const victoryConditions = truePropositions
+  const victoryConditions = gamestate.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
 
@@ -1449,12 +1451,12 @@ function confirmKuhnAbility() {
 
   let currentValidatedTruths = preCheckResult.expandedSet;
   let survivingPropositions = [
-    ...truePropositions.filter((p) => p.type === "victory"),
+    ...gamestate.truePropositions.filter((p) => p.type === "victory"),
     newParadigmPropForList,
   ];
 
   // --- (3) 기존 명제 재검증 ---
-  const candidatesForRevalidation = truePropositions.filter(
+  const candidatesForRevalidation = gamestate.truePropositions.filter(
     (p) =>
       (p.type === "user-made" || p.type === "theorem") &&
       p.propId !== selectedPropId
@@ -1475,7 +1477,7 @@ function confirmKuhnAbility() {
   }
 
   // --- (4) 최종 목록 확정 및 UI 갱신 ---
-  truePropositions = survivingPropositions;
+  gamestate.truePropositions = survivingPropositions;
   internalTruthSet = currentValidatedTruths;
 
   const philosopherId =
@@ -1583,7 +1585,7 @@ function confirmKantAbility(player) {
   abilityUsedState[player].used = true;
 
   // 6. 새로운 명제를 참 목록에 추가
-  truePropositions.push({
+  gamestate.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem", // 능력으로 만든 명제는 '정리'로 취급
     source: "kant_ability", // 칸트 능력 출처 명시

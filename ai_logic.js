@@ -62,7 +62,7 @@ function analyzeOpponentThreats(opponentHand, myCorePredicate, langData) {
  * @returns {object | null} 가장 점수가 높은 최적의 계획 객체 또는 null
  */
 function generateAndScorePlans() {
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === aiPlayer
   );
   if (!myVictoryData) return null;
@@ -245,7 +245,7 @@ function generateCandidateTheorems() {
       }
 
       // 2. 이미 게임의 '참 명제 목록'에 존재하는지 확인 (핵심 수정)
-      const isAlreadyKnown = truePropositions.some(
+      const isAlreadyKnown = gamestate.truePropositions.some(
         (p) => p.proposition && arePropositionsEqual(p.proposition, prop)
       );
       // 3. 아직 알려지지 않은 새로운 명제일 경우에만 후보로 추가
@@ -317,10 +317,10 @@ function generateCandidateTheorems() {
 
 function scoreCandidateTheorems(candidates) {
   const opponentPlayer = thinkingTimeTurn === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === thinkingTimeTurn
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -412,7 +412,7 @@ function executeTheoremDerivation(scoredTheorems) {
       }
 
       actions.push({ type: "theorem", proposition: candidateProp });
-      truePropositions.push({
+      gamestate.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`,
         type: "theorem",
         round: currentRound,
@@ -542,7 +542,7 @@ function aiCanActuallyComplete() {
     const isAxiom = parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, propToComplete)
     );
-    const isAlreadyProven = truePropositions.some(
+    const isAlreadyProven = gamestate.truePropositions.some(
       (p) =>
         p.proposition && arePropositionsEqual(p.proposition, propToComplete)
     );
@@ -608,10 +608,10 @@ function checkForGuaranteedWinMove() {
   }
 
   // 3. 마지막 카드가 '나' 또는 '상대'의 이름(고유명사)인지 확인
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner !== currentPlayer
   );
 
@@ -761,7 +761,7 @@ function scorePlans(plans, aiHand) {
 }
 
 function generateWinningPlan() {
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
   if (!myVictoryData) return null;
@@ -973,7 +973,7 @@ function aiTurn() {
   );
   devLog(currentProposition.map((c) => c.card.text).join(" "));
 
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
   const aiHand =
@@ -1010,7 +1010,7 @@ function aiTurn() {
   }
 
   const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   const hasValidCardMove = aiHand.some((card) =>
@@ -1108,11 +1108,11 @@ function aiTurn() {
 
         if (resultingProposition) {
           devLog(
-            `[DUPLICATE DEBUG] Checking against ${truePropositions.length} true propositions`
+            `[DUPLICATE DEBUG] Checking against ${gamestate.truePropositions.length} true propositions`
           );
           devLog(
             `[DUPLICATE DEBUG] True propositions list:`,
-            truePropositions.map((p) => ({
+            gamestate.truePropositions.map((p) => ({
               type: p.type,
               text: p.text || "no text",
               proposition: p.proposition
@@ -1144,23 +1144,27 @@ function aiTurn() {
           });
 
           // 2. 참 명제와 비교
-          const truePropDuplicate = truePropositions.some((trueProp) => {
-            if (trueProp.proposition) {
-              const isEqual = arePropositionsEqual(
-                trueProp.proposition,
-                resultingProposition
-              );
-              if (isEqual) {
-                devLog(
-                  `[DUPLICATE PREVENTION] Found duplicate with TRUE PROP! Existing: "${propositionToNaturalText(
-                    trueProp.proposition
-                  )}", New: "${propositionToNaturalText(resultingProposition)}"`
+          const truePropDuplicate = gamestate.truePropositions.some(
+            (trueProp) => {
+              if (trueProp.proposition) {
+                const isEqual = arePropositionsEqual(
+                  trueProp.proposition,
+                  resultingProposition
                 );
+                if (isEqual) {
+                  devLog(
+                    `[DUPLICATE PREVENTION] Found duplicate with TRUE PROP! Existing: "${propositionToNaturalText(
+                      trueProp.proposition
+                    )}", New: "${propositionToNaturalText(
+                      resultingProposition
+                    )}"`
+                  );
+                }
+                return isEqual;
               }
-              return isEqual;
+              return false;
             }
-            return false;
-          });
+          );
 
           isDuplicate = axiomDuplicate || truePropDuplicate;
 
@@ -1724,7 +1728,7 @@ function aiTurn() {
         );
         if (verificationResult.success) {
           const expandedSet = verificationResult.expandedSet;
-          const myVictoryData = truePropositions.find(
+          const myVictoryData = gamestate.truePropositions.find(
             (p) => p.type === "victory" && p.owner === currentPlayer
           );
           if (myVictoryData) {
@@ -1793,7 +1797,7 @@ function aiTurn() {
       if (aiPhilosopherId === "nietzsche") {
         const propToComplete = parsePropositionFromCards(currentProposition);
         if (propToComplete) {
-          const isAlreadyProven = truePropositions.some(
+          const isAlreadyProven = gamestate.truePropositions.some(
             (p) =>
               p.proposition &&
               arePropositionsEqual(p.proposition, propToComplete)
@@ -2035,7 +2039,7 @@ function getTemporaryUsableTruths() {
   // --- '무지의 지'이 사용된 경우, AI의 지식을 재구성합니다. ---
 
   // 1. 화면의 참 명제 목록에서 비활성화된 명제를 먼저 제외합니다.
-  const filteredUserMadeProps = truePropositions.filter(
+  const filteredUserMadeProps = gamestate.truePropositions.filter(
     (p) =>
       !p.propId || !socratesDisabledProps.some((dp) => dp.propId === p.propId)
   );
@@ -2063,10 +2067,10 @@ function aiDeclareEureka() {
   if (isThinkingTime) return false;
 
   const opponentPlayer = currentPlayer === "A" ? "B" : "A";
-  const myVictoryCondition = truePropositions.find(
+  const myVictoryCondition = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === currentPlayer
   );
-  const opponentVictoryCondition = truePropositions.find(
+  const opponentVictoryCondition = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -2099,7 +2103,7 @@ function aiDeclareEureka() {
     // 2. '경로 생성'을 위해서는 추론이 완료되지 않은 '순수 전제'들을 전달해야 함
 
     // 소크라테스 능력으로 비활성화된 명제를 제외한 순수 전제 목록 생성
-    const activePropositions = truePropositions.filter(
+    const activePropositions = gamestate.truePropositions.filter(
       (p) =>
         !p.propId || !socratesDisabledProps.some((dp) => dp.propId === p.propId)
     );
@@ -2218,7 +2222,7 @@ const GAMBIT_EVALUATORS = [
   {
     name: "Disjunctive Syllogism Gambit",
     trigger: () => {
-      return truePropositions.filter(
+      return gamestate.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "disjunction"
       );
     },
@@ -2252,7 +2256,7 @@ const GAMBIT_EVALUATORS = [
   {
     name: "Modus Tollens Gambit",
     trigger: () => {
-      return truePropositions.filter(
+      return gamestate.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "conditional"
       );
     },
@@ -2281,7 +2285,7 @@ const GAMBIT_EVALUATORS = [
      * 참 명제 목록에서 '라면'으로 연결된 조건문을 찾아 반환합니다.
      */
     trigger: () => {
-      return truePropositions.filter(
+      return gamestate.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "conditional"
       );
     },
@@ -2374,10 +2378,10 @@ function calculateStrategicValue(proposition, perspectivePlayer) {
   const normalizedProp = normalizeProposition(proposition);
 
   const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === perspectivePlayer
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -2428,7 +2432,7 @@ function isPlanTooRisky(path, perspectivePlayer) {
   if (!path || path.length === 0) return false;
 
   const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   if (!opponentVictoryData) return false;
@@ -2457,7 +2461,7 @@ function executePlatoAbilityCheck(player) {
   }
 
   // 1. 사용 가능한 '어떤' 명제 찾기
-  const availableExistentials = truePropositions.filter(
+  const availableExistentials = gamestate.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
   if (availableExistentials.length === 0) {
@@ -2465,10 +2469,10 @@ function executePlatoAbilityCheck(player) {
   }
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData) {
@@ -2495,7 +2499,7 @@ function executePlatoAbilityCheck(player) {
       entity: originalProp.entity,
       predicate: originalProp.predicate,
     };
-    const isAlreadyKnown = truePropositions.some(
+    const isAlreadyKnown = gamestate.truePropositions.some(
       (p) => p.proposition && arePropositionsEqual(p.proposition, universalProp)
     );
 
@@ -2605,7 +2609,7 @@ function executePlatoAbilityCheck(player) {
     source: "plato_ability",
     proposition: bestCandidate.newProp,
   };
-  truePropositions.push(newTheorem);
+  gamestate.truePropositions.push(newTheorem);
 
   const finalVerification = verifyAndExpandTruths(
     bestCandidate.newProp,
@@ -2636,7 +2640,7 @@ function executeSocratesAbilityCheck(player) {
     // 👈 usedCount >= maxUses 대신 .used가 있는지 확인
     return null;
   }
-  const availablePropositions = truePropositions.filter((p) => {
+  const availablePropositions = gamestate.truePropositions.filter((p) => {
     const isTargetType = p.type === "user-made" || p.type === "theorem";
     if (!isTargetType || !p.propId) return false;
 
@@ -2651,10 +2655,10 @@ function executeSocratesAbilityCheck(player) {
 
   // 2. AI와 상대방의 데이터 가져오기
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -2842,7 +2846,7 @@ function executeDescartesAbilityCheck(player) {
   if (abilityUsedState[player]?.used) {
     return null;
   }
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) => (p.type === "user-made" || p.type === "theorem") && p.propId
   );
   if (availablePropositions.length === 0) {
@@ -2851,10 +2855,10 @@ function executeDescartesAbilityCheck(player) {
 
   // --- 2. 위협 점수 산출 ---
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -2928,16 +2932,16 @@ function executeDescartesAbilityCheck(player) {
 
   abilityUsedState[player].used = true;
 
-  const propIndex = truePropositions.findIndex(
+  const propIndex = gamestate.truePropositions.findIndex(
     (p) => p.propId === bestCandidate.propData.propId
   );
   if (propIndex > -1) {
-    truePropositions.splice(propIndex, 1);
+    gamestate.truePropositions.splice(propIndex, 1);
   }
 
   // 진리 집합 재구성 (이 부분은 문제가 없습니다)
   let newTruthSet = parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = truePropositions
+  const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -2977,7 +2981,7 @@ function executeHumeAbilityCheck(player) {
   }
 
   // --- 1. '라면'으로 연결된 명제만 찾기 (핵심 수정) ---
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) => p.propId && p.proposition && p.proposition.type === "conditional" // 👈 '라면' 명제만 필터링
   );
 
@@ -2987,10 +2991,10 @@ function executeHumeAbilityCheck(player) {
 
   // AI와 상대방의 승리 조건 데이터 가져오기 (데리다 로직과 동일)
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3009,7 +3013,7 @@ function executeHumeAbilityCheck(player) {
     }
 
     // --- 3. 안전성 검사 (데리다 로직과 동일) ---
-    const propositionsWithoutOriginal = truePropositions.filter(
+    const propositionsWithoutOriginal = gamestate.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
     let tempTruthSet = parsedAxioms.map((a) => a.proposition);
@@ -3097,7 +3101,7 @@ function executeHumeAbilityCheck(player) {
 
   abilityUsedState[player].used = true;
 
-  truePropositions = truePropositions.filter(
+  gamestate.truePropositions = gamestate.truePropositions.filter(
     (p) => p.propId !== bestCandidate.propData.propId
   );
 
@@ -3116,7 +3120,7 @@ function executeHumeAbilityCheck(player) {
       proposition: right,
     },
   ];
-  truePropositions.push(...newProps);
+  gamestate.truePropositions.push(...newProps);
   internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
@@ -3193,10 +3197,10 @@ function executeWittgensteinAbilityCheck(player) {
   }
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3204,7 +3208,7 @@ function executeWittgensteinAbilityCheck(player) {
 
   // --- 1단계: 제거할 '핵심 위협' 목록 생성 및 정렬 ---
   const allTruthsOnBoard = getTemporaryUsableTruths();
-  const candidatePropositions = truePropositions.filter(
+  const candidatePropositions = gamestate.truePropositions.filter(
     (p) => (p.type === "user-made" || p.type === "theorem") && p.propId
   );
 
@@ -3247,7 +3251,7 @@ function executeWittgensteinAbilityCheck(player) {
     const targetProp = targetPropData.proposition;
 
     // 이 목표물을 제거할 파트너를 찾기 위해 다른 모든 명제를 순회
-    for (const partnerData of truePropositions) {
+    for (const partnerData of gamestate.truePropositions) {
       if (
         !partnerData.proposition ||
         targetPropData.propId === partnerData.propId
@@ -3281,7 +3285,7 @@ function executeWittgensteinAbilityCheck(player) {
         );
 
         // 가상 시나리오: 전제들을 제거하고 새 정리를 추가
-        const remainingPropositions = truePropositions.filter(
+        const remainingPropositions = gamestate.truePropositions.filter(
           (p) => !idsToKick.has(p.propId)
         );
         const hypotheticalTruths = remainingPropositions
@@ -3330,9 +3334,9 @@ function executeWittgensteinAbilityCheck(player) {
         );
 
         abilityUsedState[player].used = true;
-        truePropositions = remainingPropositions; // 전제들이 제거된 목록으로 교체
+        gamestate.truePropositions = remainingPropositions; // 전제들이 제거된 목록으로 교체
 
-        truePropositions.push({
+        gamestate.truePropositions.push({
           propId: `prop_${Date.now()}_${Math.random()}`,
           type: "theorem",
           round: currentRound,
@@ -3367,7 +3371,7 @@ function getOppositePredicate(predicate) {
 }
 
 function simulateKuhnsAbility(propIdToChange) {
-  const originalPropData = truePropositions.find(
+  const originalPropData = gamestate.truePropositions.find(
     (p) => p.propId === propIdToChange
   );
   if (!originalPropData) return null;
@@ -3413,7 +3417,7 @@ function simulateKuhnsAbility(propIdToChange) {
   };
 
   const axioms = parsedAxioms.map((a) => a.proposition);
-  const victoryConditions = truePropositions
+  const victoryConditions = gamestate.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
   const foundationOfTruths = [
@@ -3427,11 +3431,11 @@ function simulateKuhnsAbility(propIdToChange) {
 
   let currentValidatedTruths = preCheckResult.expandedSet;
   let survivingPropositions = [
-    ...truePropositions.filter((p) => p.type === "victory"),
+    ...gamestate.truePropositions.filter((p) => p.type === "victory"),
     newParadigmPropForList,
   ];
 
-  const candidatesForRevalidation = truePropositions.filter(
+  const candidatesForRevalidation = gamestate.truePropositions.filter(
     (p) =>
       (p.type === "user-made" || p.type === "theorem") &&
       p.propId !== propIdToChange
@@ -3462,7 +3466,7 @@ function executeKuhnsAbility(propIdToChange, player) {
     return null;
   }
 
-  truePropositions = simResult.finalPropList;
+  gamestate.truePropositions = simResult.finalPropList;
   internalTruthSet = simResult.finalTruthSet;
 
   const philosopherId =
@@ -3486,12 +3490,12 @@ function executeKuhnAbilityCheck(player) {
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) return null;
 
-  const userMadePropsCount = truePropositions.filter(
+  const userMadePropsCount = gamestate.truePropositions.filter(
     (p) => p.type === "user-made"
   ).length;
   if (userMadePropsCount < 15) return null;
 
-  const availablePropositions = truePropositions.filter((p) => {
+  const availablePropositions = gamestate.truePropositions.filter((p) => {
     if (!p.proposition || !p.propId) return false;
 
     // 최소 단위 명제 타입들: atomic, universal, existential, individual
@@ -3534,10 +3538,10 @@ function executeKuhnAbilityCheck(player) {
   if (availablePropositions.length === 0) return null;
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -3621,7 +3625,7 @@ function executeDerridaAbilityCheck(player) {
   }
 
   // --- 0. '그리고'를 제외한 연결사로 연결된 명제 찾기 ---
-  const availablePropositions = truePropositions.filter(
+  const availablePropositions = gamestate.truePropositions.filter(
     (p) =>
       p.propId && // ID가 있어 추적 및 삭제가 가능한 명제만
       p.proposition &&
@@ -3635,10 +3639,10 @@ function executeDerridaAbilityCheck(player) {
 
   // AI와 상대방의 승리 조건 데이터 가져오기
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3661,7 +3665,7 @@ function executeDerridaAbilityCheck(player) {
 
     // --- 2. 안전성 검사: 해체 시 상대 이득/모순 발생 여부 확인 ---
     // 원본 명제를 제외한 진리 집합을 시뮬레이션용으로 생성
-    const propositionsWithoutOriginal = truePropositions.filter(
+    const propositionsWithoutOriginal = gamestate.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
     let tempTruthSet = parsedAxioms.map((a) => a.proposition);
@@ -3759,7 +3763,7 @@ function executeDerridaAbilityCheck(player) {
   abilityUsedState[player].used = true;
 
   // 원본 명제 삭제
-  truePropositions = truePropositions.filter(
+  gamestate.truePropositions = gamestate.truePropositions.filter(
     (p) => p.propId !== bestCandidate.propData.propId
   );
 
@@ -3779,7 +3783,7 @@ function executeDerridaAbilityCheck(player) {
       proposition: right,
     },
   ];
-  truePropositions.push(...newProps);
+  gamestate.truePropositions.push(...newProps);
 
   // 최종 진리 집합으로 업데이트
   internalTruthSet = bestCandidate.finalTruthSet;
@@ -3845,10 +3849,10 @@ function executeKantAbilityCheck(player) {
   // --- 2단계: 우선순위에 따른 후보 평가 ---
   const evaluatedCandidates = [];
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = truePropositions.find(
+  const myVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = truePropositions.find(
+  const opponentVictoryData = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3953,7 +3957,7 @@ function executeKantAbilityCheck(player) {
   if (player === "A") gamestate.playerA_Hand = tempHand;
   else gamestate.playerB_Hand = tempHand;
 
-  truePropositions.push({
+  gamestate.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem",
     source: "kant_ability",
