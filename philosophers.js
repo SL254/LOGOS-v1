@@ -492,7 +492,7 @@ function confirmDescartesAbility() {
 }
 function activateWittgensteinAbility(player) {
   // 유레카 모달과 동일하게 내부 상태를 초기화합니다.
-  derivedPropositionsInModal = [];
+  gamestate.derivedPropositionsInModal = [];
   currentAssumption = null;
 
   const modal = document.getElementById("eureka-modal");

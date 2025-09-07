@@ -1,5 +1,5 @@
 function openEurekaModal() {
-  derivedPropositionsInModal = [];
+  gamestate.derivedPropositionsInModal = [];
   currentAssumption = null;
 
   devLog(
@@ -507,9 +507,8 @@ function addAssumption() {
 function cancelAssumption() {
   if (inTutorialMode) return;
   currentAssumption = null;
-  derivedPropositionsInModal = derivedPropositionsInModal.filter(
-    (p) => !p.dependsOnAssumption
-  );
+  gamestate.derivedPropositionsInModal =
+    gamestate.derivedPropositionsInModal.filter((p) => !p.dependsOnAssumption);
   renderModal();
   updateConclusionPreview();
 }
@@ -534,7 +533,7 @@ function addPremiseToWorkbench(propObject) {
     }
   }
 
-  derivedPropositionsInModal.push(propObject);
+  gamestate.derivedPropositionsInModal.push(propObject);
 }
 
 function applyRule() {
@@ -586,7 +585,7 @@ function applyRule() {
     };
 
     // '가정'과 그로부터 도출된 '결론' 모두를 source로 추적
-    const assumptionData = derivedPropositionsInModal.find(
+    const assumptionData = gamestate.derivedPropositionsInModal.find(
       (p) => p.isAssumption
     );
     const sourcePremisesForCI = [assumptionData, conclusionData];
@@ -594,9 +593,10 @@ function applyRule() {
     // 논증 과정 기록을 위해 currentAssumption을 미리 저장
     const assumptionForRecord = currentAssumption;
 
-    derivedPropositionsInModal = derivedPropositionsInModal.filter(
-      (p) => !p.dependsOnAssumption
-    );
+    gamestate.derivedPropositionsInModal =
+      gamestate.derivedPropositionsInModal.filter(
+        (p) => !p.dependsOnAssumption
+      );
     currentAssumption = null;
     addPremiseToWorkbench({
       proposition: newConditional,
@@ -666,7 +666,7 @@ function applyRule() {
     }
 
     // '가정'과 모순을 이끌어낸 '두 전제' 모두를 source로 추적
-    const assumptionData = derivedPropositionsInModal.find(
+    const assumptionData = gamestate.derivedPropositionsInModal.find(
       (p) => p.isAssumption
     );
     const sourcePremisesForRAA = [assumptionData, ...premisesData];
@@ -738,9 +738,10 @@ function applyRule() {
         result.proofStepId = stepId;
       }
 
-      derivedPropositionsInModal = derivedPropositionsInModal.filter(
-        (p) => !p.dependsOnAssumption
-      );
+      gamestate.derivedPropositionsInModal =
+        gamestate.derivedPropositionsInModal.filter(
+          (p) => !p.dependsOnAssumption
+        );
       currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
@@ -807,8 +808,8 @@ function applyRule() {
             // 1. 전제 데이터에서 proofStepId 찾기
             if (p.proofStepId) return p.proofStepId;
 
-            // 2. derivedPropositionsInModal에서 찾기 (모달 내에서 생성된 것들)
-            const modalProp = derivedPropositionsInModal.find(
+            // 2. gamestate.derivedPropositionsInModal에서 찾기 (모달 내에서 생성된 것들)
+            const modalProp = gamestate.derivedPropositionsInModal.find(
               (modal) =>
                 modal.proposition &&
                 arePropositionsEqual(modal.proposition, p.proposition)
@@ -857,7 +858,7 @@ function applyRule() {
         conc.proofStepId = stepId;
 
         // 생성된 결론을 모달 내 명제들에도 ID 부여
-        const modalConclusion = derivedPropositionsInModal.find(
+        const modalConclusion = gamestate.derivedPropositionsInModal.find(
           (modal) =>
             modal.proposition && arePropositionsEqual(modal.proposition, conc)
         );
@@ -995,12 +996,12 @@ function proveVictory() {
       proposition: opponentVictoryCondition.ultimate_target,
     };
 
-    const isMyVictoryProven = derivedPropositionsInModal.some(
+    const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, myUltimateTarget)
     );
-    const isOpponentLossProven = derivedPropositionsInModal.some(
+    const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, opponentLossCondition)
@@ -1081,12 +1082,12 @@ function proveVictory() {
       proposition: opponentVictoryCondition.ultimate_target,
     };
 
-    const isMyVictoryProven = derivedPropositionsInModal.some(
+    const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, myUltimateTarget)
     );
-    const isOpponentLossProven = derivedPropositionsInModal.some(
+    const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, opponentLossCondition)
@@ -1127,19 +1128,19 @@ function proveVictory() {
     proposition: opponentVictoryCondition.ultimate_target,
   };
 
-  const isMyVictoryProven = derivedPropositionsInModal.some(
+  const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
     (p) =>
       !p.dependsOnAssumption &&
       arePropositionsEqual(p.proposition, myUltimateTarget)
   );
-  const isOpponentLossProven = derivedPropositionsInModal.some(
+  const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
     (p) =>
       !p.dependsOnAssumption &&
       arePropositionsEqual(p.proposition, opponentLossCondition)
   );
 
   if (isMyVictoryProven || isOpponentLossProven) {
-    const newTheorems = derivedPropositionsInModal.filter(
+    const newTheorems = gamestate.derivedPropositionsInModal.filter(
       (p) =>
         p.type === "theorem" &&
         !p.dependsOnAssumption &&
@@ -1209,7 +1210,7 @@ function renderModal() {
     ? "inline-block"
     : "none";
 
-  derivedPropositionsInModal.forEach((propData) => {
+  gamestate.derivedPropositionsInModal.forEach((propData) => {
     // 구분선인 경우 특별히 처리
     if (propData.isSeparator) {
       const li = document.createElement("li");

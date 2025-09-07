@@ -1188,7 +1188,7 @@ function completePropositionTutorial() {
 }
 
 function openEurekaModalTutorial() {
-  derivedPropositionsInModal = [];
+  gamestate.derivedPropositionsInModal = [];
   currentAssumption = null;
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
@@ -1611,9 +1611,10 @@ function applyRuleTutorial() {
       right: premises[0],
     };
     if (result) {
-      derivedPropositionsInModal = derivedPropositionsInModal.filter(
-        (p) => !p.dependsOnAssumption
-      );
+      gamestate.derivedPropositionsInModal =
+        gamestate.derivedPropositionsInModal.filter(
+          (p) => !p.dependsOnAssumption
+        );
       currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
@@ -1632,9 +1633,10 @@ function applyRuleTutorial() {
       currentAssumption
     );
     if (result) {
-      derivedPropositionsInModal = derivedPropositionsInModal.filter(
-        (p) => !p.dependsOnAssumption
-      );
+      gamestate.derivedPropositionsInModal =
+        gamestate.derivedPropositionsInModal.filter(
+          (p) => !p.dependsOnAssumption
+        );
       currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
