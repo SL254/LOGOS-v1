@@ -989,7 +989,7 @@ function aiTurn() {
           "background: #ff0000; color: #ffffff; font-size: 1.3em;"
         );
         playCard(currentPlayer, notCardInHand);
-        setTimeout(endTurn, 250);
+        setTimeout(endTurn, 500);
         return;
       }
     }
@@ -1462,7 +1462,6 @@ function aiTurn() {
             }
           }
         }
-
       }
 
       // 칸트 대응: 상대가 칸트이고 능력을 아직 사용하지 않았을 때 '그리고' 카드에 가산점
@@ -1470,13 +1469,15 @@ function aiTurn() {
         if (IS_DEV_MODE) {
           console.warn(`[KANT DEBUG] Evaluating '그리고' card`);
         }
-        
+
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
         const opponentPhilosopherId =
           opponentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
 
         if (IS_DEV_MODE) {
-          console.warn(`[KANT DEBUG] Opponent philosopher: ${opponentPhilosopherId}`);
+          console.warn(
+            `[KANT DEBUG] Opponent philosopher: ${opponentPhilosopherId}`
+          );
         }
 
         if (opponentPhilosopherId === "kant") {
@@ -1485,75 +1486,116 @@ function aiTurn() {
           };
 
           if (IS_DEV_MODE) {
-            console.warn(`[KANT DEBUG] Kant ability used: ${opponentAbilityState.used}`);
+            console.warn(
+              `[KANT DEBUG] Kant ability used: ${opponentAbilityState.used}`
+            );
           }
 
           if (!opponentAbilityState.used) {
-            const opponentHand = currentPlayer === "A" ? playerB_Hand : playerA_Hand;
-            const myName = currentPlayer === "A" ? 
-              (typeof playerA_Data.name === "string" ? playerA_Data.name : playerA_Data.name?.ko || playerA_Data.name?.en) :
-              (typeof playerB_Data.name === "string" ? playerB_Data.name : playerB_Data.name?.ko || playerB_Data.name?.en);
-            const opponentName = opponentPlayer === "A" ? 
-              (typeof playerA_Data.name === "string" ? playerA_Data.name : playerA_Data.name?.ko || playerA_Data.name?.en) :
-              (typeof playerB_Data.name === "string" ? playerB_Data.name : playerB_Data.name?.ko || playerB_Data.name?.en);
-            
+            const opponentHand =
+              currentPlayer === "A" ? playerB_Hand : playerA_Hand;
+            const myName =
+              currentPlayer === "A"
+                ? typeof playerA_Data.name === "string"
+                  ? playerA_Data.name
+                  : playerA_Data.name?.ko || playerA_Data.name?.en
+                : typeof playerB_Data.name === "string"
+                ? playerB_Data.name
+                : playerB_Data.name?.ko || playerB_Data.name?.en;
+            const opponentName =
+              opponentPlayer === "A"
+                ? typeof playerA_Data.name === "string"
+                  ? playerA_Data.name
+                  : playerA_Data.name?.ko || playerA_Data.name?.en
+                : typeof playerB_Data.name === "string"
+                ? playerB_Data.name
+                : playerB_Data.name?.ko || playerB_Data.name?.en;
+
             // 자신의 패배 술어 찾기
-            const myDefeatPredicate = myVictoryData ? 
-              currentLang.contradictoryPredicates[myVictoryData.core_goal.predicate] ||
-              Object.keys(currentLang.contradictoryPredicates).find(
-                key => currentLang.contradictoryPredicates[key] === myVictoryData.core_goal.predicate
-              ) : null;
-            
+            const myDefeatPredicate = myVictoryData
+              ? currentLang.contradictoryPredicates[
+                  myVictoryData.core_goal.predicate
+                ] ||
+                Object.keys(currentLang.contradictoryPredicates).find(
+                  (key) =>
+                    currentLang.contradictoryPredicates[key] ===
+                    myVictoryData.core_goal.predicate
+                )
+              : null;
+
             // 상대의 승리 술어 찾기
-            const opponentWinPredicate = opponentVictoryData ? opponentVictoryData.core_goal.predicate : null;
-            
+            const opponentWinPredicate = opponentVictoryData
+              ? opponentVictoryData.core_goal.predicate
+              : null;
+
             if (IS_DEV_MODE) {
-              console.warn(`[KANT DEBUG] My defeat predicate: ${myDefeatPredicate}, My name: ${myName}`);
-              console.warn(`[KANT DEBUG] Opponent win predicate: ${opponentWinPredicate}, Opponent name: ${opponentName}`);
-              console.warn(`[KANT DEBUG] Opponent hand:`, opponentHand.map(c => c.text));
+              console.warn(
+                `[KANT DEBUG] My defeat predicate: ${myDefeatPredicate}, My name: ${myName}`
+              );
+              console.warn(
+                `[KANT DEBUG] Opponent win predicate: ${opponentWinPredicate}, Opponent name: ${opponentName}`
+              );
+              console.warn(
+                `[KANT DEBUG] Opponent hand:`,
+                opponentHand.map((c) => c.text)
+              );
             }
-            
+
             // 위험한 카드 쌍이 상대 손에 있는지 확인
             let hasDangerousCards = false;
-            
+
             if (myDefeatPredicate && myName) {
               // 자신의 패배 술어-자신의 이름 쌍 확인
-              const hasDefeatPredicate = opponentHand.some(card => card.text === myDefeatPredicate);
-              const hasMyName = opponentHand.some(card => 
-                card.text === myName || 
-                card.text === myName + "는" || 
-                card.text === myName + "은" ||
-                (myName.includes(" ") && card.text.includes(myName.split(" ").pop()))
+              const hasDefeatPredicate = opponentHand.some(
+                (card) => card.text === myDefeatPredicate
+              );
+              const hasMyName = opponentHand.some(
+                (card) =>
+                  card.text === myName ||
+                  card.text === myName + "는" ||
+                  card.text === myName + "은" ||
+                  (myName.includes(" ") &&
+                    card.text.includes(myName.split(" ").pop()))
               );
               if (hasDefeatPredicate && hasMyName) {
                 hasDangerousCards = true;
                 if (IS_DEV_MODE) {
-                  console.warn(`[KANT DEBUG] Found dangerous cards: ${myDefeatPredicate} + ${myName} (matched in opponent hand)`);
+                  console.warn(
+                    `[KANT DEBUG] Found dangerous cards: ${myDefeatPredicate} + ${myName} (matched in opponent hand)`
+                  );
                 }
               }
             }
-            
+
             if (!hasDangerousCards && opponentWinPredicate && opponentName) {
               // 상대의 승리 술어-상대의 이름 쌍 확인
-              const hasWinPredicate = opponentHand.some(card => card.text === opponentWinPredicate);
-              const hasOpponentName = opponentHand.some(card => 
-                card.text === opponentName || 
-                card.text === opponentName + "는" || 
-                card.text === opponentName + "은" ||
-                (opponentName.includes(" ") && card.text.includes(opponentName.split(" ").pop()))
+              const hasWinPredicate = opponentHand.some(
+                (card) => card.text === opponentWinPredicate
+              );
+              const hasOpponentName = opponentHand.some(
+                (card) =>
+                  card.text === opponentName ||
+                  card.text === opponentName + "는" ||
+                  card.text === opponentName + "은" ||
+                  (opponentName.includes(" ") &&
+                    card.text.includes(opponentName.split(" ").pop()))
               );
               if (hasWinPredicate && hasOpponentName) {
                 hasDangerousCards = true;
                 if (IS_DEV_MODE) {
-                  console.warn(`[KANT DEBUG] Found dangerous cards: ${opponentWinPredicate} + ${opponentName} (matched in opponent hand)`);
+                  console.warn(
+                    `[KANT DEBUG] Found dangerous cards: ${opponentWinPredicate} + ${opponentName} (matched in opponent hand)`
+                  );
                 }
               }
             }
-            
+
             if (IS_DEV_MODE) {
-              console.warn(`[KANT DEBUG] Has dangerous cards: ${hasDangerousCards}, Is risky to complete: ${isRiskyToComplete}`);
+              console.warn(
+                `[KANT DEBUG] Has dangerous cards: ${hasDangerousCards}, Is risky to complete: ${isRiskyToComplete}`
+              );
             }
-            
+
             if (hasDangerousCards && !isRiskyToComplete) {
               if (IS_DEV_MODE) {
                 console.warn(
