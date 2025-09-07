@@ -2116,7 +2116,8 @@ function playCard(player, cardToPlay) {
     }
     return;
   }
-  if (gamestate.currentProposition.length === 0) propositionStarter = player;
+  if (gamestate.currentProposition.length === 0)
+    gamestate.propositionStarter = player;
   const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
   const cardIndex = hand.findIndex(
     (card) => card.text === cardToPlay.text && card.type === cardToPlay.type

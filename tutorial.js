@@ -1931,7 +1931,7 @@ function setupTutorialScenario(step) {
     }
     gamestate.currentProposition = [];
     gamestate.currentPlayer = "A";
-    propositionStarter = "A";
+    gamestate.propositionStarter = "A";
     gameIsOver = false;
     currentRound = 1;
     isThinkingTime = false;
