@@ -62,14 +62,14 @@ function analyzeOpponentThreats(opponentHand, myCorePredicate, langData) {
  * @returns {object | null} 가장 점수가 높은 최적의 계획 객체 또는 null
  */
 function generateAndScorePlans() {
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === aiPlayer
   );
   if (!myVictoryData) return null;
   const goalPredicate = myVictoryData.core_goal.predicate;
 
   // '모든 [개체]는 ...' 이 이미 참 명제 목록에 있는 경우만 찾습니다.
-  const allUniversalProps = gamestate.internalTruthSet.filter(
+  const allUniversalProps = gameState.internalTruthSet.filter(
     (p) => p.type === "universal"
   );
   if (allUniversalProps.length === 0) return null;
@@ -81,7 +81,7 @@ function generateAndScorePlans() {
       const entityText = universalProp.entity; // 예: '개는'
       let predicateText; // 서술어 텍스트를 담을 변수 선언
 
-      if (gamestate.currentLang.langCode === "ko") {
+      if (gameState.currentLang.langCode === "ko") {
         // 한국어 모드: 기존 로직을 유지 (완벽하진 않지만 의도는 보존)
         // "개는" -> "개이다"
         predicateText = entityText.replace(/는$/, "이다");
@@ -98,7 +98,7 @@ function generateAndScorePlans() {
       // 그 명제가 아직 참이 아니라면, 이것을 최우선 계획으로 삼습니다.
       if (
         neededProp &&
-        !gamestate.internalTruthSet.some((p) =>
+        !gameState.internalTruthSet.some((p) =>
           arePropositionsEqual(p, neededProp)
         )
       ) {
@@ -116,9 +116,9 @@ function generateAndScorePlans() {
 function aithinkingTimeTurn() {
   const summaryActions = []; // 이번 턴에 AI가 수행한 모든 행동을 기록
   const aiPhilosopherData =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data
-      : gamestate.playerB_Data;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data
+      : gameState.playerB_Data;
   const philosopherId = aiPhilosopherData.id;
 
   // 1단계: 새로운 정리 도출 시도
@@ -137,11 +137,11 @@ function aithinkingTimeTurn() {
   if (philosopherId === "plato") {
     // 사용 가능한 횟수만큼 반복 시도
     while (
-      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].usedCount <
-      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].maxUses
+      gameState.abilityUsedState[gameState.thinkingTimeTurn].usedCount <
+      gameState.abilityUsedState[gameState.thinkingTimeTurn].maxUses
     ) {
       const abilityAction = executePlatoAbilityCheck(
-        gamestate.thinkingTimeTurn
+        gameState.thinkingTimeTurn
       );
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -155,9 +155,9 @@ function aithinkingTimeTurn() {
   // 소크라테스 능력 체크 (단일 사용으로 변경)
   if (philosopherId === "socrates") {
     // 'used' 플래그를 확인하여 아직 사용하지 않았을 경우에만 실행
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       const abilityAction = executeSocratesAbilityCheck(
-        gamestate.thinkingTimeTurn
+        gameState.thinkingTimeTurn
       );
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -167,10 +167,10 @@ function aithinkingTimeTurn() {
 
   // 데카르트 능력 체크 (단일 사용)
   if (philosopherId === "descartes") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeDescartesAbilityCheck(
-        gamestate.thinkingTimeTurn
+        gameState.thinkingTimeTurn
       );
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -179,19 +179,19 @@ function aithinkingTimeTurn() {
   }
   // 흄 능력 체크 (단일 사용으로 수정)
   if (philosopherId === "hume") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 이렇게 바꿔야 합니다.
-      const abilityAction = executeHumeAbilityCheck(gamestate.thinkingTimeTurn);
+      const abilityAction = executeHumeAbilityCheck(gameState.thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
     }
   }
   if (philosopherId === "wittgenstein") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeWittgensteinAbilityCheck(
-        gamestate.thinkingTimeTurn
+        gameState.thinkingTimeTurn
       );
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -199,9 +199,9 @@ function aithinkingTimeTurn() {
     }
   }
   if (philosopherId === "kuhn") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const abilityAction = executeKuhnAbilityCheck(gamestate.thinkingTimeTurn);
+      const abilityAction = executeKuhnAbilityCheck(gameState.thinkingTimeTurn);
       if (abilityAction) {
         summaryActions.push(abilityAction);
       }
@@ -209,10 +209,10 @@ function aithinkingTimeTurn() {
   }
   // 데리다 능력 체크 (단일 사용)
   if (philosopherId === "derrida") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeDerridaAbilityCheck(
-        gamestate.thinkingTimeTurn
+        gameState.thinkingTimeTurn
       );
       if (abilityAction) {
         summaryActions.push(abilityAction);
@@ -220,9 +220,9 @@ function aithinkingTimeTurn() {
     }
   }
   if (philosopherId === "kant") {
-    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gameState.abilityUsedState[gameState.thinkingTimeTurn]?.used) {
       // 👈 수정
-      const kantAction = executeKantAbilityCheck(gamestate.thinkingTimeTurn);
+      const kantAction = executeKantAbilityCheck(gameState.thinkingTimeTurn);
       if (kantAction) {
         summaryActions.push(kantAction);
       }
@@ -246,7 +246,7 @@ function aithinkingTimeTurn() {
   }
 }
 function generateCandidateTheorems() {
-  const knownTruths = [...gamestate.internalTruthSet];
+  const knownTruths = [...gameState.internalTruthSet];
   const candidates = new Map(); // Map을 사용해 이번 턴에 중복 생성되는 것만 막습니다.
 
   // 후보 목록에 '새로운' 정리만 추가하던 기존 로직을 수정합니다.
@@ -259,7 +259,7 @@ function generateCandidateTheorems() {
       }
 
       // 2. 이미 게임의 '참 명제 목록'에 존재하는지 확인 (핵심 수정)
-      const isAlreadyKnown = gamestate.truePropositions.some(
+      const isAlreadyKnown = gameState.truePropositions.some(
         (p) => p.proposition && arePropositionsEqual(p.proposition, prop)
       );
       // 3. 아직 알려지지 않은 새로운 명제일 경우에만 후보로 추가
@@ -330,11 +330,11 @@ function generateCandidateTheorems() {
 }
 
 function scoreCandidateTheorems(candidates) {
-  const opponentPlayer = gamestate.thinkingTimeTurn === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.thinkingTimeTurn
+  const opponentPlayer = gameState.thinkingTimeTurn === "A" ? "B" : "A";
+  const myVictoryData = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.thinkingTimeTurn
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -351,10 +351,10 @@ function scoreCandidateTheorems(candidates) {
   };
 
   const opponentDefeatPredicate =
-    gamestate.currentLang.contradictoryPredicates[opponentCoreGoal.predicate] ||
-    Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+    gameState.currentLang.contradictoryPredicates[opponentCoreGoal.predicate] ||
+    Object.keys(gameState.currentLang.contradictoryPredicates).find(
       (key) =>
-        gamestate.currentLang.contradictoryPredicates[key] ===
+        gameState.currentLang.contradictoryPredicates[key] ===
         opponentCoreGoal.predicate
     );
 
@@ -398,7 +398,7 @@ function scoreCandidateTheorems(candidates) {
       }
     }
 
-    const simulatedTruths = [...gamestate.internalTruthSet, candidate];
+    const simulatedTruths = [...gameState.internalTruthSet, candidate];
     if (aiFindProof(opponentUltimateGoal, simulatedTruths)) {
       score -= 2000;
     }
@@ -426,10 +426,10 @@ function executeTheoremDerivation(scoredTheorems) {
       }
 
       actions.push({ type: "theorem", proposition: candidateProp });
-      gamestate.truePropositions.push({
+      gameState.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`,
         type: "theorem",
-        round: gamestate.currentRound,
+        round: gameState.currentRound,
         proposition: candidateProp,
       });
       addedThisTurn.push(candidateProp);
@@ -445,24 +445,24 @@ function showAITurnSummary(actions) {
 
   // 모달 내용 초기화
   contentEl.innerHTML = "";
-  okBtn.textContent = gamestate.currentLang.ui.okButton;
+  okBtn.textContent = gameState.currentLang.ui.okButton;
 
   // 제목 설정
-  titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleDefault; // 기본 제목
+  titleEl.textContent = gameState.currentLang.ui.aiSummaryTitleDefault; // 기본 제목
 
   // 행동 내역에 따라 내용 채우기 (확장성 고려)
   actions.forEach((action) => {
     const p = document.createElement("p");
     switch (action.type) {
       case "theorem":
-        titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleTheorem;
+        titleEl.textContent = gameState.currentLang.ui.aiSummaryTitleTheorem;
         p.innerHTML = `<strong>${
-          gamestate.currentLang.ui.theoremLabel
+          gameState.currentLang.ui.theoremLabel
         }</strong> ${propositionToNaturalText(action.proposition)}`;
         break;
       case "ability":
-        titleEl.textContent = gamestate.currentLang.ui.aiSummaryTitleAbility;
-        p.innerHTML = `<strong>${gamestate.currentLang.ui.abilityLabel}</strong> ${action.description}`;
+        titleEl.textContent = gameState.currentLang.ui.aiSummaryTitleAbility;
+        p.innerHTML = `<strong>${gameState.currentLang.ui.abilityLabel}</strong> ${action.description}`;
         break;
       // 향후 다른 행동 유형 추가 가능
     }
@@ -483,8 +483,8 @@ function showAITurnSummary(actions) {
 }
 
 function isBoardDangerous(opponentVictoryData) {
-  if (gamestate.currentProposition.length === 0) return null;
-  const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
+  if (gameState.currentProposition.length === 0) return null;
+  const parsedProp = parsePropositionFromCards(gameState.currentProposition);
   if (!parsedProp || !opponentVictoryData) return null;
 
   // 위협 유형 1: 상대의 핵심 승리 조건과 '직접 일치'하는 경우
@@ -494,7 +494,7 @@ function isBoardDangerous(opponentVictoryData) {
   }
 
   // 위협 유형 2: 이 명제를 참으로 인정할 경우, 상대의 승리가 '추론 가능'해지는 경우
-  const simulatedTruths = [...gamestate.internalTruthSet, parsedProp];
+  const simulatedTruths = [...gameState.internalTruthSet, parsedProp];
   if (aiFindProof(opponentVictoryData.ultimate_target, simulatedTruths)) {
     devLog("Threat Detected (Type 2: Inferred Defeat)");
     return parsedProp;
@@ -505,12 +505,12 @@ function isBoardDangerous(opponentVictoryData) {
 
 function isBoardCompletable() {
   // 명제판에 카드가 없으면 완성 불가능
-  if (gamestate.currentProposition.length === 0) return false;
+  if (gameState.currentProposition.length === 0) return false;
   // AI 자신이 마지막 카드를 냈다면 완성 불가능 (상대 턴에만 완성 가능)
-  if (gamestate.lastCardPlayer === aiPlayer) return false;
+  if (gameState.lastCardPlayer === aiPlayer) return false;
 
   // 문법적으로 완성 가능한 명제인지 확인
-  const parsedProp = parsePropositionFromCards(gamestate.currentProposition);
+  const parsedProp = parsePropositionFromCards(gameState.currentProposition);
   return parsedProp !== null;
 }
 
@@ -546,19 +546,19 @@ function aiCanActuallyComplete() {
   if (!isBoardCompletable()) return false;
 
   const propToComplete = parsePropositionFromCards(
-    gamestate.currentProposition
+    gameState.currentProposition
   );
   if (!propToComplete) return false;
 
   const aiPhilosopherId =
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
+    gameState.currentPlayer === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
   if (aiPhilosopherId !== "nietzsche") {
-    const isAxiom = gamestate.parsedAxioms.some((a) =>
+    const isAxiom = gameState.parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, propToComplete)
     );
-    const isAlreadyProven = gamestate.truePropositions.some(
+    const isAlreadyProven = gameState.truePropositions.some(
       (p) =>
         p.proposition && arePropositionsEqual(p.proposition, propToComplete)
     );
@@ -601,24 +601,24 @@ function isImmediateWinSecure(opponentHand, aiHand, langData) {
 
 function checkForGuaranteedWinMove() {
   // 1. 기본 조건 확인: 명제판에 카드가 2장 이상 있어야 함
-  if (gamestate.currentProposition.length < 2) {
+  if (gameState.currentProposition.length < 2) {
     return null;
   }
 
-  const propLength = gamestate.currentProposition.length;
-  const lastCardInfo = gamestate.currentProposition[propLength - 1];
-  const secondLastCardInfo = gamestate.currentProposition[propLength - 2];
+  const propLength = gameState.currentProposition.length;
+  const lastCardInfo = gameState.currentProposition[propLength - 1];
+  const secondLastCardInfo = gameState.currentProposition[propLength - 2];
 
   // 2. '는 거짓이다' 카드 보유 상황 대칭성 확인
-  const { not: notKeyword } = gamestate.currentLang.keywords;
+  const { not: notKeyword } = gameState.currentLang.keywords;
   const aiHand =
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerA_Hand
-      : gamestate.playerB_Hand;
+    gameState.currentPlayer === "A"
+      ? gameState.playerA_Hand
+      : gameState.playerB_Hand;
   const opponentHand =
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerB_Hand
-      : gamestate.playerA_Hand;
+    gameState.currentPlayer === "A"
+      ? gameState.playerB_Hand
+      : gameState.playerA_Hand;
 
   const aiHasNot = aiHand.some((card) => card.text === notKeyword);
   const opponentHasNot = opponentHand.some((card) => card.text === notKeyword);
@@ -628,11 +628,11 @@ function checkForGuaranteedWinMove() {
   }
 
   // 3. 마지막 카드가 '나' 또는 '상대'의 이름(고유명사)인지 확인
-  const myVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+  const myVictoryData = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.currentPlayer
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner !== gamestate.currentPlayer
+  const opponentVictoryData = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner !== gameState.currentPlayer
   );
 
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -642,7 +642,7 @@ function checkForGuaranteedWinMove() {
 
   if (
     lastCardInfo.card.type !==
-      (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun") ||
+      (gameState.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun") ||
     (lastCardInfo.card.text !== mySubject &&
       lastCardInfo.card.text !== opponentSubject)
   ) {
@@ -654,14 +654,14 @@ function checkForGuaranteedWinMove() {
     and: andKeyword,
     if: ifKeyword,
     or: orKeyword,
-  } = gamestate.currentLang.keywords;
+  } = gameState.currentLang.keywords;
   let isWinningOpportunity = false;
 
   // 패턴 1: ... 그리고 [이름]
   if (secondLastCardInfo.card.text === andKeyword) {
     isWinningOpportunity = true;
   } else {
-    const firstPartCards = gamestate.currentProposition.slice(
+    const firstPartCards = gameState.currentProposition.slice(
       0,
       propLength - 2
     );
@@ -671,7 +671,7 @@ function checkForGuaranteedWinMove() {
       // 패턴 2: (참인 명제) 라면 [이름]
       if (
         secondLastCardInfo.card.text === ifKeyword &&
-        aiFindProof(parsedFirstPart, gamestate.internalTruthSet)
+        aiFindProof(parsedFirstPart, gameState.internalTruthSet)
       ) {
         isWinningOpportunity = true;
       }
@@ -681,7 +681,7 @@ function checkForGuaranteedWinMove() {
           type: "negation",
           proposition: parsedFirstPart,
         };
-        if (aiFindProof(negationOfFirstPart, gamestate.internalTruthSet)) {
+        if (aiFindProof(negationOfFirstPart, gameState.internalTruthSet)) {
           isWinningOpportunity = true;
         }
       }
@@ -706,7 +706,7 @@ function checkForGuaranteedWinMove() {
     else {
       // 상대의 승리 술어와 '반대'되는 술어를 찾는다.
       const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
-      const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+      const predicatePairs = gameState.currentLang.contradictoryPredicates;
 
       predicateToPlay =
         predicatePairs[opponentWinPredicate] ||
@@ -724,7 +724,7 @@ function checkForGuaranteedWinMove() {
 
       if (
         winningMove &&
-        isValidPlay(winningMove, gamestate.currentProposition)
+        isValidPlay(winningMove, gameState.currentProposition)
       ) {
         devLog("확정 승리 패턴 발견! 승리 수를 둡니다.");
         return winningMove;
@@ -763,7 +763,7 @@ function scorePlans(plans, aiHand) {
     }
 
     // 3. 현재 명제판의 상황을 고려하여 점수를 가감합니다.
-    const currentBoardText = gamestate.currentProposition
+    const currentBoardText = gameState.currentProposition
       .map((info) => info.card.text)
       .join(" ");
     if (currentBoardText === "") {
@@ -787,8 +787,8 @@ function scorePlans(plans, aiHand) {
 }
 
 function generateWinningPlan() {
-  const myVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+  const myVictoryData = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.currentPlayer
   );
   if (!myVictoryData) return null;
 
@@ -801,9 +801,9 @@ function generateWinningPlan() {
   // 각 계획의 점수를 계산합니다.
   const scoredPlans = scorePlans(
     allPossiblePlans,
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerA_Hand
-      : gamestate.playerB_Hand
+    gameState.currentPlayer === "A"
+      ? gameState.playerA_Hand
+      : gameState.playerB_Hand
   );
 
   if (scoredPlans.length === 0) return null;
@@ -817,7 +817,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   if (depth > 5) return; // 탐색 깊이 제한
 
   // 기저 조건 1: 목표가 이미 참으로 증명되었다면, 이 경로는 완전한 계획입니다.
-  if (gamestate.internalTruthSet.some((p) => arePropositionsEqual(p, goal))) {
+  if (gameState.internalTruthSet.some((p) => arePropositionsEqual(p, goal))) {
     allPlans.push({ steps: [...path] }); // 더 이상 하위 목표가 필요 없습니다.
     return;
   }
@@ -825,9 +825,9 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // 기저 조건 2: 목표를 현재 손패의 카드로 만들 수 있다면, 계획으로 간주합니다.
   const cardsNeededForGoal = propositionToNaturalText(goal).split(" ");
   const aiHand = (
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerA_Hand
-      : gamestate.playerB_Hand
+    gameState.currentPlayer === "A"
+      ? gameState.playerA_Hand
+      : gameState.playerB_Hand
   ).map((c) => c.text);
   if (cardsNeededForGoal.every((card) => aiHand.includes(card))) {
     allPlans.push({ steps: [...path, goal] });
@@ -844,7 +844,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // **재귀 단계**: 다양한 추론 규칙을 역으로 적용하여 하위 목표를 찾습니다.
 
   // 1. 전건 긍정(Modus Ponens) 역추적
-  const modusPonensBridges = gamestate.internalTruthSet.filter(
+  const modusPonensBridges = gameState.internalTruthSet.filter(
     (p) => p.type === "conditional" && arePropositionsEqual(p.right, goal)
   );
   for (const bridge of modusPonensBridges) {
@@ -855,7 +855,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   // 2. 후건 부정(Modus Tollens) 역추적
   if (goal.type === "negation") {
     const p = goal.proposition; // goal = ~p
-    const modusTollensBridges = gamestate.internalTruthSet.filter(
+    const modusTollensBridges = gameState.internalTruthSet.filter(
       (prop) =>
         prop.type === "conditional" && arePropositionsEqual(prop.left, p)
     );
@@ -866,7 +866,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
   }
 
   // 3. 선언적 삼단논법(Disjunctive Syllogism) 역추적
-  const disjunctiveBridges = gamestate.internalTruthSet.filter(
+  const disjunctiveBridges = gameState.internalTruthSet.filter(
     (p) => p.type === "disjunction"
   );
   for (const bridge of disjunctiveBridges) {
@@ -886,7 +886,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
 
   // 4. 보편 적용(Universal Application) 역추적
   if (goal.type === "atomic") {
-    const universalBridges = gamestate.internalTruthSet.filter(
+    const universalBridges = gameState.internalTruthSet.filter(
       (p) => p.type === "universal" && p.predicate === goal.predicate
     );
     for (const bridge of universalBridges) {
@@ -894,7 +894,7 @@ function findAllProofPaths(goal, path, allPlans, depth) {
       // 새로운 하위 목표: "소크라테스는 철학자이다"
       let newPredicateText;
       const entityText = bridge.entity;
-      if (gamestate.currentLang.langCode === "ko") {
+      if (gameState.currentLang.langCode === "ko") {
         newPredicateText = entityText.slice(0, -1) + "이다"; // '철학자는' -> '철학자이다'
       } else {
         newPredicateText = `is a ${entityText}`; // 'philosopher' -> 'is a philosopher'
@@ -937,10 +937,10 @@ function assessSelfDisadvantage(proposition, myVictoryData) {
   const myPredicate = myCoreGoal.predicate;
 
   const oppositePredicate =
-    gamestate.currentLang.contradictoryPredicates[myPredicate] ||
-    Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+    gameState.currentLang.contradictoryPredicates[myPredicate] ||
+    Object.keys(gameState.currentLang.contradictoryPredicates).find(
       (key) =>
-        gamestate.currentLang.contradictoryPredicates[key] === myPredicate
+        gameState.currentLang.contradictoryPredicates[key] === myPredicate
     );
 
   if (!oppositePredicate) return 0;
@@ -975,10 +975,10 @@ function normalizeProposition(prop) {
   return prop;
 }
 function aiTurn() {
-  if (gamestate.gameIsOver || gamestate.isThinkingTime) return;
+  if (gameState.gameIsOver || gameState.isThinkingTime) return;
 
   // --- 1. 새로운 갬빗 계획 수립 및 기존 계획 유효성 검사 ---
-  activeGambitPlan = findBestGambitPlan(gamestate.currentPlayer);
+  activeGambitPlan = findBestGambitPlan(gameState.currentPlayer);
   if (activeGambitPlan) {
     devLog(
       `%c[AI GAMBIT] New Plan Adopted: ${
@@ -989,40 +989,40 @@ function aiTurn() {
   }
 
   devLog(
-    `%c--- AI TURN DEBUG START (Round ${gamestate.currentRound}, Player: ${gamestate.currentPlayer}) ---`,
+    `%c--- AI TURN DEBUG START (Round ${gameState.currentRound}, Player: ${gameState.currentPlayer}) ---`,
     "color: blue; font-weight: bold; font-size: 1.2em;"
   );
   devLog(
-    "%c1. AI's Knowledge Base (gamestate.internalTruthSet):",
+    "%c1. AI's Knowledge Base (gameState.internalTruthSet):",
     "color: green; font-weight: bold;"
   );
-  devLog(gamestate.internalTruthSet.map((p) => propositionToNaturalText(p)));
+  devLog(gameState.internalTruthSet.map((p) => propositionToNaturalText(p)));
   devLog(
     "%c2. Proposition on Board to be Evaluated:",
     "color: green; font-weight: bold;"
   );
-  devLog(gamestate.currentProposition.map((c) => c.card.text).join(" "));
+  devLog(gameState.currentProposition.map((c) => c.card.text).join(" "));
 
-  const myVictoryData = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+  const myVictoryData = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.currentPlayer
   );
   const aiHand =
-    gamestate.currentPlayer === "A"
-      ? gamestate.playerA_Hand
-      : gamestate.playerB_Hand;
-  const notKeyword = gamestate.currentLang.keywords.not;
+    gameState.currentPlayer === "A"
+      ? gameState.playerA_Hand
+      : gameState.playerB_Hand;
+  const notKeyword = gameState.currentLang.keywords.not;
   const notCardInHand = aiHand.find((c) => c.text === notKeyword);
 
   if (
     notCardInHand &&
-    gamestate.currentProposition.length > 0 &&
+    gameState.currentProposition.length > 0 &&
     myVictoryData
   ) {
-    const propOnBoard = parsePropositionFromCards(gamestate.currentProposition);
+    const propOnBoard = parsePropositionFromCards(gameState.currentProposition);
     if (propOnBoard && propOnBoard.type === "negation") {
       const newTruthFromDoubleNegation = propOnBoard.proposition;
       const hypotheticalTruths = [
-        ...gamestate.internalTruthSet,
+        ...gameState.internalTruthSet,
         newTruthFromDoubleNegation,
       ];
       const myUltimateTarget = myVictoryData.ultimate_target;
@@ -1031,7 +1031,7 @@ function aiTurn() {
           `%c[AI OVERRIDE] Derived Win via Double Negation DETECTED! Playing '${notKeyword}'`,
           "background: #ff0000; color: #ffffff; font-size: 1.3em;"
         );
-        playCard(gamestate.currentPlayer, notCardInHand);
+        playCard(gameState.currentPlayer, notCardInHand);
         setTimeout(endTurn, 500);
         return;
       }
@@ -1040,17 +1040,17 @@ function aiTurn() {
 
   const guaranteedMove = checkForGuaranteedWinMove();
   if (guaranteedMove) {
-    playCard(gamestate.currentPlayer, guaranteedMove);
+    playCard(gameState.currentPlayer, guaranteedMove);
     setTimeout(endTurn, 500);
     return;
   }
 
-  const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   const hasValidCardMove = aiHand.some((card) =>
-    isValidPlay(card, gamestate.currentProposition)
+    isValidPlay(card, gameState.currentProposition)
   );
   const canActuallyComplete = aiCanActuallyComplete();
 
@@ -1067,7 +1067,7 @@ function aiTurn() {
   let isRiskyToComplete = false;
   if (isBoardCompletable()) {
     const propToComplete = parsePropositionFromCards(
-      gamestate.currentProposition
+      gameState.currentProposition
     );
     const verificationResult = verifyAndExpandTruths(propToComplete);
     const myLossCondition = myVictoryData
@@ -1089,7 +1089,7 @@ function aiTurn() {
 
   let bestCardAction = null;
   const validMoves = aiHand.filter((card) =>
-    isValidPlay(card, gamestate.currentProposition)
+    isValidPlay(card, gameState.currentProposition)
   );
 
   if (validMoves.length > 0) {
@@ -1104,7 +1104,7 @@ function aiTurn() {
 
         // 현재 보드 + 이번에 낼 카드가 계획의 첫 단계를 구성하는가?
         const expectedNextStep = [
-          ...gamestate.currentProposition.map((c) => c.card.text),
+          ...gameState.currentProposition.map((c) => c.card.text),
           move.text,
         ].join(" ");
         if (cardsNeededForStep.join(" ").startsWith(expectedNextStep)) {
@@ -1124,14 +1124,14 @@ function aiTurn() {
       );
       devLog(
         `[DUPLICATE DEBUG] Current proposition:`,
-        gamestate.currentProposition.map((c) =>
+        gameState.currentProposition.map((c) =>
           c && c.card ? c.card.text : "undefined"
         )
       );
 
       const hypotheticalProp = [
-        ...gamestate.currentProposition,
-        { card: move, player: gamestate.currentPlayer },
+        ...gameState.currentProposition,
+        { card: move, player: gameState.currentPlayer },
       ];
       devLog(
         `[DUPLICATE DEBUG] Hypothetical proposition after move:`,
@@ -1148,11 +1148,11 @@ function aiTurn() {
 
         if (resultingProposition) {
           devLog(
-            `[DUPLICATE DEBUG] Checking against ${gamestate.truePropositions.length} true propositions`
+            `[DUPLICATE DEBUG] Checking against ${gameState.truePropositions.length} true propositions`
           );
           devLog(
             `[DUPLICATE DEBUG] True propositions list:`,
-            gamestate.truePropositions.map((p) => ({
+            gameState.truePropositions.map((p) => ({
               type: p.type,
               text: p.text || "no text",
               proposition: p.proposition
@@ -1165,7 +1165,7 @@ function aiTurn() {
           let isDuplicate = false;
 
           // 1. 공리와 비교
-          const axiomDuplicate = gamestate.parsedAxioms.some((axiom) => {
+          const axiomDuplicate = gameState.parsedAxioms.some((axiom) => {
             if (axiom.proposition) {
               const isEqual = arePropositionsEqual(
                 axiom.proposition,
@@ -1184,7 +1184,7 @@ function aiTurn() {
           });
 
           // 2. 참 명제와 비교
-          const truePropDuplicate = gamestate.truePropositions.some(
+          const truePropDuplicate = gameState.truePropositions.some(
             (trueProp) => {
               if (trueProp.proposition) {
                 const isEqual = arePropositionsEqual(
@@ -1236,7 +1236,7 @@ function aiTurn() {
 
       if (move.text === notKeyword) {
         const propOnBoard = parsePropositionFromCards(
-          gamestate.currentProposition
+          gameState.currentProposition
         );
 
         // 1. 명제판에 되받아칠 부정 명제(~P)가 있는지 확인합니다.
@@ -1246,7 +1246,7 @@ function aiTurn() {
 
           // 2. 필승 확인: 이 수로 즉시 이길 수 있는지 먼저 확인합니다.
           const hypotheticalTruths = [
-            ...gamestate.internalTruthSet,
+            ...gameState.internalTruthSet,
             normalizedResultingProp,
           ];
           if (
@@ -1258,7 +1258,7 @@ function aiTurn() {
             // 3. 소소한 이득 계산: 즉시 이기는 게 아니라면, 전략적 가치를 계산합니다.
             const benefitScore = calculateStrategicValue(
               normalizedResultingProp,
-              gamestate.currentPlayer
+              gameState.currentPlayer
             );
 
             // 계산된 가치만큼 행동 점수에 보너스를 부여합니다.
@@ -1276,16 +1276,16 @@ function aiTurn() {
         }
       }
 
-      if (gamestate.currentProposition.length > 0 && myVictoryData) {
+      if (gameState.currentProposition.length > 0 && myVictoryData) {
         const myName = myVictoryData.core_goal.subject;
         if (move.text === myName) {
           const lastCardOnBoard =
-            gamestate.currentProposition[
-              gamestate.currentProposition.length - 1
+            gameState.currentProposition[
+              gameState.currentProposition.length - 1
             ].card;
-          if (lastCardOnBoard.text === gamestate.currentLang.keywords.if) {
+          if (lastCardOnBoard.text === gameState.currentLang.keywords.if) {
             const propOnBoard = parsePropositionFromCards(
-              gamestate.currentProposition.slice(0, -1)
+              gameState.currentProposition.slice(0, -1)
             );
             if (
               propOnBoard &&
@@ -1305,17 +1305,17 @@ function aiTurn() {
       // 흄 대응: '라면' 뒤에 고유명사 감점 (기존 방어 로직에 추가)
       if (
         move.type ===
-        (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
+        (gameState.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         // 상대가 흄이고 능력을 아직 사용하지 않았고, '라면' 뒤에 고유명사를 놓는 상황
-        const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
+        const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
         const opponentPhilosopherId =
           opponentPlayer === "A"
-            ? gamestate.playerA_Data.id
-            : gamestate.playerB_Data.id;
+            ? gameState.playerA_Data.id
+            : gameState.playerB_Data.id;
 
         if (opponentPhilosopherId === "hume") {
-          const opponentAbilityState = gamestate.abilityUsedState[
+          const opponentAbilityState = gameState.abilityUsedState[
             opponentPlayer
           ] || {
             used: false,
@@ -1323,13 +1323,13 @@ function aiTurn() {
 
           if (
             !opponentAbilityState.used &&
-            gamestate.currentProposition.length > 0
+            gameState.currentProposition.length > 0
           ) {
             const lastCard =
-              gamestate.currentProposition[
-                gamestate.currentProposition.length - 1
+              gameState.currentProposition[
+                gameState.currentProposition.length - 1
               ];
-            if (lastCard.card.text === gamestate.currentLang.keywords.if) {
+            if (lastCard.card.text === gameState.currentLang.keywords.if) {
               if (IS_DEV_MODE) {
                 console.warn(
                   `AI HUME COUNTER-STRATEGY: Penalizing proper noun '${move.text}' after '라면'. Hume can decompose conditional.`
@@ -1343,33 +1343,33 @@ function aiTurn() {
 
       if (
         move.type ===
-        (gamestate.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
+        (gameState.currentLang.langCode === "ko" ? "고유명사" : "Proper Noun")
       ) {
         const opponentHand =
-          gamestate.currentPlayer === "A"
-            ? gamestate.playerB_Hand
-            : gamestate.playerA_Hand;
-        const { not: notKeyword } = gamestate.currentLang.keywords;
+          gameState.currentPlayer === "A"
+            ? gameState.playerB_Hand
+            : gameState.playerA_Hand;
+        const { not: notKeyword } = gameState.currentLang.keywords;
         const aiHasNot = aiHand.some((card) => card.text === notKeyword);
         const opponentHasNot = opponentHand.some(
           (card) => card.text === notKeyword
         );
         if (
           aiHasNot === opponentHasNot &&
-          gamestate.currentProposition.length > 0
+          gameState.currentProposition.length > 0
         ) {
-          const propLength = gamestate.currentProposition.length;
-          const lastCardInfo = gamestate.currentProposition[propLength - 1];
+          const propLength = gameState.currentProposition.length;
+          const lastCardInfo = gameState.currentProposition[propLength - 1];
           const {
             and: andKeyword,
             if: ifKeyword,
             or: orKeyword,
-          } = gamestate.currentLang.keywords;
+          } = gameState.currentLang.keywords;
           let isTrap = false;
           if (lastCardInfo.card.text === andKeyword) {
             isTrap = true;
           } else {
-            const firstPartCards = gamestate.currentProposition.slice(
+            const firstPartCards = gameState.currentProposition.slice(
               0,
               propLength - 1
             );
@@ -1377,7 +1377,7 @@ function aiTurn() {
             if (parsedFirstPart) {
               if (
                 lastCardInfo.card.text === ifKeyword &&
-                aiFindProof(parsedFirstPart, gamestate.internalTruthSet)
+                aiFindProof(parsedFirstPart, gameState.internalTruthSet)
               ) {
                 isTrap = true;
               } else if (lastCardInfo.card.text === orKeyword) {
@@ -1386,7 +1386,7 @@ function aiTurn() {
                   proposition: parsedFirstPart,
                 };
                 if (
-                  aiFindProof(negationOfFirstPart, gamestate.internalTruthSet)
+                  aiFindProof(negationOfFirstPart, gameState.internalTruthSet)
                 ) {
                   isTrap = true;
                 }
@@ -1403,30 +1403,30 @@ function aiTurn() {
       }
 
       const aiPhilosopherId =
-        gamestate.currentPlayer === "A"
-          ? gamestate.playerA_Data.id
-          : gamestate.playerB_Data.id;
+        gameState.currentPlayer === "A"
+          ? gameState.playerA_Data.id
+          : gameState.playerB_Data.id;
       const opponentPhilosopherId =
         opponentPlayer === "A"
-          ? gamestate.playerA_Data.id
-          : gamestate.playerB_Data.id;
+          ? gameState.playerA_Data.id
+          : gameState.playerB_Data.id;
       const capitalistText =
-        gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
+        gameState.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
       const evilText =
-        gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil";
+        gameState.currentLang.langCode === "ko" ? "악하다" : "is evil";
       const goodText =
-        gamestate.currentLang.langCode === "ko" ? "선하다" : "is good";
+        gameState.currentLang.langCode === "ko" ? "선하다" : "is good";
       const existentialQuantifier =
-        gamestate.currentLang.langCode === "ko" ? "어떤" : "Some";
-      const andKeyword = gamestate.currentLang.keywords.and;
-      if (gamestate.currentProposition.length > 0) {
+        gameState.currentLang.langCode === "ko" ? "어떤" : "Some";
+      const andKeyword = gameState.currentLang.keywords.and;
+      if (gameState.currentProposition.length > 0) {
         const lastCardText =
-          gamestate.currentProposition[gamestate.currentProposition.length - 1]
+          gameState.currentProposition[gameState.currentProposition.length - 1]
             .card.text;
         const isQuantifiedcapitalist =
-          gamestate.currentProposition.length === 2 &&
-          gamestate.currentProposition[0].card.text === existentialQuantifier &&
-          gamestate.currentProposition[1].card.text === capitalistText;
+          gameState.currentProposition.length === 2 &&
+          gameState.currentProposition[0].card.text === existentialQuantifier &&
+          gameState.currentProposition[1].card.text === capitalistText;
         if (lastCardText === capitalistText || isQuantifiedcapitalist) {
           if (aiPhilosopherId === "marx") {
             if (move.text === evilText) score += 15000;
@@ -1439,7 +1439,7 @@ function aiTurn() {
       }
       if (move.text === andKeyword) {
         const propOnBoard = parsePropositionFromCards(
-          gamestate.currentProposition
+          gameState.currentProposition
         );
         if (propOnBoard) {
           if (aiPhilosopherId === "marx") {
@@ -1484,20 +1484,20 @@ function aiTurn() {
       }
 
       if (isRiskyToComplete) {
-        if (move.text === gamestate.currentLang.keywords.and) score -= 5000;
-        if (move.text === gamestate.currentLang.keywords.if) {
+        if (move.text === gameState.currentLang.keywords.and) score -= 5000;
+        if (move.text === gameState.currentLang.keywords.if) {
           // 기본적으로 위험한 상황에서는 '라면' 선호
           score += 200;
 
           // 흄 대응: 상대가 흄이고 능력을 아직 사용하지 않은 경우 추가 감점
-          const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
+          const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
           const opponentPhilosopherId =
             opponentPlayer === "A"
-              ? gamestate.playerA_Data.id
-              : gamestate.playerB_Data.id;
+              ? gameState.playerA_Data.id
+              : gameState.playerB_Data.id;
 
           if (opponentPhilosopherId === "hume") {
-            const opponentAbilityState = gamestate.abilityUsedState[
+            const opponentAbilityState = gameState.abilityUsedState[
               opponentPlayer
             ] || {
               used: false,
@@ -1514,9 +1514,9 @@ function aiTurn() {
           }
         }
       }
-      if (move.text === gamestate.currentLang.keywords.and) {
+      if (move.text === gameState.currentLang.keywords.and) {
         const propOnBoard = parsePropositionFromCards(
-          gamestate.currentProposition
+          gameState.currentProposition
         );
         if (propOnBoard) {
           if (opponentVictoryData) {
@@ -1528,7 +1528,7 @@ function aiTurn() {
             const opponentWinPredicate =
               opponentVictoryData.core_goal.predicate;
             const predicatePairs =
-              gamestate.currentLang.contradictoryPredicates;
+              gameState.currentLang.contradictoryPredicates;
             let oppositePredicate =
               Object.keys(predicatePairs).find(
                 (key) => predicatePairs[key] === opponentWinPredicate
@@ -1556,16 +1556,16 @@ function aiTurn() {
       }
 
       // 칸트 대응: 상대가 칸트이고 능력을 아직 사용하지 않았을 때 '그리고' 카드에 가산점
-      if (move.text === gamestate.currentLang.keywords.and) {
+      if (move.text === gameState.currentLang.keywords.and) {
         if (IS_DEV_MODE) {
           console.warn(`[KANT DEBUG] Evaluating '그리고' card`);
         }
 
-        const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
+        const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
         const opponentPhilosopherId =
           opponentPlayer === "A"
-            ? gamestate.playerA_Data.id
-            : gamestate.playerB_Data.id;
+            ? gameState.playerA_Data.id
+            : gameState.playerB_Data.id;
 
         if (IS_DEV_MODE) {
           console.warn(
@@ -1574,7 +1574,7 @@ function aiTurn() {
         }
 
         if (opponentPhilosopherId === "kant") {
-          const opponentAbilityState = gamestate.abilityUsedState[
+          const opponentAbilityState = gameState.abilityUsedState[
             opponentPlayer
           ] || {
             used: false,
@@ -1588,38 +1588,38 @@ function aiTurn() {
 
           if (!opponentAbilityState.used) {
             const opponentHand =
-              gamestate.currentPlayer === "A"
-                ? gamestate.playerB_Hand
-                : gamestate.playerA_Hand;
+              gameState.currentPlayer === "A"
+                ? gameState.playerB_Hand
+                : gameState.playerA_Hand;
             const myName =
-              gamestate.currentPlayer === "A"
-                ? typeof gamestate.playerA_Data.name === "string"
-                  ? gamestate.playerA_Data.name
-                  : gamestate.playerA_Data.name?.ko ||
-                    gamestate.playerA_Data.name?.en
-                : typeof gamestate.playerB_Data.name === "string"
-                ? gamestate.playerB_Data.name
-                : gamestate.playerB_Data.name?.ko ||
-                  gamestate.playerB_Data.name?.en;
+              gameState.currentPlayer === "A"
+                ? typeof gameState.playerA_Data.name === "string"
+                  ? gameState.playerA_Data.name
+                  : gameState.playerA_Data.name?.ko ||
+                    gameState.playerA_Data.name?.en
+                : typeof gameState.playerB_Data.name === "string"
+                ? gameState.playerB_Data.name
+                : gameState.playerB_Data.name?.ko ||
+                  gameState.playerB_Data.name?.en;
             const opponentName =
               opponentPlayer === "A"
-                ? typeof gamestate.playerA_Data.name === "string"
-                  ? gamestate.playerA_Data.name
-                  : gamestate.playerA_Data.name?.ko ||
-                    gamestate.playerA_Data.name?.en
-                : typeof gamestate.playerB_Data.name === "string"
-                ? gamestate.playerB_Data.name
-                : gamestate.playerB_Data.name?.ko ||
-                  gamestate.playerB_Data.name?.en;
+                ? typeof gameState.playerA_Data.name === "string"
+                  ? gameState.playerA_Data.name
+                  : gameState.playerA_Data.name?.ko ||
+                    gameState.playerA_Data.name?.en
+                : typeof gameState.playerB_Data.name === "string"
+                ? gameState.playerB_Data.name
+                : gameState.playerB_Data.name?.ko ||
+                  gameState.playerB_Data.name?.en;
 
             // 자신의 패배 술어 찾기
             const myDefeatPredicate = myVictoryData
-              ? gamestate.currentLang.contradictoryPredicates[
+              ? gameState.currentLang.contradictoryPredicates[
                   myVictoryData.core_goal.predicate
                 ] ||
-                Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+                Object.keys(gameState.currentLang.contradictoryPredicates).find(
                   (key) =>
-                    gamestate.currentLang.contradictoryPredicates[key] ===
+                    gameState.currentLang.contradictoryPredicates[key] ===
                     myVictoryData.core_goal.predicate
                 )
               : null;
@@ -1710,8 +1710,8 @@ function aiTurn() {
       }
 
       const hypotheticalProposition = [
-        ...gamestate.currentProposition,
-        { card: move, player: gamestate.currentPlayer },
+        ...gameState.currentProposition,
+        { card: move, player: gameState.currentPlayer },
       ];
       const parsedHypothetical = parsePropositionFromCards(
         hypotheticalProposition
@@ -1730,10 +1730,10 @@ function aiTurn() {
         )
       ) {
         const opponentHand =
-          gamestate.currentPlayer === "A"
-            ? gamestate.playerB_Hand
-            : gamestate.playerA_Hand;
-        if (isImmediateWinSecure(opponentHand, aiHand, gamestate.currentLang)) {
+          gameState.currentPlayer === "A"
+            ? gameState.playerB_Hand
+            : gameState.playerA_Hand;
+        if (isImmediateWinSecure(opponentHand, aiHand, gameState.currentLang)) {
           score += 1000000;
         }
       }
@@ -1773,43 +1773,43 @@ function aiTurn() {
         }
       }
       const isNewClauseStart =
-        gamestate.currentProposition.length === 0 ||
+        gameState.currentProposition.length === 0 ||
         [
-          gamestate.currentLang.keywords.and,
-          gamestate.currentLang.keywords.or,
-          gamestate.currentLang.keywords.if,
+          gameState.currentLang.keywords.and,
+          gameState.currentLang.keywords.or,
+          gameState.currentLang.keywords.if,
         ].includes(
-          gamestate.currentProposition[gamestate.currentProposition.length - 1]
+          gameState.currentProposition[gameState.currentProposition.length - 1]
             ?.card.text
         );
       if (isNewClauseStart) {
-        if (move.type === gamestate.currentLang.cardTypes[1]) {
-          if (move.text === gamestate.currentLang.keywords.universal_q)
+        if (move.type === gameState.currentLang.cardTypes[1]) {
+          if (move.text === gameState.currentLang.keywords.universal_q)
             score += 60;
           else score += 30;
-        } else if (move.type === gamestate.currentLang.cardTypes[0]) {
+        } else if (move.type === gameState.currentLang.cardTypes[0]) {
           score -= 40;
         }
       }
       if (parsedHypothetical) {
         const verificationResult = verifyAndExpandTruths(
           parsedHypothetical,
-          gamestate.internalTruthSet
+          gameState.internalTruthSet
         );
         if (verificationResult.success) {
           const expandedSet = verificationResult.expandedSet;
-          const myVictoryData = gamestate.truePropositions.find(
-            (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+          const myVictoryData = gameState.truePropositions.find(
+            (p) => p.type === "victory" && p.owner === gameState.currentPlayer
           );
           if (myVictoryData) {
             const myCoreGoal = myVictoryData.core_goal;
             const contradictoryPredicate =
-              gamestate.currentLang.contradictoryPredicates[
+              gameState.currentLang.contradictoryPredicates[
                 myCoreGoal.predicate
               ] ||
-              Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+              Object.keys(gameState.currentLang.contradictoryPredicates).find(
                 (key) =>
-                  gamestate.currentLang.contradictoryPredicates[key] ===
+                  gameState.currentLang.contradictoryPredicates[key] ===
                   myCoreGoal.predicate
               );
             if (contradictoryPredicate) {
@@ -1861,15 +1861,15 @@ function aiTurn() {
     } else {
       let completeScore = 120;
       const aiPhilosopherId =
-        gamestate.currentPlayer === "A"
-          ? gamestate.playerA_Data.id
-          : gamestate.playerB_Data.id;
+        gameState.currentPlayer === "A"
+          ? gameState.playerA_Data.id
+          : gameState.playerB_Data.id;
       if (aiPhilosopherId === "nietzsche") {
         const propToComplete = parsePropositionFromCards(
-          gamestate.currentProposition
+          gameState.currentProposition
         );
         if (propToComplete) {
-          const isAlreadyProven = gamestate.truePropositions.some(
+          const isAlreadyProven = gameState.truePropositions.some(
             (p) =>
               p.proposition &&
               arePropositionsEqual(p.proposition, propToComplete)
@@ -1888,7 +1888,7 @@ function aiTurn() {
         completeScore = -999999;
       } else {
         const propToComplete = parsePropositionFromCards(
-          gamestate.currentProposition
+          gameState.currentProposition
         );
         if (propToComplete) {
           if (opponentVictoryData) {
@@ -1930,7 +1930,7 @@ function aiTurn() {
             const opponentWinPredicate =
               opponentVictoryData.core_goal.predicate;
             const predicatePairs =
-              gamestate.currentLang.contradictoryPredicates;
+              gameState.currentLang.contradictoryPredicates;
             let oppositePredicate =
               Object.keys(predicatePairs).find(
                 (key) => predicatePairs[key] === opponentWinPredicate
@@ -1949,15 +1949,15 @@ function aiTurn() {
           }
           const opponentPhilosopherId =
             opponentPlayer === "A"
-              ? gamestate.playerA_Data.id
-              : gamestate.playerB_Data.id;
+              ? gameState.playerA_Data.id
+              : gameState.playerB_Data.id;
           const capitalistText =
-            gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
+            gameState.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
           const evilText =
-            gamestate.currentLang.langCode === "ko" ? "악하다" : "is evil";
+            gameState.currentLang.langCode === "ko" ? "악하다" : "is evil";
           const goodText =
-            gamestate.currentLang.langCode === "ko" ? "선하다" : "is good";
-          const notText = gamestate.currentLang.keywords.not;
+            gameState.currentLang.langCode === "ko" ? "선하다" : "is good";
+          const notText = gameState.currentLang.keywords.not;
           const marxGoalProp = {
             type: "universal",
             entity: capitalistText,
@@ -2091,7 +2091,7 @@ function aiTurn() {
       `%c--- AI FINAL DECISION: PLAY CARD '${bestCardAction.move.text}' (Score: ${bestCardAction.score}) ---`,
       "background: #222; color: #bada55; font-size: 1.2em;"
     );
-    playCard(gamestate.currentPlayer, bestCardAction.move);
+    playCard(gameState.currentPlayer, bestCardAction.move);
     setTimeout(endTurn, 500);
   } else if (completeAction) {
     devLog(
@@ -2105,23 +2105,23 @@ function aiTurn() {
 }
 
 function getTemporaryUsableTruths() {
-  // '무지의 지'이 사용되지 않았다면, AI도 gamestate.internalTruthSet을 그대로 씁니다.
-  if (gamestate.socratesDisabledProps.length === 0) {
-    return gamestate.internalTruthSet;
+  // '무지의 지'이 사용되지 않았다면, AI도 gameState.internalTruthSet을 그대로 씁니다.
+  if (gameState.socratesDisabledProps.length === 0) {
+    return gameState.internalTruthSet;
   }
 
   // --- '무지의 지'이 사용된 경우, AI의 지식을 재구성합니다. ---
 
   // 1. 화면의 참 명제 목록에서 비활성화된 명제를 먼저 제외합니다.
-  const filteredUserMadeProps = gamestate.truePropositions.filter(
+  const filteredUserMadeProps = gameState.truePropositions.filter(
     (p) =>
       !p.propId ||
-      !gamestate.socratesDisabledProps.some((dp) => dp.propId === p.propId)
+      !gameState.socratesDisabledProps.some((dp) => dp.propId === p.propId)
   );
 
   // 2. 공리와 필터링된 명제를 합쳐 AI가 사용할 최종 전제 목록을 만듭니다.
   const filteredPremises = [
-    ...gamestate.parsedAxioms.map((a) => a.proposition),
+    ...gameState.parsedAxioms.map((a) => a.proposition),
     ...filteredUserMadeProps.map((p) => p.proposition).filter(Boolean),
   ];
 
@@ -2135,17 +2135,17 @@ function getTemporaryUsableTruths() {
     return expandedSet;
   } else {
     console.error("AI: Truth set reconstruction failed.");
-    return gamestate.internalTruthSet; // 오류 시 안전하게 기존 값 반환
+    return gameState.internalTruthSet; // 오류 시 안전하게 기존 값 반환
   }
 }
 function aiDeclareEureka() {
-  if (gamestate.isThinkingTime) return false;
+  if (gameState.isThinkingTime) return false;
 
-  const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
-  const myVictoryCondition = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+  const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
+  const myVictoryCondition = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.currentPlayer
   );
-  const opponentVictoryCondition = gamestate.truePropositions.find(
+  const opponentVictoryCondition = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -2178,15 +2178,15 @@ function aiDeclareEureka() {
     // 2. '경로 생성'을 위해서는 추론이 완료되지 않은 '순수 전제'들을 전달해야 함
 
     // 소크라테스 능력으로 비활성화된 명제를 제외한 순수 전제 목록 생성
-    const activePropositions = gamestate.truePropositions.filter(
+    const activePropositions = gameState.truePropositions.filter(
       (p) =>
         !p.propId ||
-        !gamestate.socratesDisabledProps.some((dp) => dp.propId === p.propId)
+        !gameState.socratesDisabledProps.some((dp) => dp.propId === p.propId)
     );
 
     // 공리와 활성화된 명제들만 모아서 '순수한 문제집'을 만듦
     const foundationalTruths = [
-      ...gamestate.parsedAxioms.map((a) => a.proposition),
+      ...gameState.parsedAxioms.map((a) => a.proposition),
       ...activePropositions.map((p) => p.proposition).filter(Boolean), // proposition이 있는 경우만
     ];
 
@@ -2201,7 +2201,7 @@ function aiDeclareEureka() {
 }
 function aiFindProof(
   targetProposition,
-  initialTruths = gamestate.internalTruthSet
+  initialTruths = gameState.internalTruthSet
 ) {
   let knownTruths = [...initialTruths];
   let newTruthsFoundInIteration = true;
@@ -2301,7 +2301,7 @@ const GAMBIT_EVALUATORS = [
   {
     name: "Disjunctive Syllogism Gambit",
     trigger: () => {
-      return gamestate.truePropositions.filter(
+      return gameState.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "disjunction"
       );
     },
@@ -2335,7 +2335,7 @@ const GAMBIT_EVALUATORS = [
   {
     name: "Modus Tollens Gambit",
     trigger: () => {
-      return gamestate.truePropositions.filter(
+      return gameState.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "conditional"
       );
     },
@@ -2364,7 +2364,7 @@ const GAMBIT_EVALUATORS = [
      * 참 명제 목록에서 '라면'으로 연결된 조건문을 찾아 반환합니다.
      */
     trigger: () => {
-      return gamestate.truePropositions.filter(
+      return gameState.truePropositions.filter(
         (p) => p.proposition && p.proposition.type === "conditional"
       );
     },
@@ -2457,10 +2457,10 @@ function calculateStrategicValue(proposition, perspectivePlayer) {
   const normalizedProp = normalizeProposition(proposition);
 
   const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === perspectivePlayer
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
 
@@ -2482,7 +2482,7 @@ function calculateStrategicValue(proposition, perspectivePlayer) {
   if (normalizedProp.type === "universal") {
     const myWinPredicate = myVictoryData.core_goal.predicate;
     const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
-    const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+    const predicatePairs = gameState.currentLang.contradictoryPredicates;
     const opponentDefeatPredicate =
       predicatePairs[opponentWinPredicate] ||
       Object.keys(predicatePairs).find(
@@ -2511,7 +2511,7 @@ function isPlanTooRisky(path, perspectivePlayer) {
   if (!path || path.length === 0) return false;
 
   const opponentPlayer = perspectivePlayer === "A" ? "B" : "A";
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   if (!opponentVictoryData) return false;
@@ -2520,7 +2520,7 @@ function isPlanTooRisky(path, perspectivePlayer) {
   const finalStep = path[path.length - 1];
   const { success, expandedSet } = verifyAndExpandTruths(
     finalStep,
-    gamestate.internalTruthSet
+    gameState.internalTruthSet
   );
 
   if (!success) return true; // 계획 자체가 모순을 일으키면 위험
@@ -2536,14 +2536,14 @@ function isPlanTooRisky(path, perspectivePlayer) {
 function executePlatoAbilityCheck(player) {
   // 0. 사용 횟수 체크
   if (
-    gamestate.abilityUsedState[player].usedCount >=
-    gamestate.abilityUsedState[player].maxUses
+    gameState.abilityUsedState[player].usedCount >=
+    gameState.abilityUsedState[player].maxUses
   ) {
     return null; // 이미 최대 사용 횟수에 도달
   }
 
   // 1. 사용 가능한 '어떤' 명제 찾기
-  const availableExistentials = gamestate.truePropositions.filter(
+  const availableExistentials = gameState.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
   if (availableExistentials.length === 0) {
@@ -2551,10 +2551,10 @@ function executePlatoAbilityCheck(player) {
   }
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData) {
@@ -2566,10 +2566,10 @@ function executePlatoAbilityCheck(player) {
     : null;
 
   const opponentDefeatPredicate = opponentGoalPredicate
-    ? gamestate.currentLang.contradictoryPredicates[opponentGoalPredicate] ||
-      Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+    ? gameState.currentLang.contradictoryPredicates[opponentGoalPredicate] ||
+      Object.keys(gameState.currentLang.contradictoryPredicates).find(
         (key) =>
-          gamestate.currentLang.contradictoryPredicates[key] ===
+          gameState.currentLang.contradictoryPredicates[key] ===
           opponentGoalPredicate
       )
     : null;
@@ -2581,7 +2581,7 @@ function executePlatoAbilityCheck(player) {
       entity: originalProp.entity,
       predicate: originalProp.predicate,
     };
-    const isAlreadyKnown = gamestate.truePropositions.some(
+    const isAlreadyKnown = gameState.truePropositions.some(
       (p) => p.proposition && arePropositionsEqual(p.proposition, universalProp)
     );
 
@@ -2607,7 +2607,7 @@ function executePlatoAbilityCheck(player) {
 
     const verificationResult = verifyAndExpandTruths(
       universalProp,
-      gamestate.internalTruthSet
+      gameState.internalTruthSet
     );
 
     if (!verificationResult.success) {
@@ -2634,10 +2634,10 @@ function executePlatoAbilityCheck(player) {
         score -= 999999;
       }
       const myOppositePredicate = myGoalPredicate
-        ? gamestate.currentLang.contradictoryPredicates[myGoalPredicate] ||
-          Object.keys(gamestate.currentLang.contradictoryPredicates).find(
+        ? gameState.currentLang.contradictoryPredicates[myGoalPredicate] ||
+          Object.keys(gameState.currentLang.contradictoryPredicates).find(
             (key) =>
-              gamestate.currentLang.contradictoryPredicates[key] ===
+              gameState.currentLang.contradictoryPredicates[key] ===
               myGoalPredicate
           )
         : null;
@@ -2682,8 +2682,8 @@ function executePlatoAbilityCheck(player) {
 
   // 능력 사용 실행
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[player].usedCount++;
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  gameState.abilityUsedState[player].usedCount++;
 
   const newTheorem = {
     propId: `prop_${Date.now()}_${Math.random()}`,
@@ -2691,14 +2691,14 @@ function executePlatoAbilityCheck(player) {
     source: "plato_ability",
     proposition: bestCandidate.newProp,
   };
-  gamestate.truePropositions.push(newTheorem);
+  gameState.truePropositions.push(newTheorem);
 
   const finalVerification = verifyAndExpandTruths(
     bestCandidate.newProp,
-    gamestate.internalTruthSet
+    gameState.internalTruthSet
   );
   if (finalVerification.success) {
-    gamestate.internalTruthSet = finalVerification.expandedSet;
+    gameState.internalTruthSet = finalVerification.expandedSet;
   } else {
     console.error(
       "AI Plato Ability CRITICAL: Contradiction after final check."
@@ -2708,7 +2708,7 @@ function executePlatoAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.platoAbilityDescription.replace(
+    description: gameState.currentLang.ui.platoAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.newProp)
     ),
@@ -2717,16 +2717,16 @@ function executePlatoAbilityCheck(player) {
 function executeSocratesAbilityCheck(player) {
   // 1. 능력 사용 기본 조건 확인 (used 플래그로 변경)
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) {
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) {
     // 👈 usedCount >= maxUses 대신 .used가 있는지 확인
     return null;
   }
-  const availablePropositions = gamestate.truePropositions.filter((p) => {
+  const availablePropositions = gameState.truePropositions.filter((p) => {
     const isTargetType = p.type === "user-made" || p.type === "theorem";
     if (!isTargetType || !p.propId) return false;
 
-    const isDisabled = gamestate.socratesDisabledProps.some(
+    const isDisabled = gameState.socratesDisabledProps.some(
       (disabledProp) => disabledProp.propId === p.propId
     );
     return !isDisabled; // 비활성화되지 않은 것만 true
@@ -2737,28 +2737,28 @@ function executeSocratesAbilityCheck(player) {
 
   // 2. AI와 상대방의 데이터 가져오기
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
 
-  gamestate.internalTruthSet = getTemporaryUsableTruths();
+  gameState.internalTruthSet = getTemporaryUsableTruths();
 
   // 3. 제거할 후보 명제들의 위협 점수 계산
 
   // 3-1. 경계해야 할 '위험한 전칭 양화문' 목록 생성
-  const entities = gamestate.currentLang.cards
+  const entities = gameState.currentLang.cards
     .filter(
       (c) =>
-        c.type === (gamestate.currentLang.langCode === "ko" ? "개체" : "Entity")
+        c.type === (gameState.currentLang.langCode === "ko" ? "개체" : "Entity")
     )
     .map((c) => c.text);
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -2791,10 +2791,10 @@ function executeSocratesAbilityCheck(player) {
     // --- PRIORITY 1: 패배 임박 상황 방어 ---
     const opponentWinsWithCurrentTruths = aiFindProof(
       opponentVictoryData.ultimate_target,
-      gamestate.internalTruthSet
+      gameState.internalTruthSet
     );
     if (opponentWinsWithCurrentTruths) {
-      const tempTruthSetWithoutCandidate = gamestate.internalTruthSet.filter(
+      const tempTruthSetWithoutCandidate = gameState.internalTruthSet.filter(
         (p) => !arePropositionsEqual(p, candidateProp)
       );
       const opponentStillWins = aiFindProof(
@@ -2834,7 +2834,7 @@ function executeSocratesAbilityCheck(player) {
       }
     }
 
-    const otherTruthsOnBoard = gamestate.internalTruthSet.filter(
+    const otherTruthsOnBoard = gameState.internalTruthSet.filter(
       (p) => !arePropositionsEqual(p, candidateProp)
     );
 
@@ -2901,8 +2901,8 @@ function executeSocratesAbilityCheck(player) {
     return null;
   }
 
-  gamestate.abilityUsedState[player].used = true;
-  gamestate.socratesDisabledProps.push({
+  gameState.abilityUsedState[player].used = true;
+  gameState.socratesDisabledProps.push({
     propId: bestCandidate.propData.propId,
   });
 
@@ -2915,7 +2915,7 @@ function executeSocratesAbilityCheck(player) {
 
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.socratesAbilityDescription.replace(
+    description: gameState.currentLang.ui.socratesAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -2924,11 +2924,11 @@ function executeSocratesAbilityCheck(player) {
 function executeDescartesAbilityCheck(player) {
   // --- 1. 기본 조건 확인 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) {
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) {
     return null;
   }
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) => (p.type === "user-made" || p.type === "theorem") && p.propId
   );
   if (availablePropositions.length === 0) {
@@ -2937,10 +2937,10 @@ function executeDescartesAbilityCheck(player) {
 
   // --- 2. 위협 점수 산출 ---
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -2949,7 +2949,7 @@ function executeDescartesAbilityCheck(player) {
 
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -3012,18 +3012,18 @@ function executeDescartesAbilityCheck(player) {
     "color: #3498db; font-weight: bold;"
   );
 
-  gamestate.abilityUsedState[player].used = true;
+  gameState.abilityUsedState[player].used = true;
 
-  const propIndex = gamestate.truePropositions.findIndex(
+  const propIndex = gameState.truePropositions.findIndex(
     (p) => p.propId === bestCandidate.propData.propId
   );
   if (propIndex > -1) {
-    gamestate.truePropositions.splice(propIndex, 1);
+    gameState.truePropositions.splice(propIndex, 1);
   }
 
   // 진리 집합 재구성 (이 부분은 문제가 없습니다)
-  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = gamestate.truePropositions
+  let newTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
+  const propositionsToReverify = gameState.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -3038,12 +3038,12 @@ function executeDescartesAbilityCheck(player) {
     }
   }
 
-  // ★★★ 전역 변수인 'gamestate.internalTruthSet'에 최종 결과를 할당합니다.
-  gamestate.internalTruthSet = newTruthSet;
+  // ★★★ 전역 변수인 'gameState.internalTruthSet'에 최종 결과를 할당합니다.
+  gameState.internalTruthSet = newTruthSet;
 
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.descartesAbilityDescription.replace(
+    description: gameState.currentLang.ui.descartesAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -3057,13 +3057,13 @@ function executeDescartesAbilityCheck(player) {
 function executeHumeAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) {
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
   // --- 1. '라면'으로 연결된 명제만 찾기 (핵심 수정) ---
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) => p.propId && p.proposition && p.proposition.type === "conditional" // 👈 '라면' 명제만 필터링
   );
 
@@ -3073,10 +3073,10 @@ function executeHumeAbilityCheck(player) {
 
   // AI와 상대방의 승리 조건 데이터 가져오기 (데리다 로직과 동일)
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3090,15 +3090,15 @@ function executeHumeAbilityCheck(player) {
     const { left, right } = originalProp;
 
     // --- 2. 알아서 분해되는 명제 거르기 (데리다 로직과 동일) ---
-    if (aiFindProof(originalProp.left, gamestate.internalTruthSet)) {
+    if (aiFindProof(originalProp.left, gameState.internalTruthSet)) {
       continue;
     }
 
     // --- 3. 안전성 검사 (데리다 로직과 동일) ---
-    const propositionsWithoutOriginal = gamestate.truePropositions.filter(
+    const propositionsWithoutOriginal = gameState.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
-    let tempTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    let tempTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
     propositionsWithoutOriginal.forEach((p) => {
       if (p.proposition) tempTruthSet.push(p.proposition);
     });
@@ -3181,9 +3181,9 @@ function executeHumeAbilityCheck(player) {
     "color: #e67e22; font-weight: bold;" // 흄의 색상 코드로 변경
   );
 
-  gamestate.abilityUsedState[player].used = true;
+  gameState.abilityUsedState[player].used = true;
 
-  gamestate.truePropositions = gamestate.truePropositions.filter(
+  gameState.truePropositions = gameState.truePropositions.filter(
     (p) => p.propId !== bestCandidate.propData.propId
   );
 
@@ -3202,13 +3202,13 @@ function executeHumeAbilityCheck(player) {
       proposition: right,
     },
   ];
-  gamestate.truePropositions.push(...newProps);
-  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
+  gameState.truePropositions.push(...newProps);
+  gameState.internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.humeAbilityDescription.replace(
+    description: gameState.currentLang.ui.humeAbilityDescription.replace(
       // 👈 흄의 설명 텍스트 사용
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
@@ -3234,7 +3234,7 @@ function scoreThreat(
   let score = 0;
   const opponentWinPredicate = opponentVictoryData.core_goal.predicate;
   const myWinPredicate = myVictoryData.core_goal.predicate;
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
   const myOppositePredicate =
     predicatePairs[myWinPredicate] ||
     Object.keys(predicatePairs).find(
@@ -3273,16 +3273,16 @@ function scoreThreat(
 function executeWittgensteinAbilityCheck(player) {
   // --- 0. 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) {
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3290,7 +3290,7 @@ function executeWittgensteinAbilityCheck(player) {
 
   // --- 1단계: 제거할 '핵심 위협' 목록 생성 및 정렬 ---
   const allTruthsOnBoard = getTemporaryUsableTruths();
-  const candidatePropositions = gamestate.truePropositions.filter(
+  const candidatePropositions = gameState.truePropositions.filter(
     (p) => (p.type === "user-made" || p.type === "theorem") && p.propId
   );
 
@@ -3333,7 +3333,7 @@ function executeWittgensteinAbilityCheck(player) {
     const targetProp = targetPropData.proposition;
 
     // 이 목표물을 제거할 파트너를 찾기 위해 다른 모든 명제를 순회
-    for (const partnerData of gamestate.truePropositions) {
+    for (const partnerData of gameState.truePropositions) {
       if (
         !partnerData.proposition ||
         targetPropData.propId === partnerData.propId
@@ -3367,7 +3367,7 @@ function executeWittgensteinAbilityCheck(player) {
         );
 
         // 가상 시나리오: 전제들을 제거하고 새 정리를 추가
-        const remainingPropositions = gamestate.truePropositions.filter(
+        const remainingPropositions = gameState.truePropositions.filter(
           (p) => !idsToKick.has(p.propId)
         );
         const hypotheticalTruths = remainingPropositions
@@ -3415,23 +3415,23 @@ function executeWittgensteinAbilityCheck(player) {
           "color: #2ecc71;"
         );
 
-        gamestate.abilityUsedState[player].used = true;
-        gamestate.truePropositions = remainingPropositions; // 전제들이 제거된 목록으로 교체
+        gameState.abilityUsedState[player].used = true;
+        gameState.truePropositions = remainingPropositions; // 전제들이 제거된 목록으로 교체
 
-        gamestate.truePropositions.push({
+        gameState.truePropositions.push({
           propId: `prop_${Date.now()}_${Math.random()}`,
           type: "theorem",
-          round: gamestate.currentRound,
+          round: gameState.currentRound,
           proposition: newTheorem,
           source: "wittgenstein_ability",
         });
 
-        gamestate.internalTruthSet = finalTruthSet; // 재구성된 진리 집합으로 업데이트
+        gameState.internalTruthSet = finalTruthSet; // 재구성된 진리 집합으로 업데이트
 
         return {
           type: "ability",
           description:
-            gamestate.currentLang.ui.wittgensteinAbilityDescription.replace(
+            gameState.currentLang.ui.wittgensteinAbilityDescription.replace(
               "{newTheorem}",
               propositionToNaturalText(newTheorem)
             ),
@@ -3444,7 +3444,7 @@ function executeWittgensteinAbilityCheck(player) {
   return null;
 }
 function getOppositePredicate(predicate) {
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
   for (const key in predicatePairs) {
     if (key === predicate) return predicatePairs[key];
     if (predicatePairs[key] === predicate) return key;
@@ -3453,7 +3453,7 @@ function getOppositePredicate(predicate) {
 }
 
 function simulateKuhnsAbility(propIdToChange) {
-  const originalPropData = gamestate.truePropositions.find(
+  const originalPropData = gameState.truePropositions.find(
     (p) => p.propId === propIdToChange
   );
   if (!originalPropData) return null;
@@ -3498,8 +3498,8 @@ function simulateKuhnsAbility(propIdToChange) {
     proposition: newParadigmProposition,
   };
 
-  const axioms = gamestate.parsedAxioms.map((a) => a.proposition);
-  const victoryConditions = gamestate.truePropositions
+  const axioms = gameState.parsedAxioms.map((a) => a.proposition);
+  const victoryConditions = gameState.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
   const foundationOfTruths = [
@@ -3513,11 +3513,11 @@ function simulateKuhnsAbility(propIdToChange) {
 
   let currentValidatedTruths = preCheckResult.expandedSet;
   let survivingPropositions = [
-    ...gamestate.truePropositions.filter((p) => p.type === "victory"),
+    ...gameState.truePropositions.filter((p) => p.type === "victory"),
     newParadigmPropForList,
   ];
 
-  const candidatesForRevalidation = gamestate.truePropositions.filter(
+  const candidatesForRevalidation = gameState.truePropositions.filter(
     (p) =>
       (p.type === "user-made" || p.type === "theorem") &&
       p.propId !== propIdToChange
@@ -3548,19 +3548,19 @@ function executeKuhnsAbility(propIdToChange, player) {
     return null;
   }
 
-  gamestate.truePropositions = simResult.finalPropList;
-  gamestate.internalTruthSet = simResult.finalTruthSet;
+  gameState.truePropositions = simResult.finalPropList;
+  gameState.internalTruthSet = simResult.finalTruthSet;
 
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[player].used = true;
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  gameState.abilityUsedState[player].used = true;
 
   const newParadigmProp = simResult.finalPropList.find(
     (p) => p.source === "kuhn_ability"
   ).proposition;
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.kuhnAbilityDescription.replace(
+    description: gameState.currentLang.ui.kuhnAbilityDescription.replace(
       "{newParadigm}",
       propositionToNaturalText(newParadigmProp)
     ),
@@ -3569,15 +3569,15 @@ function executeKuhnsAbility(propIdToChange, player) {
 
 function executeKuhnAbilityCheck(player) {
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) return null;
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) return null;
 
-  const userMadePropsCount = gamestate.truePropositions.filter(
+  const userMadePropsCount = gameState.truePropositions.filter(
     (p) => p.type === "user-made"
   ).length;
   if (userMadePropsCount < 15) return null;
 
-  const availablePropositions = gamestate.truePropositions.filter((p) => {
+  const availablePropositions = gameState.truePropositions.filter((p) => {
     if (!p.proposition || !p.propId) return false;
 
     // 최소 단위 명제 타입들: atomic, universal, existential, individual
@@ -3620,10 +3620,10 @@ function executeKuhnAbilityCheck(player) {
   if (availablePropositions.length === 0) return null;
 
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
   if (!myVictoryData || !opponentVictoryData) return null;
@@ -3701,13 +3701,13 @@ function executeKuhnAbilityCheck(player) {
 function executeDerridaAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (gamestate.abilityUsedState[player]?.used) {
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  if (gameState.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
   // --- 0. '그리고'를 제외한 연결사로 연결된 명제 찾기 ---
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) =>
       p.propId && // ID가 있어 추적 및 삭제가 가능한 명제만
       p.proposition &&
@@ -3721,10 +3721,10 @@ function executeDerridaAbilityCheck(player) {
 
   // AI와 상대방의 승리 조건 데이터 가져오기
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3740,17 +3740,17 @@ function executeDerridaAbilityCheck(player) {
     // --- 1. 알아서 분해되는 명제 거르기 (전건 긍정) ---
     if (originalProp.type === "conditional") {
       // (참인 명제) -> A 형태인지 검사
-      if (aiFindProof(originalProp.left, gamestate.internalTruthSet)) {
+      if (aiFindProof(originalProp.left, gameState.internalTruthSet)) {
         continue; // 이미 참인 조건이므로, 일반 추론으로도 분해 가능. 능력 낭비 방지.
       }
     }
 
     // --- 2. 안전성 검사: 해체 시 상대 이득/모순 발생 여부 확인 ---
     // 원본 명제를 제외한 진리 집합을 시뮬레이션용으로 생성
-    const propositionsWithoutOriginal = gamestate.truePropositions.filter(
+    const propositionsWithoutOriginal = gameState.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
-    let tempTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
+    let tempTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
     propositionsWithoutOriginal.forEach((p) => {
       if (p.proposition) tempTruthSet.push(p.proposition);
     });
@@ -3842,10 +3842,10 @@ function executeDerridaAbilityCheck(player) {
     "color: #9b59b6; font-weight: bold;"
   );
 
-  gamestate.abilityUsedState[player].used = true;
+  gameState.abilityUsedState[player].used = true;
 
   // 원본 명제 삭제
-  gamestate.truePropositions = gamestate.truePropositions.filter(
+  gameState.truePropositions = gameState.truePropositions.filter(
     (p) => p.propId !== bestCandidate.propData.propId
   );
 
@@ -3865,15 +3865,15 @@ function executeDerridaAbilityCheck(player) {
       proposition: right,
     },
   ];
-  gamestate.truePropositions.push(...newProps);
+  gameState.truePropositions.push(...newProps);
 
   // 최종 진리 집합으로 업데이트
-  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
+  gameState.internalTruthSet = bestCandidate.finalTruthSet;
 
   // 요약 정보 반환
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.derridaAbilityDescription.replace(
+    description: gameState.currentLang.ui.derridaAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.propData.proposition)
     ),
@@ -3887,14 +3887,14 @@ function executeDerridaAbilityCheck(player) {
 function executeKantAbilityCheck(player) {
   // --- 1단계: 기본 조건 검사 및 후보 생성 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  const hand = player === "A" ? gameState.playerA_Hand : gameState.playerB_Hand;
   if (hand.length === 0) return null;
 
   const candidatePropositions = [];
   function generatePropositionsFromHand(currentProposition, remainingHand) {
     const parsed = parsePropositionFromCards(
-      gamestate.currentProposition.map((c) => ({ card: c }))
+      gameState.currentProposition.map((c) => ({ card: c }))
     );
     if (parsed) {
       if (!candidatePropositions.some((p) => arePropositionsEqual(p, parsed))) {
@@ -3905,20 +3905,20 @@ function executeKantAbilityCheck(player) {
     for (let i = 0; i < remainingHand.length; i++) {
       const nextCard = remainingHand[i];
       const connectiveKeywords = [
-        gamestate.currentLang.keywords.if,
-        gamestate.currentLang.keywords.and,
-        gamestate.currentLang.keywords.or,
+        gameState.currentLang.keywords.if,
+        gameState.currentLang.keywords.and,
+        gameState.currentLang.keywords.or,
       ];
       if (connectiveKeywords.includes(nextCard.text)) {
         continue;
       }
-      const tempPropositionForValidation = gamestate.currentProposition.map(
+      const tempPropositionForValidation = gameState.currentProposition.map(
         (c) => ({
           card: c,
         })
       );
       if (isValidPlay(nextCard, tempPropositionForValidation)) {
-        const nextProposition = [...gamestate.currentProposition, nextCard];
+        const nextProposition = [...gameState.currentProposition, nextCard];
         const nextRemainingHand = remainingHand.filter(
           (_, index) => index !== i
         );
@@ -3933,10 +3933,10 @@ function executeKantAbilityCheck(player) {
   // --- 2단계: 우선순위에 따른 후보 평가 ---
   const evaluatedCandidates = [];
   const opponent = player === "A" ? "B" : "A";
-  const myVictoryData = gamestate.truePropositions.find(
+  const myVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === player
   );
-  const opponentVictoryData = gamestate.truePropositions.find(
+  const opponentVictoryData = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponent
   );
 
@@ -3949,7 +3949,7 @@ function executeKantAbilityCheck(player) {
   for (const candidate of candidatePropositions) {
     const verificationResult = verifyAndExpandTruths(
       candidate,
-      gamestate.internalTruthSet
+      gameState.internalTruthSet
     );
     if (!verificationResult.success) continue;
 
@@ -4028,7 +4028,7 @@ function executeKantAbilityCheck(player) {
     "color: #1abc9c; font-weight: bold;"
   );
 
-  gamestate.abilityUsedState[player].used = true;
+  gameState.abilityUsedState[player].used = true;
 
   const cardsToCreate = propositionToNaturalText(
     bestCandidate.proposition
@@ -4038,21 +4038,21 @@ function executeKantAbilityCheck(player) {
     const cardIndex = tempHand.findIndex((c) => c.text === cardText);
     if (cardIndex > -1) tempHand.splice(cardIndex, 1);
   });
-  if (player === "A") gamestate.playerA_Hand = tempHand;
-  else gamestate.playerB_Hand = tempHand;
+  if (player === "A") gameState.playerA_Hand = tempHand;
+  else gameState.playerB_Hand = tempHand;
 
-  gamestate.truePropositions.push({
+  gameState.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem",
     source: "kant_ability",
     proposition: bestCandidate.proposition,
   });
 
-  gamestate.internalTruthSet = bestCandidate.finalTruthSet;
+  gameState.internalTruthSet = bestCandidate.finalTruthSet;
 
   return {
     type: "ability",
-    description: gamestate.currentLang.ui.kantAbilityDescription.replace(
+    description: gameState.currentLang.ui.kantAbilityDescription.replace(
       "{proposition}",
       propositionToNaturalText(bestCandidate.proposition)
     ),
@@ -4061,7 +4061,7 @@ function executeKantAbilityCheck(player) {
 
 // 헬퍼 함수 (다른 AI 로직에서도 필요할 수 있으므로 전역에 정의)
 function getOppositePredicate(predicate) {
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
   for (const key in predicatePairs) {
     if (key === predicate) return predicatePairs[key];
     if (predicatePairs[key] === predicate) return key;
@@ -4075,7 +4075,7 @@ function getOppositePredicate(predicate) {
  * @returns {{id: number, proposition: object, rule: string, premises: number[]}[]} 모든 추론 단계를 포함하는 ProofNode 객체 배열.
  */
 function expandAndRecordTruths(initialTruths) {
-  gamestate.stepCounter = 0;
+  gameState.stepCounter = 0;
   let fullProofLog = [];
 
   const addNodeIfNew = (conclusion, rule, premiseNodes) => {
@@ -4086,9 +4086,9 @@ function expandAndRecordTruths(initialTruths) {
     if (isAlreadyKnown) {
       return false;
     }
-    gamestate.stepCounter++;
+    gameState.stepCounter++;
     fullProofLog.push({
-      id: gamestate.stepCounter,
+      id: gameState.stepCounter,
       proposition: conclusion,
       rule: rule,
       premises: premiseNodes.map((node) => node.id),
@@ -4097,9 +4097,9 @@ function expandAndRecordTruths(initialTruths) {
   };
 
   initialTruths.forEach((prop) => {
-    gamestate.stepCounter++;
+    gameState.stepCounter++;
     fullProofLog.push({
-      id: gamestate.stepCounter,
+      id: gameState.stepCounter,
       proposition: prop,
       rule: "Initial Truth",
       premises: [],
@@ -4205,7 +4205,7 @@ function expandAndRecordTruths(initialTruths) {
  */
 function prepareAndShowAIProof(fullProofLog, goal) {
   // --- 1단계: 데이터 준비 (기존과 동일) ---
-  gamestate.proofSteps = fullProofLog.map((node) => ({
+  gameState.proofSteps = fullProofLog.map((node) => ({
     id: node.id,
     conclusion: node.proposition,
     type: node.rule === "Initial Truth" ? "premise" : "inference",
@@ -4214,11 +4214,11 @@ function prepareAndShowAIProof(fullProofLog, goal) {
     timestamp: Date.now(),
   }));
 
-  gamestate.victoryProposition = goal;
+  gameState.victoryProposition = goal;
 
   // ★★★★★★★★★★ 핵심 수정 부분 ★★★★★★★★★★
   // 2. 최종 승리 단계(goal)를 찾아서 type을 'victory'로 명시적으로 변경
-  const finalVictoryStep = gamestate.proofSteps.find((step) =>
+  const finalVictoryStep = gameState.proofSteps.find((step) =>
     arePropositionsEqual(step.conclusion, goal)
   );
   if (finalVictoryStep) {
@@ -4232,8 +4232,8 @@ function prepareAndShowAIProof(fullProofLog, goal) {
     );
     // 승리 단계를 못찾으면 추적이 불가능하므로, 여기서 게임을 종료하고 오류를 알림
     audioManager.playSfx("eureka");
-    showAlert(gamestate.currentLang.alerts.aiEurekaDeclared, () =>
-      endGame(gamestate.currentPlayer)
+    showAlert(gameState.currentLang.alerts.aiEurekaDeclared, () =>
+      endGame(gameState.currentPlayer)
     );
     return;
   }
@@ -4241,7 +4241,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
 
   // --- 3단계: 유레카 선언 알림 (기존과 동일) ---
   audioManager.playSfx("eureka");
-  showAlert(gamestate.currentLang.alerts.aiEurekaDeclared, () => {
+  showAlert(gameState.currentLang.alerts.aiEurekaDeclared, () => {
     // --- 4단계: 논증 다시보기 표시 (기존과 동일) ---
     showProofReviewModal();
 
@@ -4249,7 +4249,7 @@ function prepareAndShowAIProof(fullProofLog, goal) {
     if (closeBtn) {
       closeBtn.onclick = () => {
         hideProofReviewModal();
-        endGame(gamestate.currentPlayer);
+        endGame(gameState.currentPlayer);
 
         // ★★★ (선택사항) 다음 게임을 위해 버튼의 onclick을 원래대로 되돌려 놓는 것이 좋습니다.
         // 이 부분은 events.js나 초기화 로직에 따라 달라질 수 있습니다.

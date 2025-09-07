@@ -1,20 +1,20 @@
 function openEurekaModal() {
-  gamestate.derivedPropositionsInModal = [];
-  gamestate.currentAssumption = null;
+  gameState.derivedPropositionsInModal = [];
+  gameState.currentAssumption = null;
 
   devLog(
-    "Opening Eureka Modal, gamestate.currentPuzzleLevel:",
-    gamestate.currentPuzzleLevel,
+    "Opening Eureka Modal, gameState.currentPuzzleLevel:",
+    gameState.currentPuzzleLevel,
     "type:",
-    typeof gamestate.currentPuzzleLevel
+    typeof gameState.currentPuzzleLevel
   );
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
-  if (!gamestate.isThinkingTime) {
+  if (!gameState.isThinkingTime) {
     startProofRecording();
 
     // 기존 전제들(공리, 승리 조건 등)을 논증 기록에 추가
-    [...gamestate.parsedAxioms, ...gamestate.truePropositions].forEach(
+    [...gameState.parsedAxioms, ...gameState.truePropositions].forEach(
       (propData) => {
         if (propData.proposition) {
           const stepId = recordProofStep(
@@ -32,15 +32,15 @@ function openEurekaModal() {
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
   const allSelectablePropositions = [
-    ...gamestate.parsedAxioms,
-    ...gamestate.truePropositions
+    ...gameState.parsedAxioms,
+    ...gameState.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
   ].filter(
     (propData) =>
-      // ✅ propData에 propId가 있고, 그 ID가 gamestate.socratesDisabledProps 배열에 포함되지 않은 경우만 true를 반환
+      // ✅ propData에 propId가 있고, 그 ID가 gameState.socratesDisabledProps 배열에 포함되지 않은 경우만 true를 반환
       !propData.propId ||
-      !gamestate.socratesDisabledProps.some(
+      !gameState.socratesDisabledProps.some(
         (dp) => dp.propId === propData.propId
       )
   );
@@ -50,9 +50,9 @@ function openEurekaModal() {
   const nonAxioms = allSelectablePropositions.filter((p) => p.type !== "axiom");
 
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
-  if (gamestate.currentAxioms.groups && axioms.length > 0) {
-    const groups = gamestate.currentAxioms.groups;
-    const templates = gamestate.currentLang.axiom_templates;
+  if (gameState.currentAxioms.groups && axioms.length > 0) {
+    const groups = gameState.currentAxioms.groups;
+    const templates = gameState.currentLang.axiom_templates;
     let axiomIndex = 0;
 
     // 정체성 공리 그룹
@@ -61,7 +61,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -83,7 +83,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -102,7 +102,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -121,7 +121,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -140,7 +140,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -162,7 +162,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -181,7 +181,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -200,7 +200,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -219,7 +219,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -238,7 +238,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -257,7 +257,7 @@ function openEurekaModal() {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -295,7 +295,7 @@ function openEurekaModal() {
               if (text.includes("자본가") || text.includes("capitalist")) {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: gamestate.currentLang.labels.axiom,
+                  label: gameState.currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
@@ -322,7 +322,7 @@ function openEurekaModal() {
               if (text.includes("자본가") || text.includes("capitalist")) {
                 addPremiseToWorkbench({
                   ...axiomData,
-                  label: gamestate.currentLang.labels.axiom,
+                  label: gameState.currentLang.labels.axiom,
                 });
                 axiomIndex++;
               }
@@ -344,7 +344,7 @@ function openEurekaModal() {
     axioms.forEach((propData) => {
       addPremiseToWorkbench({
         ...propData,
-        label: gamestate.currentLang.labels.axiom,
+        label: gameState.currentLang.labels.axiom,
       });
     });
 
@@ -364,13 +364,13 @@ function openEurekaModal() {
     let label;
     switch (propData.type) {
       case "victory":
-        label = gamestate.currentLang.labels.victory_condition;
+        label = gameState.currentLang.labels.victory_condition;
         break;
       case "theorem":
-        label = gamestate.currentLang.labels.theorem;
+        label = gameState.currentLang.labels.theorem;
         break;
       default:
-        label = gamestate.currentLang.labels.proposition;
+        label = gameState.currentLang.labels.proposition;
     }
     addPremiseToWorkbench({
       proposition: propData.proposition,
@@ -382,13 +382,13 @@ function openEurekaModal() {
   });
   const modalTitle = document.getElementById("eureka-title");
   const confirmBtn = document.getElementById("modal-confirm-btn");
-  if (gamestate.isThinkingTime) {
-    modalTitle.textContent = gamestate.currentLang.modals.eurekaTitleTheorem;
-    confirmBtn.textContent = gamestate.currentLang.modals.confirmTheoremButton;
+  if (gameState.isThinkingTime) {
+    modalTitle.textContent = gameState.currentLang.modals.eurekaTitleTheorem;
+    confirmBtn.textContent = gameState.currentLang.modals.confirmTheoremButton;
     confirmBtn.onclick = addTheoremsToList;
   } else {
-    modalTitle.textContent = gamestate.currentLang.modals.eurekaTitleVictory;
-    confirmBtn.textContent = gamestate.currentLang.modals.confirmVictoryButton;
+    modalTitle.textContent = gameState.currentLang.modals.eurekaTitleVictory;
+    confirmBtn.textContent = gameState.currentLang.modals.confirmVictoryButton;
     confirmBtn.onclick = proveVictory;
   }
   renderModal();
@@ -418,15 +418,15 @@ function openEurekaModal() {
 }
 
 function addAssumption() {
-  if (gamestate.currentAssumption) {
-    showAlert(gamestate.currentLang.alerts.oneAssumptionOnly, () => {
+  if (gameState.currentAssumption) {
+    showAlert(gameState.currentLang.alerts.oneAssumptionOnly, () => {
       // 경고창을 닫은 후 다시 가정 입력창 열기
       addAssumption();
     });
     return;
   }
   showPrompt(
-    gamestate.currentLang.modals.promptInputPlaceholder,
+    gameState.currentLang.modals.promptInputPlaceholder,
     (propositionText) => {
       if (propositionText) {
         const parsedProp = parsePropositionFromString(propositionText);
@@ -434,7 +434,7 @@ function addAssumption() {
           // 복합 명제 (연결사가 포함된 명제) 검증
           if (isCompoundProposition(parsedProp)) {
             showAlert(
-              gamestate.currentLang.alerts.onlyAtomicAssumptions,
+              gameState.currentLang.alerts.onlyAtomicAssumptions,
               () => {
                 // 경고창을 닫은 후 다시 가정 입력창 열기
                 addAssumption();
@@ -443,10 +443,10 @@ function addAssumption() {
             return;
           }
 
-          gamestate.currentAssumption = parsedProp;
+          gameState.currentAssumption = parsedProp;
 
           // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
-          if (gamestate.isRecordingProof) {
+          if (gameState.isRecordingProof) {
             const stepId = recordProofStep(
               "assumption",
               [],
@@ -462,7 +462,7 @@ function addAssumption() {
             type: "assumption",
             dependsOnAssumption: true,
             isAssumption: true,
-            label: gamestate.currentLang.labels.assumption,
+            label: gameState.currentLang.labels.assumption,
             proofStepId: parsedProp.proofStepId, // proofStepId 명시적으로 전달
           });
 
@@ -471,7 +471,7 @@ function addAssumption() {
 
           // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
           if (inPuzzleMode) {
-            gamestate.inferenceStepCount++;
+            gameState.inferenceStepCount++;
           }
 
           renderModal();
@@ -496,7 +496,7 @@ function addAssumption() {
             }
           }, 100);
         } else {
-          showAlert(gamestate.currentLang.alerts.parsingFailed, () => {
+          showAlert(gameState.currentLang.alerts.parsingFailed, () => {
             // 경고창을 닫은 후 다시 가정 입력창 열기
             addAssumption();
           });
@@ -508,9 +508,9 @@ function addAssumption() {
 
 function cancelAssumption() {
   if (inTutorialMode) return;
-  gamestate.currentAssumption = null;
-  gamestate.derivedPropositionsInModal =
-    gamestate.derivedPropositionsInModal.filter((p) => !p.dependsOnAssumption);
+  gameState.currentAssumption = null;
+  gameState.derivedPropositionsInModal =
+    gameState.derivedPropositionsInModal.filter((p) => !p.dependsOnAssumption);
   renderModal();
   updateConclusionPreview();
 }
@@ -523,8 +523,8 @@ function addPremiseToWorkbench(propObject) {
     !propObject.isAssumption
   ) {
     const existing = [
-      ...gamestate.parsedAxioms,
-      ...gamestate.truePropositions,
+      ...gameState.parsedAxioms,
+      ...gameState.truePropositions,
     ].find(
       (existing) =>
         existing.proposition &&
@@ -535,7 +535,7 @@ function addPremiseToWorkbench(propObject) {
     }
   }
 
-  gamestate.derivedPropositionsInModal.push(propObject);
+  gameState.derivedPropositionsInModal.push(propObject);
 }
 
 function applyRule() {
@@ -568,49 +568,49 @@ function applyRule() {
 
   if (rule === "conditionalIntroduction") {
     if (premises.length !== 1) {
-      showAlert(gamestate.currentLang.alerts.premiseNeededForIntro);
+      showAlert(gameState.currentLang.alerts.premiseNeededForIntro);
       return;
     }
-    if (!gamestate.currentAssumption) {
-      showAlert(gamestate.currentLang.alerts.assumptionNeededForIntro);
+    if (!gameState.currentAssumption) {
+      showAlert(gameState.currentLang.alerts.assumptionNeededForIntro);
       return;
     }
     const conclusionData = premisesData[0];
     if (!conclusionData.dependsOnAssumption) {
-      showAlert(gamestate.currentLang.alerts.premiseNotFromAssumption);
+      showAlert(gameState.currentLang.alerts.premiseNotFromAssumption);
       return;
     }
     const newConditional = {
       type: "conditional",
-      left: gamestate.currentAssumption,
+      left: gameState.currentAssumption,
       right: conclusionData.proposition,
     };
 
     // '가정'과 그로부터 도출된 '결론' 모두를 source로 추적
-    const assumptionData = gamestate.derivedPropositionsInModal.find(
+    const assumptionData = gameState.derivedPropositionsInModal.find(
       (p) => p.isAssumption
     );
     const sourcePremisesForCI = [assumptionData, conclusionData];
 
-    // 논증 과정 기록을 위해 gamestate.currentAssumption을 미리 저장
-    const assumptionForRecord = gamestate.currentAssumption;
+    // 논증 과정 기록을 위해 gameState.currentAssumption을 미리 저장
+    const assumptionForRecord = gameState.currentAssumption;
 
-    gamestate.derivedPropositionsInModal =
-      gamestate.derivedPropositionsInModal.filter(
+    gameState.derivedPropositionsInModal =
+      gameState.derivedPropositionsInModal.filter(
         (p) => !p.dependsOnAssumption
       );
-    gamestate.currentAssumption = null;
+    gameState.currentAssumption = null;
     addPremiseToWorkbench({
       proposition: newConditional,
       type: "theorem",
       dependsOnAssumption: false,
       isAssumption: false,
-      label: gamestate.currentLang.labels.ci_theorem,
+      label: gameState.currentLang.labels.ci_theorem,
       sourcePremises: sourcePremisesForCI, // source 정보 추가
     });
 
     // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
-    if (gamestate.isRecordingProof) {
+    if (gameState.isRecordingProof) {
       const premiseIds = sourcePremisesForCI
         .map((p) => {
           if (!p) return null;
@@ -618,7 +618,7 @@ function applyRule() {
 
           // 가정의 경우 별도로 찾기
           if (p.isAssumption && assumptionForRecord) {
-            const assumptionStep = gamestate.proofSteps.find(
+            const assumptionStep = gameState.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -627,8 +627,8 @@ function applyRule() {
             return assumptionStep ? assumptionStep.id : null;
           }
 
-          // gamestate.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
-          const assumptionStep = gamestate.proofSteps.find(
+          // gameState.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+          const assumptionStep = gameState.proofSteps.find(
             (step) =>
               step.type === "assumption" &&
               step.conclusion &&
@@ -636,7 +636,7 @@ function applyRule() {
           );
           if (assumptionStep) return assumptionStep.id;
 
-          const proofStep = gamestate.proofSteps.find(
+          const proofStep = gameState.proofSteps.find(
             (step) =>
               step.conclusion &&
               arePropositionsEqual(step.conclusion, p.proposition)
@@ -659,16 +659,16 @@ function applyRule() {
     audioManager.playSfx("pop");
   } else if (rule === "reductioAdAbsurdum") {
     if (premises.length !== 2) {
-      showAlert(gamestate.currentLang.alerts.contradictionNeededForRAA);
+      showAlert(gameState.currentLang.alerts.contradictionNeededForRAA);
       return;
     }
-    if (!gamestate.currentAssumption) {
-      showAlert(gamestate.currentLang.alerts.assumptionNeededForRAA);
+    if (!gameState.currentAssumption) {
+      showAlert(gameState.currentLang.alerts.assumptionNeededForRAA);
       return;
     }
 
     // '가정'과 모순을 이끌어낸 '두 전제' 모두를 source로 추적
-    const assumptionData = gamestate.derivedPropositionsInModal.find(
+    const assumptionData = gameState.derivedPropositionsInModal.find(
       (p) => p.isAssumption
     );
     const sourcePremisesForRAA = [assumptionData, ...premisesData];
@@ -676,32 +676,32 @@ function applyRule() {
     const result = reductioAdAbsurdum(
       premises[0],
       premises[1],
-      gamestate.currentAssumption
+      gameState.currentAssumption
     );
     if (result) {
       // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - 삭제하기 전에 먼저 기록
-      if (gamestate.isRecordingProof) {
+      if (gameState.isRecordingProof) {
         const premiseIds = sourcePremisesForRAA
           .map((p) => {
             if (!p) return null;
             if (p.proofStepId) return p.proofStepId;
 
             // 가정의 경우 별도로 찾기
-            if (p.isAssumption && gamestate.currentAssumption) {
-              const assumptionStep = gamestate.proofSteps.find(
+            if (p.isAssumption && gameState.currentAssumption) {
+              const assumptionStep = gameState.proofSteps.find(
                 (step) =>
                   step.type === "assumption" &&
                   step.conclusion &&
                   arePropositionsEqual(
                     step.conclusion,
-                    gamestate.currentAssumption
+                    gameState.currentAssumption
                   )
               );
               return assumptionStep ? assumptionStep.id : null;
             }
 
-            // 다른 전제들도 gamestate.proofSteps에서 찾기 (가정을 우선적으로)
-            const assumptionStep = gamestate.proofSteps.find(
+            // 다른 전제들도 gameState.proofSteps에서 찾기 (가정을 우선적으로)
+            const assumptionStep = gameState.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -709,7 +709,7 @@ function applyRule() {
             );
             if (assumptionStep) return assumptionStep.id;
 
-            const proofStep = gamestate.proofSteps.find(
+            const proofStep = gameState.proofSteps.find(
               (step) =>
                 step.conclusion &&
                 arePropositionsEqual(step.conclusion, p.proposition)
@@ -738,34 +738,34 @@ function applyRule() {
           premiseIds,
           result,
           "reductioAdAbsurdum",
-          gamestate.currentAssumption
+          gameState.currentAssumption
         );
         result.proofStepId = stepId;
       }
 
-      gamestate.derivedPropositionsInModal =
-        gamestate.derivedPropositionsInModal.filter(
+      gameState.derivedPropositionsInModal =
+        gameState.derivedPropositionsInModal.filter(
           (p) => !p.dependsOnAssumption
         );
-      gamestate.currentAssumption = null;
+      gameState.currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
         type: "theorem",
         dependsOnAssumption: false,
         isAssumption: false,
-        label: gamestate.currentLang.labels.raa_theorem,
+        label: gameState.currentLang.labels.raa_theorem,
         sourcePremises: sourcePremisesForRAA, // source 정보 추가
       });
 
       // 귀류법 성공 시 사운드 재생
       audioManager.playSfx("pop");
     } else {
-      showAlert(gamestate.currentLang.alerts.notAContradiction);
+      showAlert(gameState.currentLang.alerts.notAContradiction);
     }
   } else if (threePremiseRules.includes(rule)) {
     if (premises.length !== 3) {
       showAlert(
-        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 3)
+        gameState.currentLang.alerts.premiseCountError.replace("{count}", 3)
       );
       return;
     }
@@ -774,7 +774,7 @@ function applyRule() {
   } else if (twoPremiseRules.includes(rule)) {
     if (premises.length !== 2) {
       showAlert(
-        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 2)
+        gameState.currentLang.alerts.premiseCountError.replace("{count}", 2)
       );
       return;
     }
@@ -783,7 +783,7 @@ function applyRule() {
   } else if (onePremiseRules.includes(rule)) {
     if (premises.length !== 1) {
       showAlert(
-        gamestate.currentLang.alerts.premiseCountError.replace("{count}", 1)
+        gameState.currentLang.alerts.premiseCountError.replace("{count}", 1)
       );
       return;
     }
@@ -802,19 +802,19 @@ function applyRule() {
         type: "theorem",
         dependsOnAssumption: isDependent,
         isAssumption: false,
-        label: gamestate.currentLang.labels.theorem,
+        label: gameState.currentLang.labels.theorem,
         sourcePremises: premisesData, // source 정보 추가
       });
 
       // 논증 과정 기록 (승리를 위한 유레카 모달인 경우)
-      if (gamestate.isRecordingProof) {
+      if (gameState.isRecordingProof) {
         const premiseIds = premisesData
           .map((p) => {
             // 1. 전제 데이터에서 proofStepId 찾기
             if (p.proofStepId) return p.proofStepId;
 
-            // 2. gamestate.derivedPropositionsInModal에서 찾기 (모달 내에서 생성된 것들)
-            const modalProp = gamestate.derivedPropositionsInModal.find(
+            // 2. gameState.derivedPropositionsInModal에서 찾기 (모달 내에서 생성된 것들)
+            const modalProp = gameState.derivedPropositionsInModal.find(
               (modal) =>
                 modal.proposition &&
                 arePropositionsEqual(modal.proposition, p.proposition)
@@ -825,8 +825,8 @@ function applyRule() {
             // 3. 기존 전제들에서 찾기 (가정인 경우 제외)
             if (!p.isAssumption) {
               const existing = [
-                ...gamestate.parsedAxioms,
-                ...gamestate.truePropositions,
+                ...gameState.parsedAxioms,
+                ...gameState.truePropositions,
               ].find(
                 (existing) =>
                   existing.proposition &&
@@ -835,8 +835,8 @@ function applyRule() {
               if (existing && existing.proofStepId) return existing.proofStepId;
             }
 
-            // 4. gamestate.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
-            const assumptionStep = gamestate.proofSteps.find(
+            // 4. gameState.proofSteps에서 직접 찾기 (가정을 우선적으로 찾기)
+            const assumptionStep = gameState.proofSteps.find(
               (step) =>
                 step.type === "assumption" &&
                 step.conclusion &&
@@ -844,7 +844,7 @@ function applyRule() {
             );
             if (assumptionStep) return assumptionStep.id;
 
-            const proofStep = gamestate.proofSteps.find(
+            const proofStep = gameState.proofSteps.find(
               (step) =>
                 step.conclusion &&
                 arePropositionsEqual(step.conclusion, p.proposition)
@@ -858,12 +858,12 @@ function applyRule() {
           premiseIds,
           conc,
           rule,
-          gamestate.currentAssumption
+          gameState.currentAssumption
         );
         conc.proofStepId = stepId;
 
         // 생성된 결론을 모달 내 명제들에도 ID 부여
-        const modalConclusion = gamestate.derivedPropositionsInModal.find(
+        const modalConclusion = gameState.derivedPropositionsInModal.find(
           (modal) =>
             modal.proposition && arePropositionsEqual(modal.proposition, conc)
         );
@@ -877,14 +877,14 @@ function applyRule() {
 
     // 퍼즐 모드에서 추론 규칙 사용 횟수 증가
     if (inPuzzleMode) {
-      gamestate.inferenceStepCount++;
+      gameState.inferenceStepCount++;
     }
   } else if (
     rule !== "reductioAdAbsurdum" &&
     rule !== "conditionalIntroduction" &&
     conclusions.length === 0
   ) {
-    showAlert(gamestate.currentLang.alerts.ruleFailed);
+    showAlert(gameState.currentLang.alerts.ruleFailed);
   }
 
   renderModal();
@@ -914,7 +914,7 @@ function addTheoremsToList() {
     document.querySelectorAll('#premise-list input[type="checkbox"]:checked')
   );
   if (selectedLis.length === 0) {
-    showAlert(gamestate.currentLang.alerts.noTheoremsToAdd);
+    showAlert(gameState.currentLang.alerts.noTheoremsToAdd);
     return;
   }
 
@@ -928,7 +928,7 @@ function addTheoremsToList() {
   );
 
   if (hasAssumptionRelated) {
-    showAlert(gamestate.currentLang.alerts.assumptionDependentNotAllowed);
+    showAlert(gameState.currentLang.alerts.assumptionDependentNotAllowed);
     return;
   }
 
@@ -937,10 +937,10 @@ function addTheoremsToList() {
   );
 
   const trulyNewTheorems = potentialTheorems.filter((theoremData) => {
-    const isAxiom = gamestate.parsedAxioms.some((a) =>
+    const isAxiom = gameState.parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, theoremData.proposition)
     );
-    const isAlreadyProven = gamestate.truePropositions.some(
+    const isAlreadyProven = gameState.truePropositions.some(
       (p) =>
         p.proposition &&
         arePropositionsEqual(p.proposition, theoremData.proposition)
@@ -949,7 +949,7 @@ function addTheoremsToList() {
   });
 
   if (trulyNewTheorems.length === 0) {
-    showAlert(gamestate.currentLang.alerts.duplicateProposition);
+    showAlert(gameState.currentLang.alerts.duplicateProposition);
     return;
   }
 
@@ -958,20 +958,20 @@ function addTheoremsToList() {
     const verificationResult = verifyAndExpandTruths(theoremData.proposition);
 
     if (verificationResult.success) {
-      gamestate.truePropositions.push({
+      gameState.truePropositions.push({
         propId: `prop_${Date.now()}_${Math.random()}`, // ✅ 이 줄이 추가되었습니다.
         type: "theorem",
-        round: gamestate.currentRound,
+        round: gameState.currentRound,
         proposition: theoremData.proposition,
       });
-      gamestate.internalTruthSet = verificationResult.expandedSet;
+      gameState.internalTruthSet = verificationResult.expandedSet;
       theoremsAdded++;
     } else {
       console.error(
         "Contradiction detected while adding a new theorem.",
         theoremData.proposition
       );
-      showAlert(gamestate.currentLang.alerts.contradictionFound);
+      showAlert(gameState.currentLang.alerts.contradictionFound);
       break;
     }
   }
@@ -983,13 +983,13 @@ function addTheoremsToList() {
 }
 
 function proveVictory() {
-  if (gamestate.isThinkingTime) return;
+  if (gameState.isThinkingTime) return;
 
   if (inPuzzleMode) {
-    const myVictoryCondition = gamestate.truePropositions.find(
+    const myVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === "A"
     );
-    const opponentVictoryCondition = gamestate.truePropositions.find(
+    const opponentVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === "B"
     );
 
@@ -1001,12 +1001,12 @@ function proveVictory() {
       proposition: opponentVictoryCondition.ultimate_target,
     };
 
-    const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
+    const isMyVictoryProven = gameState.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, myUltimateTarget)
     );
-    const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
+    const isOpponentLossProven = gameState.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, opponentLossCondition)
@@ -1015,22 +1015,22 @@ function proveVictory() {
     if (isMyVictoryProven || isOpponentLossProven) {
       // Calculate star rating based on proof steps
       const stars = calculateStarRating(
-        gamestate.currentPuzzleLevel,
-        gamestate.inferenceStepCount
+        gameState.currentPuzzleLevel,
+        gameState.inferenceStepCount
       );
 
       try {
         // Record puzzle completion with star rating
         recordPuzzleCompletion(
-          gamestate.currentPuzzleLevel,
-          gamestate.inferenceStepCount,
+          gameState.currentPuzzleLevel,
+          gameState.inferenceStepCount,
           stars
         );
 
         // Keep backward compatibility - also save to old format
         const clearedPuzzles =
           JSON.parse(localStorage.getItem("logos_cleared_puzzles")) || {};
-        clearedPuzzles[gamestate.currentPuzzleLevel] = true;
+        clearedPuzzles[gameState.currentPuzzleLevel] = true;
         localStorage.setItem(
           "logos_cleared_puzzles",
           JSON.stringify(clearedPuzzles)
@@ -1041,8 +1041,8 @@ function proveVictory() {
 
       // Create star display for the alert message
       const starDisplay = "★".repeat(stars) + "☆".repeat(3 - stars);
-      const alertMessage = gamestate.currentLang.alerts.puzzleCleared
-        .replace("{steps}", gamestate.inferenceStepCount)
+      const alertMessage = gameState.currentLang.alerts.puzzleCleared
+        .replace("{steps}", gameState.inferenceStepCount)
         .replace("{stars}", `${starDisplay} (${stars}/3)`);
 
       showAlert(alertMessage, () => {
@@ -1058,7 +1058,7 @@ function proveVictory() {
       });
     } else {
       showAlert(
-        gamestate.currentLang.alerts.proofIncomplete
+        gameState.currentLang.alerts.proofIncomplete
           .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
           .replace(
             "{opponentGoal}",
@@ -1071,11 +1071,11 @@ function proveVictory() {
 
   // --- 튜토리얼 마지막 단계 성공 처리 로직 (새로 추가된 부분) ---
   if (inTutorialMode && tutorialStep === 8) {
-    const myVictoryCondition = gamestate.truePropositions.find(
-      (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+    const myVictoryCondition = gameState.truePropositions.find(
+      (p) => p.type === "victory" && p.owner === gameState.currentPlayer
     );
-    const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
-    const opponentVictoryCondition = gamestate.truePropositions.find(
+    const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
+    const opponentVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === opponentPlayer
     );
 
@@ -1087,12 +1087,12 @@ function proveVictory() {
       proposition: opponentVictoryCondition.ultimate_target,
     };
 
-    const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
+    const isMyVictoryProven = gameState.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, myUltimateTarget)
     );
-    const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
+    const isOpponentLossProven = gameState.derivedPropositionsInModal.some(
       (p) =>
         !p.dependsOnAssumption &&
         arePropositionsEqual(p.proposition, opponentLossCondition)
@@ -1100,11 +1100,11 @@ function proveVictory() {
 
     if (isMyVictoryProven || isOpponentLossProven) {
       // 성공 시, 새로 추가한 알림 메시지를 띄우고 확인을 누르면 튜토리얼을 종료합니다.
-      showAlert(gamestate.currentLang.alerts.tutorialVictory, endTutorial);
+      showAlert(gameState.currentLang.alerts.tutorialVictory, endTutorial);
     } else {
       // 실패 시, 기존처럼 증명 미완료 메시지를 띄웁니다.
       showAlert(
-        gamestate.currentLang.alerts.proofIncomplete
+        gameState.currentLang.alerts.proofIncomplete
           .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
           .replace(
             "{opponentGoal}",
@@ -1117,14 +1117,14 @@ function proveVictory() {
   // --- 튜토리얼 로직 끝 ---
 
   // --- 이하 기존의 일반 게임 승리 증명 로직 ---
-  const myVictoryCondition = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
+  const myVictoryCondition = gameState.truePropositions.find(
+    (p) => p.type === "victory" && p.owner === gameState.currentPlayer
   );
   if (!myVictoryCondition) return;
   const myUltimateTarget = myVictoryCondition.ultimate_target;
 
-  const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
-  const opponentVictoryCondition = gamestate.truePropositions.find(
+  const opponentPlayer = gameState.currentPlayer === "A" ? "B" : "A";
+  const opponentVictoryCondition = gameState.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
   if (!opponentVictoryCondition) return;
@@ -1133,23 +1133,23 @@ function proveVictory() {
     proposition: opponentVictoryCondition.ultimate_target,
   };
 
-  const isMyVictoryProven = gamestate.derivedPropositionsInModal.some(
+  const isMyVictoryProven = gameState.derivedPropositionsInModal.some(
     (p) =>
       !p.dependsOnAssumption &&
       arePropositionsEqual(p.proposition, myUltimateTarget)
   );
-  const isOpponentLossProven = gamestate.derivedPropositionsInModal.some(
+  const isOpponentLossProven = gameState.derivedPropositionsInModal.some(
     (p) =>
       !p.dependsOnAssumption &&
       arePropositionsEqual(p.proposition, opponentLossCondition)
   );
 
   if (isMyVictoryProven || isOpponentLossProven) {
-    const newTheorems = gamestate.derivedPropositionsInModal.filter(
+    const newTheorems = gameState.derivedPropositionsInModal.filter(
       (p) =>
         p.type === "theorem" &&
         !p.dependsOnAssumption &&
-        !gamestate.truePropositions.some((existing) =>
+        !gameState.truePropositions.some((existing) =>
           arePropositionsEqual(p.proposition, existing.proposition)
         )
     );
@@ -1157,25 +1157,25 @@ function proveVictory() {
     for (const theoremData of newTheorems) {
       const verificationResult = verifyAndExpandTruths(theoremData.proposition);
       if (verificationResult.success) {
-        gamestate.internalTruthSet = verificationResult.expandedSet;
+        gameState.internalTruthSet = verificationResult.expandedSet;
       } else {
         console.error(
           "치명적 오류: 승리 증명에 사용된 정리가 기존 사실과 모순됩니다.",
           theoremData
         );
-        showAlert(gamestate.currentLang.alerts.criticalErrorUndo);
+        showAlert(gameState.currentLang.alerts.criticalErrorUndo);
         return;
       }
     }
 
     // 논증 기록 완료 및 승리 명제 기록
-    if (gamestate.isRecordingProof) {
+    if (gameState.isRecordingProof) {
       const victoryProp = isMyVictoryProven
         ? myUltimateTarget
         : opponentLossCondition;
 
       // 승리 명제를 직접 도출한 마지막 추론 단계 찾기
-      const lastInferenceStep = gamestate.proofSteps
+      const lastInferenceStep = gameState.proofSteps
         .filter((step) => step.type === "inference")
         .reverse()
         .find(
@@ -1194,12 +1194,12 @@ function proveVictory() {
       stopProofRecording();
     }
 
-    endGame(gamestate.currentPlayer);
+    endGame(gameState.currentPlayer);
     return;
   }
 
   showAlert(
-    gamestate.currentLang.alerts.proofIncomplete
+    gameState.currentLang.alerts.proofIncomplete
       .replace("{myGoal}", propositionToPlainText(myUltimateTarget))
       .replace("{opponentGoal}", propositionToPlainText(opponentLossCondition))
   );
@@ -1209,13 +1209,13 @@ function renderModal() {
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
 
-  const hasAssumption = !!gamestate.currentAssumption;
+  const hasAssumption = !!gameState.currentAssumption;
   document.getElementById("add-assumption-btn").disabled = hasAssumption;
   document.getElementById("cancel-assumption-btn").style.display = hasAssumption
     ? "inline-block"
     : "none";
 
-  gamestate.derivedPropositionsInModal.forEach((propData) => {
+  gameState.derivedPropositionsInModal.forEach((propData) => {
     // 구분선인 경우 특별히 처리
     if (propData.isSeparator) {
       const li = document.createElement("li");
@@ -1467,7 +1467,7 @@ function updateConclusionPreview() {
 
   // UI 텍스트 업데이트 (다국어 지원)
   titleEl.innerHTML =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "<strong>결론 미리보기</strong>"
       : "<strong>Conclusion Preview</strong>";
 
@@ -1509,10 +1509,10 @@ function updateConclusionPreview() {
   if (premises.length === requiredPremises && requiredPremises > 0) {
     try {
       if (rule === "conditionalIntroduction") {
-        if (gamestate.currentAssumption) {
+        if (gameState.currentAssumption) {
           conclusion = {
             type: "conditional",
-            left: gamestate.currentAssumption,
+            left: gameState.currentAssumption,
             right: premises[0],
           };
         }
@@ -1520,7 +1520,7 @@ function updateConclusionPreview() {
         conclusion = reductioAdAbsurdum(
           premises[0],
           premises[1],
-          gamestate.currentAssumption
+          gameState.currentAssumption
         );
       } else if (threePremiseRules.includes(rule)) {
         conclusion = window[rule](premises[0], premises[1], premises[2]);
@@ -1546,7 +1546,7 @@ function updateConclusionPreview() {
     }
   } else {
     textEl.innerHTML = `<i>${
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "규칙을 적용할 수 없습니다."
         : "Cannot apply rule."
     }</i>`;

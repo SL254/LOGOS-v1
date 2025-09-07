@@ -156,13 +156,13 @@ const PHILOSOPHERS = {
 };
 
 function activatePlatoAbility(player) {
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "보편화할 수 있는 명제가 없습니다."
         : "There are no propositions to universalize."
     );
@@ -171,9 +171,9 @@ function activatePlatoAbility(player) {
 
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.ui.platoAbilityTitle;
+    gameState.currentLang.ui.platoAbilityTitle;
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.ui.platoConfirmButton;
+    gameState.currentLang.ui.platoConfirmButton;
 
   const listEl = document.getElementById("ability-list");
   listEl.innerHTML = ""; // 목록 초기화
@@ -217,7 +217,7 @@ function confirmPlatoAbility() {
   }
 
   const selectedIndex = parseInt(selectedRadio.value, 10);
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) => p.proposition && p.proposition.type === "existential"
   );
   const selectedPropData = availablePropositions[selectedIndex];
@@ -243,62 +243,62 @@ function confirmPlatoAbility() {
   if (verificationResult.success) {
     // 4. 검증 성공 시, 능력 사용 상태를 기록하고 새 명제를 추가합니다.
     const philosopherId =
-      gamestate.thinkingTimeTurn === "A"
-        ? gamestate.playerA_Data.id
-        : gamestate.playerB_Data.id;
+      gameState.thinkingTimeTurn === "A"
+        ? gameState.playerA_Data.id
+        : gameState.playerB_Data.id;
 
     // 플라톤 능력 사용 횟수 증가
     if (
-      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].usedCount !==
+      gameState.abilityUsedState[gameState.thinkingTimeTurn].usedCount !==
       undefined
     ) {
-      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].usedCount++;
+      gameState.abilityUsedState[gameState.thinkingTimeTurn].usedCount++;
     } else {
-      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+      gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
     }
 
-    gamestate.truePropositions.push({
+    gameState.truePropositions.push({
       propId: `prop_${Date.now()}_${Math.random()}`,
       type: "theorem", // 타입은 'theorem'으로 유지
       source: "plato_ability", // '이데아 회상' 출처 명시
       proposition: universalProp,
     });
-    gamestate.internalTruthSet = verificationResult.expandedSet;
+    gameState.internalTruthSet = verificationResult.expandedSet;
 
     // 5. 모달을 닫고 게임 상태를 갱신합니다.
     document.getElementById("ability-modal").classList.remove("visible");
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "새로운 보편 명제가 참 목록에 추가되었습니다!"
         : "A new universal proposition has been added to the true list!"
     );
     render();
   } else {
     // 6. 모순 발생 시, 사용자에게 알립니다.
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
   }
 }
 
 function activateSocratesAbility(player) {
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  const state = gamestate.abilityUsedState[player];
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  const state = gameState.abilityUsedState[player];
 
   if (state && state.used) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "이미 능력을 사용했습니다."
         : "Ability has already been used."
     );
     return;
   }
-  const availablePropositions = gamestate.truePropositions.filter((p) => {
+  const availablePropositions = gameState.truePropositions.filter((p) => {
     // 1. 타입이 'user-made' 또는 'theorem'이어야 함 (기존 조건)
     const isTargetType = p.type === "user-made" || p.type === "theorem";
     if (!isTargetType) return false;
 
     // 2. 해당 명제가 이미 비활성화 목록에 있는지 확인 (새로운 조건)
-    const isDisabled = gamestate.socratesDisabledProps.some(
+    const isDisabled = gameState.socratesDisabledProps.some(
       (disabledProp) => disabledProp.propId === p.propId
     );
 
@@ -308,7 +308,7 @@ function activateSocratesAbility(player) {
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "비활성화할 수 있는 명제가 없습니다."
         : "There are no propositions to disable."
     );
@@ -317,9 +317,9 @@ function activateSocratesAbility(player) {
 
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.ui.socratesAbilityTitle;
+    gameState.currentLang.ui.socratesAbilityTitle;
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.ui.socratesConfirmButton;
+    gameState.currentLang.ui.socratesConfirmButton;
 
   const listEl = document.getElementById("ability-list");
   listEl.innerHTML = ""; // 목록 초기화
@@ -358,22 +358,22 @@ function confirmSocratesAbility() {
 
   const selectedPropId = selectedRadio.value;
 
-  // gamestate.socratesDisabledProps 배열에는 이제 propId만 저장합니다.
+  // gameState.socratesDisabledProps 배열에는 이제 propId만 저장합니다.
   // 더 이상 proposition 객체를 저장할 필요가 없습니다.
-  gamestate.socratesDisabledProps.push({
+  gameState.socratesDisabledProps.push({
     propId: selectedPropId,
   });
 
   // 능력 사용 처리
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "선택한 명제가 논증에서 제외됩니다."
       : "The selected proposition will be excluded from arguments."
   );
@@ -381,13 +381,13 @@ function confirmSocratesAbility() {
 }
 function activateDescartesAbility(player) {
   // 삭제 가능한 명제 (공리, 승리조건 제외) 목록을 준비합니다.
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) => p.type === "user-made" || p.type === "theorem"
   );
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "삭제할 수 있는 명제가 없습니다."
         : "There are no propositions to delete."
     );
@@ -397,9 +397,9 @@ function activateDescartesAbility(player) {
   // 범용 능력 모달창을 가져와 내용을 데카르트에 맞게 수정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.langCode === "ko" ? "방법적 회의" : "Methodic Doubt";
+    gameState.currentLang.langCode === "ko" ? "방법적 회의" : "Methodic Doubt";
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "이 명제를 삭제하기"
       : "Delete this Proposition";
 
@@ -444,8 +444,8 @@ function confirmDescartesAbility() {
 
   const selectedPropId = selectedRadio.value;
 
-  // 1. gamestate.truePropositions 배열에서 삭제할 명제의 인덱스를 찾습니다.
-  const propIndex = gamestate.truePropositions.findIndex(
+  // 1. gameState.truePropositions 배열에서 삭제할 명제의 인덱스를 찾습니다.
+  const propIndex = gameState.truePropositions.findIndex(
     (p) => p.propId === selectedPropId
   );
 
@@ -455,13 +455,13 @@ function confirmDescartesAbility() {
   }
 
   // 2. 해당 명제를 배열에서 제거합니다.
-  gamestate.truePropositions.splice(propIndex, 1);
+  gameState.truePropositions.splice(propIndex, 1);
 
   // 3. ★★★ 핵심 단계 ★★★
   //    명제 하나가 사라졌으므로, 전체 논리 체계에 모순이 생겼을 수 있습니다.
-  //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(gamestate.internalTruthSet)을 완전히 재구성합니다.
-  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = gamestate.truePropositions
+  //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(gameState.internalTruthSet)을 완전히 재구성합니다.
+  let newTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
+  const propositionsToReverify = gameState.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -476,18 +476,18 @@ function confirmDescartesAbility() {
       // 실제 게임에서는 이 오류를 더 견고하게 처리해야 할 수 있습니다.
     }
   }
-  gamestate.internalTruthSet = newTruthSet;
+  gameState.internalTruthSet = newTruthSet;
 
   // 4. 능력 사용 상태를 기록하고 UI를 갱신합니다.
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "선택한 명제가 참 목록에서 삭제되었습니다."
       : "The selected proposition has been deleted from the true list."
   );
@@ -495,8 +495,8 @@ function confirmDescartesAbility() {
 }
 function activateWittgensteinAbility(player) {
   // 유레카 모달과 동일하게 내부 상태를 초기화합니다.
-  gamestate.derivedPropositionsInModal = [];
-  gamestate.currentAssumption = null;
+  gameState.derivedPropositionsInModal = [];
+  gameState.currentAssumption = null;
 
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
@@ -504,14 +504,14 @@ function activateWittgensteinAbility(player) {
 
   // 유레카 모달과 똑같이 사용 가능한 모든 전제를 가져옵니다.
   const allSelectablePropositions = [
-    ...gamestate.parsedAxioms,
-    ...gamestate.truePropositions
+    ...gameState.parsedAxioms,
+    ...gameState.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
   ].filter(
     (propData) =>
       !propData.propId ||
-      !gamestate.socratesDisabledProps.some(
+      !gameState.socratesDisabledProps.some(
         (dp) => dp.propId === propData.propId
       )
   );
@@ -521,9 +521,9 @@ function activateWittgensteinAbility(player) {
   const nonAxioms = allSelectablePropositions.filter((p) => p.type !== "axiom");
 
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
-  if (gamestate.currentAxioms.groups && axioms.length > 0) {
-    const groups = gamestate.currentAxioms.groups;
-    const templates = gamestate.currentLang.axiom_templates;
+  if (gameState.currentAxioms.groups && axioms.length > 0) {
+    const groups = gameState.currentAxioms.groups;
+    const templates = gameState.currentLang.axiom_templates;
     let axiomIndex = 0;
 
     // 정체성 공리 그룹
@@ -532,7 +532,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -554,7 +554,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -573,7 +573,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -592,7 +592,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -611,7 +611,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -633,7 +633,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -652,7 +652,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -671,7 +671,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -690,7 +690,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -709,7 +709,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -728,7 +728,7 @@ function activateWittgensteinAbility(player) {
         if (axiomIndex < axioms.length) {
           addPremiseToWorkbench({
             ...axioms[axiomIndex],
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         }
@@ -753,7 +753,7 @@ function activateWittgensteinAbility(player) {
         marxAxioms.forEach((axiomData) => {
           addPremiseToWorkbench({
             ...axiomData,
-            label: gamestate.currentLang.labels.axiom,
+            label: gameState.currentLang.labels.axiom,
           });
           axiomIndex++;
         });
@@ -772,7 +772,7 @@ function activateWittgensteinAbility(player) {
     axioms.forEach((propData) => {
       addPremiseToWorkbench({
         ...propData,
-        label: gamestate.currentLang.labels.axiom,
+        label: gameState.currentLang.labels.axiom,
       });
     });
 
@@ -792,13 +792,13 @@ function activateWittgensteinAbility(player) {
     let label;
     switch (propData.type) {
       case "victory":
-        label = gamestate.currentLang.labels.victory_condition;
+        label = gameState.currentLang.labels.victory_condition;
         break;
       case "theorem":
-        label = gamestate.currentLang.labels.theorem;
+        label = gameState.currentLang.labels.theorem;
         break;
       default:
-        label = gamestate.currentLang.labels.proposition;
+        label = gameState.currentLang.labels.proposition;
     }
     addPremiseToWorkbench({
       proposition: propData.proposition,
@@ -814,8 +814,8 @@ function activateWittgensteinAbility(player) {
   const confirmBtn = document.getElementById("modal-confirm-btn");
 
   // 모달의 제목과 버튼을 비트겐슈타인 전용으로 설정합니다.
-  modalTitle.textContent = gamestate.currentLang.ui.wittgensteinAbilityTitle;
-  confirmBtn.textContent = gamestate.currentLang.ui.wittgensteinConfirmButton;
+  modalTitle.textContent = gameState.currentLang.ui.wittgensteinAbilityTitle;
+  confirmBtn.textContent = gameState.currentLang.ui.wittgensteinConfirmButton;
 
   // 확인 버튼 클릭 시, 비트겐슈타인 전용 확인 함수를 호출하도록 연결합니다.
   confirmBtn.onclick = confirmWittgensteinAbility;
@@ -852,7 +852,7 @@ function confirmWittgensteinAbility() {
 
   // 1. 유효성 검사: 반드시 하나의 '정리'만 선택해야 합니다.
   if (selectedLis.length !== 1) {
-    showAlert(gamestate.currentLang.alerts.selectOneTheoremOnly);
+    showAlert(gameState.currentLang.alerts.selectOneTheoremOnly);
     return;
   }
   const finalTheoremData = JSON.parse(
@@ -862,7 +862,7 @@ function confirmWittgensteinAbility() {
     finalTheoremData.type !== "theorem" ||
     finalTheoremData.dependsOnAssumption
   ) {
-    showAlert(gamestate.currentLang.alerts.selectOneTheoremOnly);
+    showAlert(gameState.currentLang.alerts.selectOneTheoremOnly);
     return;
   }
 
@@ -907,22 +907,22 @@ function confirmWittgensteinAbility() {
     }
   });
 
-  gamestate.truePropositions = gamestate.truePropositions.filter(
+  gameState.truePropositions = gameState.truePropositions.filter(
     (p) => !idsToDelete.has(p.propId)
   );
 
   // 4. 최종적으로 도출된 새로운 정리를 참 목록에 추가합니다.
-  gamestate.truePropositions.push({
+  gameState.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem",
-    round: gamestate.currentRound,
+    round: gameState.currentRound,
     proposition: finalTheoremData.proposition,
     source: "wittgenstein_ability",
   });
 
   // 5. 전체 진리 집합을 재구성하여 논리적 일관성을 유지합니다.
-  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-  const propositionsToReverify = gamestate.truePropositions
+  let newTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
+  const propositionsToReverify = gameState.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
 
@@ -936,22 +936,22 @@ function confirmWittgensteinAbility() {
       );
     }
   }
-  gamestate.internalTruthSet = newTruthSet;
+  gameState.internalTruthSet = newTruthSet;
 
   // 6. 능력 사용 상태를 업데이트하고 마무리합니다.
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
 
   document.getElementById("eureka-modal").classList.remove("visible");
-  showAlert(gamestate.currentLang.alerts.wittgensteinSuccess);
+  showAlert(gameState.currentLang.alerts.wittgensteinSuccess);
   render();
 }
 function activateDerridaAbility(player) {
   // 1. 분해 가능한 명제(연결사로 이어진 명제)만 필터링합니다.
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) =>
       p.type !== "victory" &&
       p.proposition &&
@@ -962,7 +962,7 @@ function activateDerridaAbility(player) {
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "분해할 수 있는 명제가 없습니다."
         : "There are no compound propositions to deconstruct."
     );
@@ -972,9 +972,9 @@ function activateDerridaAbility(player) {
   // 2. 범용 능력 모달 UI를 설정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.langCode === "ko" ? "해체" : "Deconstruction";
+    gameState.currentLang.langCode === "ko" ? "해체" : "Deconstruction";
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "이 명제를 해체하기"
       : "Deconstruct this Proposition";
 
@@ -1021,7 +1021,7 @@ function confirmDerridaAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const selectedPropData = gamestate.truePropositions.find(
+  const selectedPropData = gameState.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1035,12 +1035,12 @@ function confirmDerridaAbility() {
   // --- 핵심 로직: 삭제와 추가가 모두 가능한지 '미리' 검증하는 단계 ---
 
   // 1. 선택된 원본 명제를 '제외한' 나머지 명제 목록을 만듭니다.
-  const propositionsWithoutOriginal = gamestate.truePropositions.filter(
+  const propositionsWithoutOriginal = gameState.truePropositions.filter(
     (p) => p.propId !== selectedPropId
   );
 
   // 2. 이 임시 목록을 기반으로 진리 집합을 '재구성'하여, 원본 명제가 없었을 때의 상태를 만듭니다.
-  let baseTruthSetForTest = gamestate.parsedAxioms.map((a) => a.proposition);
+  let baseTruthSetForTest = gameState.parsedAxioms.map((a) => a.proposition);
   const propsToReverify = propositionsWithoutOriginal
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -1052,7 +1052,7 @@ function confirmDerridaAbility() {
       console.error(
         "Derrida Pre-check Error: Inconsistency found when creating base set."
       );
-      showAlert(gamestate.currentLang.alerts.criticalErrorUndo); // 내부 오류 알림
+      showAlert(gameState.currentLang.alerts.criticalErrorUndo); // 내부 오류 알림
       return;
     }
   }
@@ -1060,27 +1060,27 @@ function confirmDerridaAbility() {
   // 3. '원본이 삭제된' 상태에서, 분해된 첫 번째(left) 명제를 추가했을 때 모순이 없는지 확인합니다.
   const verification1 = verifyAndExpandTruths(left, baseTruthSetForTest);
   if (!verification1.success) {
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
     return;
   }
 
   // 4. 이어서 두 번째(right) 명제를 추가했을 때 모순이 없는지 최종 확인합니다.
   const verification2 = verifyAndExpandTruths(right, verification1.expandedSet);
   if (!verification2.success) {
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
     return;
   }
 
   // 5. 모든 검증을 통과했으므로 능력 사용을 확정합니다.
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
 
   // 6. 검증이 모두 끝났으므로, 실제 게임 상태를 변경합니다.
   //    - 원본 복합 명제를 삭제합니다. (이미 만들어 둔 리스트 재활용)
-  gamestate.truePropositions = propositionsWithoutOriginal;
+  gameState.truePropositions = propositionsWithoutOriginal;
   //    - 분해된 두 명제를 추가합니다.
   const newProps = [
     {
@@ -1096,14 +1096,14 @@ function confirmDerridaAbility() {
       proposition: right,
     },
   ];
-  gamestate.truePropositions.push(...newProps);
+  gameState.truePropositions.push(...newProps);
 
   // 7. 최종적으로 검증된 진리 집합으로 내부 상태를 업데이트합니다.
-  gamestate.internalTruthSet = verification2.expandedSet;
+  gameState.internalTruthSet = verification2.expandedSet;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "명제가 성공적으로 해체되었습니다."
       : "The proposition has been successfully deconstructed."
   );
@@ -1112,7 +1112,7 @@ function confirmDerridaAbility() {
 function activateHumeAbility(player) {
   // 함수 이름을 activateHumeAbility로 변경
   // 1. 분해 가능한 명제('라면'으로 이어진 명제만) 필터링합니다.
-  const availablePropositions = gamestate.truePropositions.filter(
+  const availablePropositions = gameState.truePropositions.filter(
     (p) =>
       p.type !== "victory" &&
       p.proposition &&
@@ -1121,7 +1121,7 @@ function activateHumeAbility(player) {
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "분해할 수 있는 '라면' 명제가 없습니다."
         : "There are no 'then' propositions to deconstruct."
     );
@@ -1131,11 +1131,11 @@ function activateHumeAbility(player) {
   // 2. 범용 능력 모달 UI를 흄에 맞게 설정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "인과성 비판"
       : "Critique of Causality"; // 👈 능력 이름 변경
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "이 명제를 분해하기"
       : "Decompose this Proposition"; // 👈 버튼 텍스트 변경
 
@@ -1181,7 +1181,7 @@ function confirmHumeAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const selectedPropData = gamestate.truePropositions.find(
+  const selectedPropData = gameState.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1193,10 +1193,10 @@ function confirmHumeAbility() {
   const { left, right } = selectedPropData.proposition;
 
   // --- 핵심 로직: 데리다와 동일한 안전성 검증 로직 사용 ---
-  const propositionsWithoutOriginal = gamestate.truePropositions.filter(
+  const propositionsWithoutOriginal = gameState.truePropositions.filter(
     (p) => p.propId !== selectedPropId
   );
-  let baseTruthSetForTest = gamestate.parsedAxioms.map((a) => a.proposition);
+  let baseTruthSetForTest = gameState.parsedAxioms.map((a) => a.proposition);
   const propsToReverify = propositionsWithoutOriginal
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -1208,30 +1208,30 @@ function confirmHumeAbility() {
       console.error(
         "Hume Pre-check Error: Inconsistency found when creating base set." // 에러 메시지 변경
       );
-      showAlert(gamestate.currentLang.alerts.criticalErrorUndo);
+      showAlert(gameState.currentLang.alerts.criticalErrorUndo);
       return;
     }
   }
   const verification1 = verifyAndExpandTruths(left, baseTruthSetForTest);
   if (!verification1.success) {
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
     return;
   }
   const verification2 = verifyAndExpandTruths(right, verification1.expandedSet);
   if (!verification2.success) {
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
     return;
   }
 
   // 5. 능력 사용을 '1회용'으로 확정합니다.
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true; // 👈 '게임당 1회' 규칙으로 변경
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true; // 👈 '게임당 1회' 규칙으로 변경
 
   // 6. 실제 게임 상태를 변경합니다.
-  gamestate.truePropositions = propositionsWithoutOriginal;
+  gameState.truePropositions = propositionsWithoutOriginal;
   const newProps = [
     {
       propId: `prop_${Date.now()}_${Math.random()}`,
@@ -1246,14 +1246,14 @@ function confirmHumeAbility() {
       proposition: right,
     },
   ];
-  gamestate.truePropositions.push(...newProps);
+  gameState.truePropositions.push(...newProps);
 
   // 7. 최종 진리 집합으로 업데이트합니다.
-  gamestate.internalTruthSet = verification2.expandedSet;
+  gameState.internalTruthSet = verification2.expandedSet;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "명제가 성공적으로 분해되었습니다."
       : "The proposition has been successfully decomposed."
   );
@@ -1263,7 +1263,7 @@ function confirmHumeAbility() {
 function activateKuhnAbility(player) {
   // 1. '선하다/악하다' 또는 '지혜롭다/어리석다'를 가진 최소 단위 명제 확인
   // 2. getOppositePredicate 함수를 이용해 해당 명제의 술어에 반대 개념이 존재하는지 확인합니다.
-  const availablePropositions = gamestate.truePropositions.filter((p) => {
+  const availablePropositions = gameState.truePropositions.filter((p) => {
     if (!p.proposition) return false;
 
     // 최소 단위 명제 타입들: atomic, universal, existential, individual
@@ -1306,7 +1306,7 @@ function activateKuhnAbility(player) {
 
   if (availablePropositions.length === 0) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "패러다임을 전환할 수 있는 명제가 없습니다. ('선하다/악하다' 또는 '지혜롭다/어리석다' 술어가 필요합니다)"
         : "There are no propositions available for paradigm shift. (Requires 'good/evil' or 'wise/foolish' predicates)"
     );
@@ -1316,11 +1316,11 @@ function activateKuhnAbility(player) {
   // 2. 범용 능력 모달 UI를 쿤에 맞게 설정합니다.
   const modal = document.getElementById("ability-modal");
   document.getElementById("ability-title").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "패러다임 전환"
       : "Paradigm Shift";
   document.getElementById("ability-confirm-btn").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "패러다임 전환하기"
       : "Shift Paradigm";
 
@@ -1362,7 +1362,7 @@ function confirmKuhnAbility() {
   if (!selectedRadio) return;
 
   const selectedPropId = selectedRadio.value;
-  const originalPropData = gamestate.truePropositions.find(
+  const originalPropData = gameState.truePropositions.find(
     (p) => p.propId === selectedPropId
   );
 
@@ -1373,7 +1373,7 @@ function confirmKuhnAbility() {
 
   // --- (1) 새로운 패러다임 명제 생성 ---
   const originalPredicate = originalPropData.proposition.predicate;
-  const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+  const predicatePairs = gameState.currentLang.contradictoryPredicates;
 
   let newPredicate = null;
   for (const key in predicatePairs) {
@@ -1389,7 +1389,7 @@ function confirmKuhnAbility() {
 
   if (!newPredicate) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "이 명제의 반대 술어를 찾을 수 없습니다."
         : "Cannot find an opposite predicate for this proposition."
     );
@@ -1432,8 +1432,8 @@ function confirmKuhnAbility() {
   };
 
   // --- (2) 기반 진리 목록 생성 및 사전 검증 ---
-  const axioms = gamestate.parsedAxioms.map((a) => a.proposition);
-  const victoryConditions = gamestate.truePropositions
+  const axioms = gameState.parsedAxioms.map((a) => a.proposition);
+  const victoryConditions = gameState.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
 
@@ -1447,7 +1447,7 @@ function confirmKuhnAbility() {
 
   if (!preCheckResult.success) {
     showAlert(
-      gamestate.currentLang.langCode === "ko"
+      gameState.currentLang.langCode === "ko"
         ? "새로운 패러다임이 기존 공리나 승리 조건과 모순되어 능력을 발동할 수 없습니다."
         : "The new paradigm contradicts basic axioms or win conditions and cannot be activated."
     );
@@ -1456,12 +1456,12 @@ function confirmKuhnAbility() {
 
   let currentValidatedTruths = preCheckResult.expandedSet;
   let survivingPropositions = [
-    ...gamestate.truePropositions.filter((p) => p.type === "victory"),
+    ...gameState.truePropositions.filter((p) => p.type === "victory"),
     newParadigmPropForList,
   ];
 
   // --- (3) 기존 명제 재검증 ---
-  const candidatesForRevalidation = gamestate.truePropositions.filter(
+  const candidatesForRevalidation = gameState.truePropositions.filter(
     (p) =>
       (p.type === "user-made" || p.type === "theorem") &&
       p.propId !== selectedPropId
@@ -1482,25 +1482,25 @@ function confirmKuhnAbility() {
   }
 
   // --- (4) 최종 목록 확정 및 UI 갱신 ---
-  gamestate.truePropositions = survivingPropositions;
-  gamestate.internalTruthSet = currentValidatedTruths;
+  gameState.truePropositions = survivingPropositions;
+  gameState.internalTruthSet = currentValidatedTruths;
 
   const philosopherId =
-    gamestate.thinkingTimeTurn === "A"
-      ? gamestate.playerA_Data.id
-      : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[gamestate.thinkingTimeTurn].used = true;
+    gameState.thinkingTimeTurn === "A"
+      ? gameState.playerA_Data.id
+      : gameState.playerB_Data.id;
+  gameState.abilityUsedState[gameState.thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
   showAlert(
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "패러다임이 전환되었습니다!"
       : "Paradigm has shifted!"
   );
   render();
 }
 function renderKantModal(player) {
-  const hand = player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
+  const hand = player === "A" ? gameState.playerA_Hand : gameState.playerB_Hand;
   const handDisplay = document.getElementById("kant-hand-display");
   const propDisplay = document.getElementById("kant-proposition-display");
 
@@ -1516,7 +1516,7 @@ function renderKantModal(player) {
     cardEl.className = `card ${colorClass}`;
     cardEl.textContent = card.text;
     cardEl.onclick = () => {
-      const tempPropositionForValidation = gamestate.kantProposition.map(
+      const tempPropositionForValidation = gameState.kantProposition.map(
         (c) => ({
           card: c,
           player: player,
@@ -1530,18 +1530,18 @@ function renderKantModal(player) {
         );
         if (cardIndex > -1) {
           const [movedCard] = hand.splice(cardIndex, 1);
-          gamestate.kantProposition.push(movedCard);
+          gameState.kantProposition.push(movedCard);
           renderKantModal(player);
         }
       } else {
-        showAlert(gamestate.currentLang.alerts.invalidCard);
+        showAlert(gameState.currentLang.alerts.invalidCard);
       }
     };
     handDisplay.appendChild(cardEl);
   });
 
   // 2. 명제 구성 영역 렌더링
-  gamestate.kantProposition.forEach((card) => {
+  gameState.kantProposition.forEach((card) => {
     const cardEl = document.createElement("div");
 
     cardEl.className = `card ${colorClass}`;
@@ -1552,13 +1552,13 @@ function renderKantModal(player) {
   // 3. 버튼들 활성화/비활성화 상태 업데이트
   // 되돌리기 버튼: 카드가 없으면 비활성화
   document.getElementById("kant-undo-btn").disabled =
-    gamestate.kantProposition.length === 0;
+    gameState.kantProposition.length === 0;
 
   // 완성 버튼: 카드가 없거나 문법적으로 완성되지 않았으면 비활성화
   const isGrammaticallyComplete =
-    gamestate.kantProposition.length > 0 &&
+    gameState.kantProposition.length > 0 &&
     parsePropositionFromCards(
-      gamestate.kantProposition.map((c) => ({ card: c }))
+      gameState.kantProposition.map((c) => ({ card: c }))
     ) !== null;
   document.getElementById("kant-confirm-btn").disabled =
     !isGrammaticallyComplete;
@@ -1566,34 +1566,34 @@ function renderKantModal(player) {
 
 function confirmKantAbility(player) {
   // 1. 명제가 비어있는지 확인
-  if (gamestate.kantProposition.length === 0) {
+  if (gameState.kantProposition.length === 0) {
     return;
   }
 
   // 2. 문법적 완결성 검사
   // parsePropositionFromCards는 {card: cardObject} 형태의 배열을 기대하므로 변환
   const parsedProp = parsePropositionFromCards(
-    gamestate.kantProposition.map((c) => ({ card: c }))
+    gameState.kantProposition.map((c) => ({ card: c }))
   );
   if (!parsedProp) {
-    showAlert(gamestate.currentLang.alerts.incompleteProposition);
+    showAlert(gameState.currentLang.alerts.incompleteProposition);
     return;
   }
 
   // 4. 논리적 모순 검사
   const verificationResult = verifyAndExpandTruths(parsedProp);
   if (!verificationResult.success) {
-    showAlert(gamestate.currentLang.alerts.contradictionFound);
+    showAlert(gameState.currentLang.alerts.contradictionFound);
     return;
   }
 
   // 5. 모든 검사를 통과: 능력 사용 처리
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  gamestate.abilityUsedState[player].used = true;
+    player === "A" ? gameState.playerA_Data.id : gameState.playerB_Data.id;
+  gameState.abilityUsedState[player].used = true;
 
   // 6. 새로운 명제를 참 목록에 추가
-  gamestate.truePropositions.push({
+  gameState.truePropositions.push({
     propId: `prop_${Date.now()}_${Math.random()}`,
     type: "theorem", // 능력으로 만든 명제는 '정리'로 취급
     source: "kant_ability", // 칸트 능력 출처 명시
@@ -1601,14 +1601,14 @@ function confirmKantAbility(player) {
   });
 
   // 7. 내부 진리 집합 업데이트
-  gamestate.internalTruthSet = verificationResult.expandedSet;
+  gameState.internalTruthSet = verificationResult.expandedSet;
 
   // 8. 마무리
   const modal = document.getElementById("kant-ability-modal");
   modal.classList.remove("visible");
-  gamestate.kantProposition = []; // 임시 명제 배열 비우기
+  gameState.kantProposition = []; // 임시 명제 배열 비우기
 
-  showAlert(gamestate.currentLang.alerts.kantSuccess);
+  showAlert(gameState.currentLang.alerts.kantSuccess);
   render(); // 게임 화면 전체 갱신
 }
 
@@ -1616,42 +1616,42 @@ function confirmKantAbility(player) {
  * 칸트 능력 활성화: 모달창을 설정하고 띄웁니다.
  */
 function activateKantAbility(player) {
-  gamestate.kantProposition = []; // 명제 배열 초기화
+  gameState.kantProposition = []; // 명제 배열 초기화
   const modal = document.getElementById("kant-ability-modal");
 
   // UI 텍스트 설정
   document.getElementById("kant-ability-title").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "선험적 종합판단"
       : "Synthetic A Priori Judgment";
   document.getElementById("kant-current-proposition-title").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "구성중인 명제"
       : "Proposition under Construction";
   document.getElementById("kant-hand-title").textContent =
-    gamestate.currentLang.langCode === "ko"
+    gameState.currentLang.langCode === "ko"
       ? "사용 가능한 카드"
       : "Available Cards";
   document.getElementById("kant-undo-btn").textContent =
-    gamestate.currentLang.ui.undoButton;
+    gameState.currentLang.ui.undoButton;
   document.getElementById("kant-confirm-btn").textContent =
-    gamestate.currentLang.ui.completeButton;
+    gameState.currentLang.ui.completeButton;
 
   // 되돌리기 버튼 기능 연결
   document.getElementById("kant-undo-btn").onclick = (event) => {
-    if (gamestate.kantProposition.length > 0) {
+    if (gameState.kantProposition.length > 0) {
       // 글로벌 click 이벤트 전파를 막아 중복 hover 효과음 방지
       event.stopPropagation();
       audioManager.playSfx("undo");
-      const cardToReturn = gamestate.kantProposition.pop();
+      const cardToReturn = gameState.kantProposition.pop();
       const hand =
-        player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
+        player === "A" ? gameState.playerA_Hand : gameState.playerB_Hand;
       hand.push(cardToReturn);
       // 손패 정렬을 다시 해주는 것이 좋습니다.
       hand.sort(
         (a, b) =>
-          gamestate.cardTypeOrder.indexOf(a.type) -
-          gamestate.cardTypeOrder.indexOf(b.type)
+          gameState.cardTypeOrder.indexOf(a.type) -
+          gameState.cardTypeOrder.indexOf(b.type)
       );
       renderKantModal(player);
     }
@@ -1661,15 +1661,15 @@ function activateKantAbility(player) {
   // 닫기 버튼 기능 연결 (중요: 취소 시 카드를 모두 손패로 되돌림)
   document.getElementById("close-kant-modal-btn").onclick = () => {
     audioManager.playSfx("hover");
-    if (gamestate.kantProposition.length > 0) {
+    if (gameState.kantProposition.length > 0) {
       const hand =
-        player === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
-      hand.push(...gamestate.kantProposition);
-      gamestate.kantProposition = [];
+        player === "A" ? gameState.playerA_Hand : gameState.playerB_Hand;
+      hand.push(...gameState.kantProposition);
+      gameState.kantProposition = [];
       hand.sort(
         (a, b) =>
-          gamestate.cardTypeOrder.indexOf(a.type) -
-          gamestate.cardTypeOrder.indexOf(b.type)
+          gameState.cardTypeOrder.indexOf(a.type) -
+          gameState.cardTypeOrder.indexOf(b.type)
       );
     }
     modal.classList.remove("visible");

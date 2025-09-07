@@ -321,35 +321,35 @@ function populatePuzzleLevels() {
  * @param {object} levelData - PUZZLES 객체에서 가져온 레벨 정보
  */
 function startPuzzle(levelNum, levelData) {
-  gamestate.currentPuzzleLevel = levelNum;
+  gameState.currentPuzzleLevel = levelNum;
 
-  const masterDeck = gamestate.currentLang.cards;
+  const masterDeck = gameState.currentLang.cards;
   // '소크라테스는', '플라톤은' 카드를 기본 덱에서 찾습니다.
   const socratesCard = masterDeck.find(
-    (c) => c.text === gamestate.currentLang.keywords.socrates
+    (c) => c.text === gameState.currentLang.keywords.socrates
   );
   const platoCard = masterDeck.find(
-    (c) => c.text === gamestate.currentLang.keywords.plato
+    (c) => c.text === gameState.currentLang.keywords.plato
   );
   // 모든 철학자 이름을 제외한 기본 카드 목록을 만듭니다.
   const allPhilosopherCardTexts = Object.values(PHILOSOPHERS).map(
-    (p) => p.cardText[gamestate.currentLang.langCode]
+    (p) => p.cardText[gameState.currentLang.langCode]
   );
   const baseDeck = masterDeck.filter(
     (card) => !allPhilosopherCardTexts.includes(card.text)
   );
-  // 기본 카드 목록에 소크라테스와 플라톤 카드만 추가하여 gamestate.fullDeck을 재설정합니다.
-  gamestate.fullDeck = [...baseDeck, socratesCard, platoCard];
+  // 기본 카드 목록에 소크라테스와 플라톤 카드만 추가하여 gameState.fullDeck을 재설정합니다.
+  gameState.fullDeck = [...baseDeck, socratesCard, platoCard];
 
   // 1. 퍼즐에 필요한 공리를 먼저 생성합니다. (튜토리얼 로직 재활용)
-  const socratesSubject = gamestate.currentLang.keywords.socrates;
-  const platoSubject = gamestate.currentLang.keywords.plato;
-  gamestate.currentAxioms = generateAxioms(
+  const socratesSubject = gameState.currentLang.keywords.socrates;
+  const platoSubject = gameState.currentLang.keywords.plato;
+  gameState.currentAxioms = generateAxioms(
     socratesSubject,
     platoSubject,
-    gamestate.currentLang
+    gameState.currentLang
   );
-  gamestate.parsedAxioms = gamestate.currentAxioms
+  gameState.parsedAxioms = gameState.currentAxioms
     .map((str) => ({
       type: "axiom",
       proposition: parsePropositionFromString(str),
@@ -357,7 +357,7 @@ function startPuzzle(levelNum, levelData) {
     .filter((a) => a.proposition);
 
   inPuzzleMode = true;
-  gamestate.inferenceStepCount = 0; // 퍼즐 시작 시 추론 규칙 사용 횟수 초기화
+  gameState.inferenceStepCount = 0; // 퍼즐 시작 시 추론 규칙 사용 횟수 초기화
   document
     .getElementById("puzzle-level-select-modal")
     .classList.remove("visible");
@@ -367,53 +367,53 @@ function startPuzzle(levelNum, levelData) {
   const goalText = document.getElementById("puzzle-goal-text"); // p 태그를 선택
 
   goalText.innerHTML =
-    levelData.goalDescription[gamestate.currentLang.langCode]; // p 태그에 텍스트 설정
+    levelData.goalDescription[gameState.currentLang.langCode]; // p 태그에 텍스트 설정
   goalBox.classList.remove("hidden"); // 전체 박스를 보이게 함
 
   // 퍼즐 데이터로 게임 상태 설정
-  gamestate.truePropositions = [];
+  gameState.truePropositions = [];
 
   // 1. 승리 조건 설정
   const socratesVC_Text =
-    levelData.victoryConditions.socrates[gamestate.currentLang.langCode];
+    levelData.victoryConditions.socrates[gameState.currentLang.langCode];
   const socratesVC_Parsed = parsePropositionFromString(socratesVC_Text);
   if (socratesVC_Parsed) {
-    gamestate.truePropositions.push({
+    gameState.truePropositions.push({
       type: "victory",
       owner: "A",
       text: socratesVC_Text,
       proposition: socratesVC_Parsed,
       ultimate_target: {
         type: "atomic",
-        subject: gamestate.currentLang.keywords.socrates,
-        predicate: gamestate.currentLang.keywords.wins,
+        subject: gameState.currentLang.keywords.socrates,
+        predicate: gameState.currentLang.keywords.wins,
       },
     });
   }
 
   const platoVC_Text =
-    levelData.victoryConditions.plato[gamestate.currentLang.langCode];
+    levelData.victoryConditions.plato[gameState.currentLang.langCode];
   const platoVC_Parsed = parsePropositionFromString(platoVC_Text);
   if (platoVC_Parsed) {
-    gamestate.truePropositions.push({
+    gameState.truePropositions.push({
       type: "victory",
       owner: "B",
       text: platoVC_Text,
       proposition: platoVC_Parsed,
       ultimate_target: {
         type: "atomic",
-        subject: gamestate.currentLang.keywords.plato,
-        predicate: gamestate.currentLang.keywords.wins,
+        subject: gameState.currentLang.keywords.plato,
+        predicate: gameState.currentLang.keywords.wins,
       },
     });
   }
 
   // 2. 전제 명제 설정
-  const premises = levelData.premises[gamestate.currentLang.langCode];
+  const premises = levelData.premises[gameState.currentLang.langCode];
   premises.forEach((pText) => {
     const parsed = parsePropositionFromString(pText);
     if (parsed) {
-      gamestate.truePropositions.push({
+      gameState.truePropositions.push({
         type: "user-made",
         proposition: parsed,
       });
@@ -421,13 +421,13 @@ function startPuzzle(levelNum, levelData) {
   });
 
   // 3. 내부 진리 집합 재구성
-  gamestate.internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-  gamestate.truePropositions.forEach((p) =>
-    gamestate.internalTruthSet.push(p.proposition)
+  gameState.internalTruthSet = gameState.parsedAxioms.map((a) => a.proposition);
+  gameState.truePropositions.forEach((p) =>
+    gameState.internalTruthSet.push(p.proposition)
   );
-  gamestate.internalTruthSet = verifyAndExpandTruths(
+  gameState.internalTruthSet = verifyAndExpandTruths(
     null,
-    gamestate.internalTruthSet
+    gameState.internalTruthSet
   ).expandedSet;
 
   // 4. 유레카 모달 바로 열기

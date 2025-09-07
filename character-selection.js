@@ -11,7 +11,7 @@ function startCharacterSelection(mode) {
   gameMode = mode;
   selectionMode = mode;
   tempSelections = { p1: null, p2: null };
-  gamestate.isPlayerAI = { A: false, B: false }; // 상태 초기화
+  gameState.isPlayerAI = { A: false, B: false }; // 상태 초기화
 
   document.getElementById("credits-btn").classList.add("hidden");
   updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
@@ -28,11 +28,11 @@ function startCharacterSelection(mode) {
     // 기존 1P vs AI 모드 로직 (수정 없음)
     const turnModal = document.getElementById("turn-order-modal");
     document.getElementById("turn-order-title").textContent =
-      gamestate.currentLang.ui.turnOrderTitle;
+      gameState.currentLang.ui.turnOrderTitle;
     document.getElementById("select-first-player").textContent =
-      gamestate.currentLang.ui.selectFirstPlayer;
+      gameState.currentLang.ui.selectFirstPlayer;
     document.getElementById("select-second-player").textContent =
-      gamestate.currentLang.ui.selectSecondPlayer;
+      gameState.currentLang.ui.selectSecondPlayer;
 
     turnModal.classList.add("visible");
 
@@ -47,7 +47,7 @@ function startCharacterSelection(mode) {
     document.getElementById("select-first-player").onclick = () => {
       humanPlayerId = "P1";
       aiPlayer = "B"; // 기존 호환성을 위해 유지
-      gamestate.isPlayerAI.B = true; // 새로운 상태 변수 설정
+      gameState.isPlayerAI.B = true; // 새로운 상태 변수 설정
       turnModal.classList.remove("visible");
       document
         .getElementById("character-selection-screen")
@@ -57,7 +57,7 @@ function startCharacterSelection(mode) {
     document.getElementById("select-second-player").onclick = () => {
       humanPlayerId = "P2";
       aiPlayer = "A"; // 기존 호환성을 위해 유지
-      gamestate.isPlayerAI.A = true; // 새로운 상태 변수 설정
+      gameState.isPlayerAI.A = true; // 새로운 상태 변수 설정
       turnModal.classList.remove("visible");
       document
         .getElementById("character-selection-screen")
@@ -67,7 +67,7 @@ function startCharacterSelection(mode) {
   } else if (mode === "AI_VS_AI") {
     aiPlayer = null; // 사용하지 않음
     humanPlayerId = null;
-    gamestate.isPlayerAI = { A: true, B: true }; // 양쪽 모두 AI로 설정
+    gameState.isPlayerAI = { A: true, B: true }; // 양쪽 모두 AI로 설정
     document
       .getElementById("character-selection-screen")
       .classList.remove("hidden");
@@ -85,7 +85,7 @@ function startCharacterSelection(mode) {
 
 function beginPlayerSelectionTurn(player) {
   characterSelectionTurn = player;
-  const lang = gamestate.currentLang.ui;
+  const lang = gameState.currentLang.ui;
   let instruction; // instruction 변수 선언
 
   // 턴에 따라 표시할 안내 문구를 결정하는 부분 (기존과 동일)
@@ -112,7 +112,7 @@ function beginPlayerSelectionTurn(player) {
 
   // 확인 버튼 텍스트를 현재 언어에 맞게 설정 및 비활성화
   document.getElementById("confirm-selection-btn").textContent =
-    gamestate.currentLang.ui.confirmSelectionButton;
+    gameState.currentLang.ui.confirmSelectionButton;
   document.getElementById("confirm-selection-btn").disabled = true;
 
   // [수정된 부분 2] 누락되었던 캐릭터 아이콘 생성 코드가 여기에 다시 포함되었습니다.
@@ -178,9 +178,9 @@ function updatePlayerDisplay(player, philosopherId) {
     // player('p1' 또는 'p2')에 따라 p.image 객체에서 알맞은 경로를 가져옵니다.
     const imageUrl = p.image[player];
     portraitEl.style.backgroundImage = `url('${imageUrl}')`;
-    nameEl.textContent = p.name[gamestate.currentLang.langCode];
+    nameEl.textContent = p.name[gameState.currentLang.langCode];
     nameEl.style.opacity = "1";
-    skillDescEl.textContent = p.skill[gamestate.currentLang.langCode];
+    skillDescEl.textContent = p.skill[gameState.currentLang.langCode];
   } else {
     portraitEl.style.backgroundImage = "none";
     nameEl.textContent = "철학자를 선택하세요";
@@ -204,7 +204,7 @@ function handleConfirmClick() {
 
 function finalizeSelection() {
   const charIndicator = document.getElementById("character-select-indicator");
-  charIndicator.textContent = gamestate.currentLang.ui.gameStartingSoon;
+  charIndicator.textContent = gameState.currentLang.ui.gameStartingSoon;
 
   document.querySelector(".shared-selection-area").style.pointerEvents = "none";
 
@@ -228,7 +228,7 @@ function finalizeSelection() {
     updateMainMenuBtnVisibility();
     updateMainCenterVisibility();
 
-    if (gamestate.isTestMode) {
+    if (gameState.isTestMode) {
       // 테스트 모드일 경우, 데이터 입력 및 테스트 게임 시작
       promptAndSetupTestGame(tempSelections);
     }

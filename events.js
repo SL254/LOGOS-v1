@@ -85,16 +85,16 @@ function setupEventListeners() {
       if (inTutorialMode) return;
 
       // ▼▼▼ [수정] 아래 줄들을 추가하여 모달의 내부 상태를 초기화합니다. ▼▼▼
-      gamestate.derivedPropositionsInModal = [];
-      gamestate.currentAssumption = null;
+      gameState.derivedPropositionsInModal = [];
+      gameState.currentAssumption = null;
 
       // 논증 로그 초기화 (논증 다시보기를 위한 데이터 정리)
-      if (gamestate.isRecordingProof) {
+      if (gameState.isRecordingProof) {
         stopProofRecording();
       }
-      gamestate.proofSteps = [];
-      gamestate.stepCounter = 0;
-      gamestate.victoryProposition = null;
+      gameState.proofSteps = [];
+      gameState.stepCounter = 0;
+      gameState.victoryProposition = null;
       // ▲▲▲ [수정] 코드 추가 끝 ▲▲▲
 
       if (inPuzzleMode) {
@@ -177,7 +177,7 @@ function setupEventListeners() {
     });
   document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
     if (inTutorialMode) return;
-    gamestate.isTestMode = true;
+    gameState.isTestMode = true;
     audioManager.fadeOut("main-menu");
     audioManager.play("character-select");
     startCharacterSelection("AI");

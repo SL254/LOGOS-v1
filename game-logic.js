@@ -132,7 +132,7 @@ function existentialInstantiation(p) {
 function universalApplication(p1, p2) {
   if (!p1 || !p2) return null;
   const getBaseNoun = (text) => {
-    if (gamestate.currentLang.langCode === "ko") {
+    if (gameState.currentLang.langCode === "ko") {
       return text.replace(/(이다|는|은)$/, "").trim();
     } else {
       return text.replace(/^is a /, "").trim();
@@ -227,7 +227,7 @@ function isContradictory(newProp, allTrueProps) {
       return true;
   }
   if (newProp.type === "atomic" || newProp.type === "universal") {
-    const predicatePairs = gamestate.currentLang.contradictoryPredicates;
+    const predicatePairs = gameState.currentLang.contradictoryPredicates;
     let oppositePredicate = null;
     for (const key in predicatePairs) {
       if (key === newProp.predicate) {
@@ -259,7 +259,7 @@ function isContradictory(newProp, allTrueProps) {
 
 function verifyAndExpandTruths(
   newProposition,
-  initialTruths = gamestate.internalTruthSet
+  initialTruths = gameState.internalTruthSet
 ) {
   let knownTruths = [...initialTruths];
 

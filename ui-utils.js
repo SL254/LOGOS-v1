@@ -55,8 +55,8 @@ function showConfirm(message, onConfirm, onCancel) {
 
   input.style.display = "none";
   hintElement.style.display = "none";
-  confirmBtn.textContent = gamestate.currentLang.ui.yesButton;
-  cancelBtn.textContent = gamestate.currentLang.ui.noButton;
+  confirmBtn.textContent = gameState.currentLang.ui.yesButton;
+  cancelBtn.textContent = gameState.currentLang.ui.noButton;
 
   const confirmHandler = (event) => {
     // 💡 변경점: event 객체를 받도록 수정
@@ -73,8 +73,8 @@ function showConfirm(message, onConfirm, onCancel) {
     modal.classList.remove("visible");
     input.style.display = "";
     hintElement.style.display = "none";
-    confirmBtn.textContent = gamestate.currentLang.ui.okButton;
-    cancelBtn.textContent = gamestate.currentLang.ui.cancelButton;
+    confirmBtn.textContent = gameState.currentLang.ui.okButton;
+    cancelBtn.textContent = gameState.currentLang.ui.cancelButton;
     confirmBtn.removeEventListener("click", confirmHandler);
     cancelBtn.removeEventListener("click", cancelHandler);
   };
@@ -86,32 +86,32 @@ function showConfirm(message, onConfirm, onCancel) {
 
 function setupUI() {
   document.getElementById("main-menu-btn").textContent =
-    gamestate.currentLang.langCode === "ko" ? "메인으로" : "Main Menu";
+    gameState.currentLang.langCode === "ko" ? "메인으로" : "Main Menu";
 
   document.getElementById("main-title").textContent =
-    gamestate.currentLang.ui.title;
+    gameState.currentLang.ui.title;
   document.getElementById("new-game-btn").textContent =
-    gamestate.currentLang.ui.newGameButton;
+    gameState.currentLang.ui.newGameButton;
   document.getElementById("vs-ai-btn").textContent =
-    gamestate.currentLang.ui.vsAIButton;
+    gameState.currentLang.ui.vsAIButton;
   document.getElementById("vs-player-btn").textContent =
-    gamestate.currentLang.ui.vsPlayerButton;
+    gameState.currentLang.ui.vsPlayerButton;
   document.getElementById("tutorial-btn").textContent =
-    gamestate.currentLang.ui.tutorialButton;
+    gameState.currentLang.ui.tutorialButton;
   document.getElementById("exit-game-btn").textContent =
-    gamestate.currentLang.ui.exitGameButton;
+    gameState.currentLang.ui.exitGameButton;
   document.getElementById("vs-ai-battle-btn").textContent =
-    gamestate.currentLang.ui.vsAIBattleButton;
+    gameState.currentLang.ui.vsAIBattleButton;
   document.getElementById(
     "player-a-title"
-  ).innerHTML = `${gamestate.currentLang.ui.playerAName} - ${gamestate.currentLang.ui.playerAColor}`;
+  ).innerHTML = `${gameState.currentLang.ui.playerAName} - ${gameState.currentLang.ui.playerAColor}`;
   document.getElementById(
     "player-b-title"
-  ).innerHTML = `${gamestate.currentLang.ui.playerBName} - ${gamestate.currentLang.ui.playerBColor}`;
+  ).innerHTML = `${gameState.currentLang.ui.playerBName} - ${gameState.currentLang.ui.playerBColor}`;
   document.getElementById("eureka-a").textContent =
-    gamestate.currentLang.ui.eurekaButton;
+    gameState.currentLang.ui.eurekaButton;
   document.getElementById("eureka-b").textContent =
-    gamestate.currentLang.ui.eurekaButton;
+    gameState.currentLang.ui.eurekaButton;
   document
     .getElementById("ability-a")
     .addEventListener("click", () => activateAbility("A"));
@@ -119,90 +119,90 @@ function setupUI() {
     .getElementById("ability-b")
     .addEventListener("click", () => activateAbility("B"));
   document.getElementById("current-proposition-title").textContent =
-    gamestate.currentLang.ui.gamestate.currentPropositionTitle;
+    gameState.currentLang.ui.gameState.currentPropositionTitle;
   document.getElementById("complete-btn").textContent =
-    gamestate.currentLang.ui.completeButton;
+    gameState.currentLang.ui.completeButton;
   document.getElementById("undo-btn").textContent =
-    gamestate.currentLang.ui.undoButton;
+    gameState.currentLang.ui.undoButton;
   document.getElementById("end-turn-btn").textContent =
-    gamestate.currentLang.ui.endTurnButton;
+    gameState.currentLang.ui.endTurnButton;
   document.getElementById("true-propositions-title").textContent =
-    gamestate.currentLang.ui.gamestate.truePropositionsTitle;
+    gameState.currentLang.ui.gameState.truePropositionsTitle;
   document.getElementById("thinking-time-title").textContent =
-    gamestate.currentLang.ui.thinkingTimeTitle;
+    gameState.currentLang.ui.thinkingTimeTitle;
   document.getElementById("thinking-time-desc").innerHTML =
-    gamestate.currentLang.ui.thinkingTimeDesc;
+    gameState.currentLang.ui.thinkingTimeDesc;
   updateFullscreenButtonText();
   document.getElementById("settings-btn").textContent =
-    gamestate.currentLang.ui.settingsButton;
+    gameState.currentLang.ui.settingsButton;
   document.getElementById("tutorial-btn").textContent =
-    gamestate.currentLang.ui.tutorialButton;
+    gameState.currentLang.ui.tutorialButton;
   document.getElementById("tutorial-puzzle-btn").textContent =
-    gamestate.currentLang.ui.tutorialPuzzleButton;
+    gameState.currentLang.ui.tutorialPuzzleButton;
 
   document.getElementById("puzzle-mode-btn").textContent =
-    gamestate.currentLang.ui.puzzleButton;
+    gameState.currentLang.ui.puzzleButton;
   document.getElementById("puzzle-modal-title").textContent =
-    gamestate.currentLang.modals.puzzleTitle;
+    gameState.currentLang.modals.puzzleTitle;
 
   document.getElementById("tutorial-modal-title").textContent =
-    gamestate.currentLang.modals.tutorialTitle;
+    gameState.currentLang.modals.tutorialTitle;
   document.getElementById("alert-ok-btn").textContent =
-    gamestate.currentLang.ui.okButton;
+    gameState.currentLang.ui.okButton;
   document.getElementById("credits-btn").textContent =
-    gamestate.currentLang.ui.creditsButton;
+    gameState.currentLang.ui.creditsButton;
   document.getElementById("credits-title").textContent =
-    gamestate.currentLang.modals.creditsTitle;
+    gameState.currentLang.modals.creditsTitle;
   document.getElementById("prompt-cancel-btn").textContent =
-    gamestate.currentLang.ui.cancelButton;
+    gameState.currentLang.ui.cancelButton;
   document.getElementById("prompt-confirm-btn").textContent =
-    gamestate.currentLang.ui.okButton;
+    gameState.currentLang.ui.okButton;
   document.getElementById("prompt-input").placeholder =
-    gamestate.currentLang.modals.promptInputPlaceholder;
+    gameState.currentLang.modals.promptInputPlaceholder;
   document.getElementById("prompt-hint").textContent =
-    gamestate.currentLang.modals.promptInputHint;
+    gameState.currentLang.modals.promptInputHint;
 
   document.getElementById("p1-skill-title").textContent =
-    gamestate.currentLang.ui.skillTitle;
+    gameState.currentLang.ui.skillTitle;
   document.getElementById("p2-skill-title").textContent =
-    gamestate.currentLang.ui.skillTitle;
+    gameState.currentLang.ui.skillTitle;
 
   document.getElementById("premise-selection-title").textContent =
-    gamestate.currentLang.modals.premiseSelectionTitle;
+    gameState.currentLang.modals.premiseSelectionTitle;
   document.getElementById("apply-rule-btn").textContent =
-    gamestate.currentLang.modals.applyRuleButton;
+    gameState.currentLang.modals.applyRuleButton;
   document.getElementById("add-assumption-btn").textContent =
-    gamestate.currentLang.modals.addAssumptionButton;
+    gameState.currentLang.modals.addAssumptionButton;
   document.getElementById("cancel-assumption-btn").textContent =
-    gamestate.currentLang.ui.cancelAssumptionButton;
+    gameState.currentLang.ui.cancelAssumptionButton;
 
   document.getElementById("settings-title").textContent =
-    gamestate.currentLang.ui.settingsTitle;
+    gameState.currentLang.ui.settingsTitle;
   document.getElementById("bgm-label").textContent =
-    gamestate.currentLang.ui.bgmLabel;
+    gameState.currentLang.ui.bgmLabel;
   document.getElementById("sfx-label").textContent =
-    gamestate.currentLang.ui.sfxLabel;
+    gameState.currentLang.ui.sfxLabel;
   document.getElementById("language-change-notice").textContent =
-    gamestate.currentLang.ui.languageChangeNotice;
+    gameState.currentLang.ui.languageChangeNotice;
 
   const select = document.getElementById("inference-rule-select");
   select.innerHTML = `
-                  <optgroup label="${gamestate.currentLang.inferenceRules.basic}">
-                      <option value="modusPonens">${gamestate.currentLang.inferenceRules.modusPonens}</option>
-                      <option value="modusTollens">${gamestate.currentLang.inferenceRules.modusTollens}</option>
-                      <option value="hypotheticalSyllogism">${gamestate.currentLang.inferenceRules.hypotheticalSyllogism}</option>
-                      <option value="disjunctiveSyllogism">${gamestate.currentLang.inferenceRules.disjunctiveSyllogism}</option>
-                      <option value="universalApplication">${gamestate.currentLang.inferenceRules.universalApplication}</option>
-                      <option value="existentialInstantiation">${gamestate.currentLang.inferenceRules.existentialInstantiation}</option>
-                      <option value="conjunctionElimination">${gamestate.currentLang.inferenceRules.conjunctionElimination}</option>
-                      <option value="doubleNegationElimination">${gamestate.currentLang.inferenceRules.doubleNegationElimination}</option>
+                  <optgroup label="${gameState.currentLang.inferenceRules.basic}">
+                      <option value="modusPonens">${gameState.currentLang.inferenceRules.modusPonens}</option>
+                      <option value="modusTollens">${gameState.currentLang.inferenceRules.modusTollens}</option>
+                      <option value="hypotheticalSyllogism">${gameState.currentLang.inferenceRules.hypotheticalSyllogism}</option>
+                      <option value="disjunctiveSyllogism">${gameState.currentLang.inferenceRules.disjunctiveSyllogism}</option>
+                      <option value="universalApplication">${gameState.currentLang.inferenceRules.universalApplication}</option>
+                      <option value="existentialInstantiation">${gameState.currentLang.inferenceRules.existentialInstantiation}</option>
+                      <option value="conjunctionElimination">${gameState.currentLang.inferenceRules.conjunctionElimination}</option>
+                      <option value="doubleNegationElimination">${gameState.currentLang.inferenceRules.doubleNegationElimination}</option>
                   </optgroup>
-                  <optgroup label="${gamestate.currentLang.inferenceRules.assumptionBased}">
-                      <option value="conditionalIntroduction" style="color:#27ae60; font-weight:normal;">${gamestate.currentLang.inferenceRules.conditionalIntroduction}</option>
-                      <option value="reductioAdAbsurdum" style="color:#c0392b; font-weight:normal;">${gamestate.currentLang.inferenceRules.reductioAdAbsurdum}</option>
+                  <optgroup label="${gameState.currentLang.inferenceRules.assumptionBased}">
+                      <option value="conditionalIntroduction" style="color:#27ae60; font-weight:normal;">${gameState.currentLang.inferenceRules.conditionalIntroduction}</option>
+                      <option value="reductioAdAbsurdum" style="color:#c0392b; font-weight:normal;">${gameState.currentLang.inferenceRules.reductioAdAbsurdum}</option>
                   </optgroup>
-                  <optgroup label="${gamestate.currentLang.inferenceRules.advanced}">
-                      <option value="proofByCases" style="color:#2980b9; font-weight:normal;">${gamestate.currentLang.inferenceRules.proofByCases}</option>
+                  <optgroup label="${gameState.currentLang.inferenceRules.advanced}">
+                      <option value="proofByCases" style="color:#2980b9; font-weight:normal;">${gameState.currentLang.inferenceRules.proofByCases}</option>
                   </optgroup>
               `;
 }
@@ -223,7 +223,7 @@ function setupModeDescriptionHovers() {
     if (buttonEl) {
       buttonEl.addEventListener("mouseenter", (e) => {
         // 1. 현재 언어에 맞는 설명 텍스트를 가져와서 내용 변경
-        const descText = gamestate.currentLang.ui[buttonInfo.key];
+        const descText = gameState.currentLang.ui[buttonInfo.key];
         descriptionBox.innerHTML = descText;
 
         // 2. 설명 박스의 Y축 위치를 현재 마우스가 올라간 버튼의 중앙으로 이동
@@ -332,9 +332,9 @@ if (eurekaPremiseList) {
     const fullscreenBtn = document.getElementById("fullscreen-btn");
 
     if (isFullscreen) {
-      fullscreenBtn.textContent = gamestate.currentLang.ui.exitFullscreenButton;
+      fullscreenBtn.textContent = gameState.currentLang.ui.exitFullscreenButton;
     } else {
-      fullscreenBtn.textContent = gamestate.currentLang.ui.fullscreenButton;
+      fullscreenBtn.textContent = gameState.currentLang.ui.fullscreenButton;
     }
   }
 
@@ -352,7 +352,7 @@ if (eurekaPremiseList) {
       const key = element.getAttribute("data-i18n");
       if (TEXTS.hasOwnProperty(key)) {
         element.textContent =
-          TEXTS[`${key}_${gamestate.currentLanguage}`] || TEXTS[`${key}_ko`]; // 현재 언어 없으면 한국어 기본
+          TEXTS[`${key}_${gameState.currentLanguage}`] || TEXTS[`${key}_ko`]; // 현재 언어 없으면 한국어 기본
       }
     });
   }
@@ -363,7 +363,7 @@ if (eurekaPremiseList) {
   // 언어 변경 시 텍스트 업데이트 함수 호출 (기존 언어 변경 로직에 추가 필요)
   // 예시:
   // function changeLanguage(lang) {
-  //     gamestate.currentLanguage = lang;
+  //     gameState.currentLanguage = lang;
   //     localStorage.setItem('languagePreference', lang);
   //     updateUIText(); // 텍스트 업데이트
   //     // ... 기존 언어 변경 로직 ...

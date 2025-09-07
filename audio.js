@@ -111,7 +111,7 @@ const audioManager = {
     // 페이드 인 효과
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(
-      gamestate.bgmVolume, // 기존: volume
+      gameState.bgmVolume, // 기존: volume
       audioContext.currentTime + 1.5
     );
 
