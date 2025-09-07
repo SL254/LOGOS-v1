@@ -269,9 +269,9 @@ function startTutorial(startStep = 0) {
   gamestate.playerB_Data = PHILOSOPHERS["plato"];
 
   // 튜토리얼에 사용될 철학자(소크라테스, 플라톤)의 능력 사용 상태를 초기화합니다.
-  abilityUsedState = {};
-  abilityUsedState["A"] = { used: false }; // 소크라테스는 1회 사용 가능
-  abilityUsedState["B"] = { used: false }; // 플라톤은 1회 사용 가능
+  gamestate.abilityUsedState = {};
+  gamestate.abilityUsedState["A"] = { used: false }; // 소크라테스는 1회 사용 가능
+  gamestate.abilityUsedState["B"] = { used: false }; // 플라톤은 1회 사용 가능
 
   gamestate.fullDeck = gamestate.currentLang.cards;
 

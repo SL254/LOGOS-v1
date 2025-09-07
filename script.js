@@ -1618,28 +1618,28 @@ function setupGame(selectedCharacters, testConfig = null) {
     portraitB_El.style.backgroundImage = `url('${gamestate.playerB_Data.image.p2}')`;
   }
 
-  abilityUsedState = {};
+  gamestate.abilityUsedState = {};
 
   // 플레이어 A의 능력 상태 설정 (이미 선언된 p1_id 변수 사용)
   if (p1_id === "hume") {
-    abilityUsedState["A"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
+    gamestate.abilityUsedState["A"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p1_id === "socrates") {
-    abilityUsedState["A"] = { used: false };
+    gamestate.abilityUsedState["A"] = { used: false };
   } else if (p1_id === "plato") {
-    abilityUsedState["A"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
+    gamestate.abilityUsedState["A"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {
-    abilityUsedState["A"] = { used: false };
+    gamestate.abilityUsedState["A"] = { used: false };
   }
 
   // 플레이어 B의 능력 상태 설정 (이미 선언된 p2_id 변수 사용)
   if (p2_id === "hume") {
-    abilityUsedState["B"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
+    gamestate.abilityUsedState["B"] = { used: false }; // 👈 '게임당 1회' 규칙으로 변경
   } else if (p2_id === "socrates") {
-    abilityUsedState["B"] = { used: false };
+    gamestate.abilityUsedState["B"] = { used: false };
   } else if (p2_id === "plato") {
-    abilityUsedState["B"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
+    gamestate.abilityUsedState["B"] = { usedCount: 0, maxUses: 2 }; // 플라톤: 게임당 2회
   } else {
-    abilityUsedState["B"] = { used: false };
+    gamestate.abilityUsedState["B"] = { used: false };
   }
 
   render();
@@ -1848,7 +1848,7 @@ function activateAbility(player) {
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
 
-  const state = abilityUsedState[player];
+  const state = gamestate.abilityUsedState[player];
   if (state) {
     // 흄의 경우 usedCount가 maxUses 이상인지 확인
     if (philosopherId === "hume" && state.usedCount >= state.maxUses) {
@@ -1958,8 +1958,8 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player].usedCount >=
-              abilityUsedState[player].maxUses ||
+            gamestate.abilityUsedState[player].usedCount >=
+              gamestate.abilityUsedState[player].maxUses ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -1976,7 +1976,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -2007,7 +2007,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -2023,7 +2023,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -2039,7 +2039,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -2054,7 +2054,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),
@@ -2074,7 +2074,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 조건 미달(15개 미만), 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             userMadePropsCount < 15 ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
@@ -2090,7 +2090,7 @@ function getAbilityButtonStateFor(player) {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
           disabled:
-            abilityUsedState[player]?.used ||
+            gamestate.abilityUsedState[player]?.used ||
             gamestate.thinkingTimeTurn !== player ||
             (gamestate.isPlayerAI[player] &&
               gamestate.thinkingTimeTurn === player),

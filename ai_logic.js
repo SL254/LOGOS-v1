@@ -137,8 +137,8 @@ function aithinkingTimeTurn() {
   if (philosopherId === "plato") {
     // 사용 가능한 횟수만큼 반복 시도
     while (
-      abilityUsedState[gamestate.thinkingTimeTurn].usedCount <
-      abilityUsedState[gamestate.thinkingTimeTurn].maxUses
+      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].usedCount <
+      gamestate.abilityUsedState[gamestate.thinkingTimeTurn].maxUses
     ) {
       const abilityAction = executePlatoAbilityCheck(
         gamestate.thinkingTimeTurn
@@ -155,7 +155,7 @@ function aithinkingTimeTurn() {
   // 소크라테스 능력 체크 (단일 사용으로 변경)
   if (philosopherId === "socrates") {
     // 'used' 플래그를 확인하여 아직 사용하지 않았을 경우에만 실행
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       const abilityAction = executeSocratesAbilityCheck(
         gamestate.thinkingTimeTurn
       );
@@ -167,7 +167,7 @@ function aithinkingTimeTurn() {
 
   // 데카르트 능력 체크 (단일 사용)
   if (philosopherId === "descartes") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeDescartesAbilityCheck(
         gamestate.thinkingTimeTurn
@@ -179,7 +179,7 @@ function aithinkingTimeTurn() {
   }
   // 흄 능력 체크 (단일 사용으로 수정)
   if (philosopherId === "hume") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 이렇게 바꿔야 합니다.
       const abilityAction = executeHumeAbilityCheck(gamestate.thinkingTimeTurn);
       if (abilityAction) {
@@ -188,7 +188,7 @@ function aithinkingTimeTurn() {
     }
   }
   if (philosopherId === "wittgenstein") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeWittgensteinAbilityCheck(
         gamestate.thinkingTimeTurn
@@ -199,7 +199,7 @@ function aithinkingTimeTurn() {
     }
   }
   if (philosopherId === "kuhn") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeKuhnAbilityCheck(gamestate.thinkingTimeTurn);
       if (abilityAction) {
@@ -209,7 +209,7 @@ function aithinkingTimeTurn() {
   }
   // 데리다 능력 체크 (단일 사용)
   if (philosopherId === "derrida") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
       const abilityAction = executeDerridaAbilityCheck(
         gamestate.thinkingTimeTurn
@@ -220,7 +220,7 @@ function aithinkingTimeTurn() {
     }
   }
   if (philosopherId === "kant") {
-    if (!abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
+    if (!gamestate.abilityUsedState[gamestate.thinkingTimeTurn]?.used) {
       // 👈 수정
       const kantAction = executeKantAbilityCheck(gamestate.thinkingTimeTurn);
       if (kantAction) {
@@ -1315,7 +1315,9 @@ function aiTurn() {
             : gamestate.playerB_Data.id;
 
         if (opponentPhilosopherId === "hume") {
-          const opponentAbilityState = abilityUsedState[opponentPlayer] || {
+          const opponentAbilityState = gamestate.abilityUsedState[
+            opponentPlayer
+          ] || {
             used: false,
           };
 
@@ -1495,7 +1497,9 @@ function aiTurn() {
               : gamestate.playerB_Data.id;
 
           if (opponentPhilosopherId === "hume") {
-            const opponentAbilityState = abilityUsedState[opponentPlayer] || {
+            const opponentAbilityState = gamestate.abilityUsedState[
+              opponentPlayer
+            ] || {
               used: false,
             };
 
@@ -1570,7 +1574,9 @@ function aiTurn() {
         }
 
         if (opponentPhilosopherId === "kant") {
-          const opponentAbilityState = abilityUsedState[opponentPlayer] || {
+          const opponentAbilityState = gamestate.abilityUsedState[
+            opponentPlayer
+          ] || {
             used: false,
           };
 
@@ -2527,7 +2533,10 @@ function isPlanTooRisky(path, perspectivePlayer) {
 
 function executePlatoAbilityCheck(player) {
   // 0. 사용 횟수 체크
-  if (abilityUsedState[player].usedCount >= abilityUsedState[player].maxUses) {
+  if (
+    gamestate.abilityUsedState[player].usedCount >=
+    gamestate.abilityUsedState[player].maxUses
+  ) {
     return null; // 이미 최대 사용 횟수에 도달
   }
 
@@ -2672,7 +2681,7 @@ function executePlatoAbilityCheck(player) {
   // 능력 사용 실행
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  abilityUsedState[player].usedCount++;
+  gamestate.abilityUsedState[player].usedCount++;
 
   const newTheorem = {
     propId: `prop_${Date.now()}_${Math.random()}`,
@@ -2707,7 +2716,7 @@ function executeSocratesAbilityCheck(player) {
   // 1. 능력 사용 기본 조건 확인 (used 플래그로 변경)
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) {
+  if (gamestate.abilityUsedState[player]?.used) {
     // 👈 usedCount >= maxUses 대신 .used가 있는지 확인
     return null;
   }
@@ -2890,7 +2899,7 @@ function executeSocratesAbilityCheck(player) {
     return null;
   }
 
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
   socratesDisabledProps.push({
     propId: bestCandidate.propData.propId,
   });
@@ -2914,7 +2923,7 @@ function executeDescartesAbilityCheck(player) {
   // --- 1. 기본 조건 확인 ---
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) {
+  if (gamestate.abilityUsedState[player]?.used) {
     return null;
   }
   const availablePropositions = gamestate.truePropositions.filter(
@@ -3001,7 +3010,7 @@ function executeDescartesAbilityCheck(player) {
     "color: #3498db; font-weight: bold;"
   );
 
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
 
   const propIndex = gamestate.truePropositions.findIndex(
     (p) => p.propId === bestCandidate.propData.propId
@@ -3047,7 +3056,7 @@ function executeHumeAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) {
+  if (gamestate.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
@@ -3170,7 +3179,7 @@ function executeHumeAbilityCheck(player) {
     "color: #e67e22; font-weight: bold;" // 흄의 색상 코드로 변경
   );
 
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
 
   gamestate.truePropositions = gamestate.truePropositions.filter(
     (p) => p.propId !== bestCandidate.propData.propId
@@ -3263,7 +3272,7 @@ function executeWittgensteinAbilityCheck(player) {
   // --- 0. 기본 조건 검사 ---
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) {
+  if (gamestate.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
@@ -3404,7 +3413,7 @@ function executeWittgensteinAbilityCheck(player) {
           "color: #2ecc71;"
         );
 
-        abilityUsedState[player].used = true;
+        gamestate.abilityUsedState[player].used = true;
         gamestate.truePropositions = remainingPropositions; // 전제들이 제거된 목록으로 교체
 
         gamestate.truePropositions.push({
@@ -3542,7 +3551,7 @@ function executeKuhnsAbility(propIdToChange, player) {
 
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
 
   const newParadigmProp = simResult.finalPropList.find(
     (p) => p.source === "kuhn_ability"
@@ -3559,7 +3568,7 @@ function executeKuhnsAbility(propIdToChange, player) {
 function executeKuhnAbilityCheck(player) {
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) return null;
+  if (gamestate.abilityUsedState[player]?.used) return null;
 
   const userMadePropsCount = gamestate.truePropositions.filter(
     (p) => p.type === "user-made"
@@ -3691,7 +3700,7 @@ function executeDerridaAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
     player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
-  if (abilityUsedState[player]?.used) {
+  if (gamestate.abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
@@ -3831,7 +3840,7 @@ function executeDerridaAbilityCheck(player) {
     "color: #9b59b6; font-weight: bold;"
   );
 
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
 
   // 원본 명제 삭제
   gamestate.truePropositions = gamestate.truePropositions.filter(
@@ -4017,7 +4026,7 @@ function executeKantAbilityCheck(player) {
     "color: #1abc9c; font-weight: bold;"
   );
 
-  abilityUsedState[player].used = true;
+  gamestate.abilityUsedState[player].used = true;
 
   const cardsToCreate = propositionToNaturalText(
     bestCandidate.proposition
