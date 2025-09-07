@@ -1322,7 +1322,7 @@ function getTopicParticle(name) {
 }
 
 function setupGame(selectedCharacters, testConfig = null) {
-  playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
+  gamestate.playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
   playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
   truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
 
@@ -1338,34 +1338,34 @@ function setupGame(selectedCharacters, testConfig = null) {
   let p1_card_obj, p2_card_obj;
   let subjectA, subjectB;
 
-  subjectA = playerA_Data.cardText[gamestate.currentLang.langCode];
+  subjectA = gamestate.playerA_Data.cardText[gamestate.currentLang.langCode];
   subjectB = playerB_Data.cardText[gamestate.currentLang.langCode];
 
   // 1. 미러전(동일 철학자 선택) 처리
   if (p1_id === p2_id) {
     if (gamestate.currentLang.langCode === "ko") {
-      const fullName = playerA_Data.name.ko;
+      const fullName = gamestate.playerA_Data.name.ko;
       const nameParts = fullName.split(" ");
       const lastName = nameParts[nameParts.length - 1];
       const particle = getTopicParticle(lastName);
       subjectA = `백색 ${lastName}${particle}`;
       subjectB = `흑색 ${lastName}${particle}`;
     } else {
-      const fullName = playerA_Data.name.en;
+      const fullName = gamestate.playerA_Data.name.en;
       const nameParts = fullName.split(" ");
       const lastName = nameParts[nameParts.length - 1];
       subjectA = `White ${lastName}`;
       subjectB = `Black ${lastName}`;
     }
     document.getElementById("player-a-title").innerHTML = `⚪️ ${
-      playerA_Data.name[gamestate.currentLang.langCode]
+      gamestate.playerA_Data.name[gamestate.currentLang.langCode]
     }(백)`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
       playerB_Data.name[gamestate.currentLang.langCode]
     }(흑)`;
   } else {
     document.getElementById("player-a-title").innerHTML = `⚪️ ${
-      playerA_Data.name[gamestate.currentLang.langCode]
+      gamestate.playerA_Data.name[gamestate.currentLang.langCode]
     }`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
       playerB_Data.name[gamestate.currentLang.langCode]
@@ -1611,7 +1611,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   // 7. 초상화 및 능력 사용 상태 초기화
   const portraitA_El = document.getElementById("player-a-portrait");
   if (portraitA_El) {
-    portraitA_El.style.backgroundImage = `url('${playerA_Data.image.p1}')`;
+    portraitA_El.style.backgroundImage = `url('${gamestate.playerA_Data.image.p1}')`;
   }
   const portraitB_El = document.getElementById("player-b-portrait");
   if (portraitB_El) {
@@ -1845,7 +1845,8 @@ function activateAbility(player) {
   if (inTutorialMode) {
     return; // 튜토리얼 모드에서는 아무것도 하지 않고 즉시 함수를 종료합니다.
   }
-  const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
+  const philosopherId =
+    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
 
   const state = abilityUsedState[player];
   if (state) {
@@ -1933,13 +1934,14 @@ function getAbilityButtonStateFor(player) {
   // 현재 게임이 진행 중이 아니거나, 해당 플레이어의 철학자 정보가 없으면 기본 상태 반환
   if (
     gameIsOver ||
-    (player === "A" && !playerA_Data) ||
+    (player === "A" && !gamestate.playerA_Data) ||
     (player === "B" && !playerB_Data)
   ) {
     return { visible: false, disabled: true, text: "" }; // 게임 종료 시에만 숨김
   }
 
-  const philosopherData = player === "A" ? playerA_Data : playerB_Data;
+  const philosopherData =
+    player === "A" ? gamestate.playerA_Data : playerB_Data;
   const philosopherId = philosopherData.id;
 
   // 사유 시간이 아니면 버튼 숨김
@@ -2155,7 +2157,7 @@ function completeProposition() {
   // 공리이거나, 이미 참 목록에 있으면 '증명된 것'으로 간주합니다.
   const isAlreadyProven = isAxiom || isAlreadyInTrueList;
   const currentPlayerId =
-    currentPlayer === "A" ? playerA_Data.id : playerB_Data.id;
+    currentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
 
   // 1. "불가능한 경우"를 먼저 확인하고 함수를 즉시 종료시킵니다.
   // 현재 플레이어가 니체가 "아닌데" 중복 명제를 완성하려는 경우 -> 거부
@@ -2342,10 +2344,12 @@ function endGame(winner, winningProposition) {
   document.getElementById("eureka-modal").classList.remove("visible");
   const statusEl = document.getElementById("status");
   let winnerName;
-  const isMirrorMatch = playerA_Data.id === playerB_Data.id;
+  const isMirrorMatch = gamestate.playerA_Data.id === playerB_Data.id;
 
   if (winner === "A") {
-    winnerName = getLastName(playerA_Data.name[gamestate.currentLang.langCode]);
+    winnerName = getLastName(
+      gamestate.playerA_Data.name[gamestate.currentLang.langCode]
+    );
     if (isMirrorMatch) {
       // 미러전일 경우, A플레이어(선공)에게 색상 식별자를 추가합니다.
       winnerName +=
@@ -2482,7 +2486,7 @@ function checkRoundEndConditions() {
   if (!hasValidCardMove && !canComplete) {
     const playerName =
       currentPlayer === "A"
-        ? playerA_Data.name[gamestate.currentLang.langCode]
+        ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
         : playerB_Data.name[gamestate.currentLang.langCode];
 
     // 'AI vs AI' 모드일 경우에만 경고창을 건너뜁니다.
@@ -2563,7 +2567,8 @@ function endThinkingTime() {
   ); // 기존 코드
 
   // 현재 게임에 마르크스가 있는지 확인합니다.
-  const isMarxInGame = playerA_Data.id === "marx" || playerB_Data.id === "marx"; // playerA_Data와 playerB_Data를 참조하여 마르크스 존재 여부 확인
+  const isMarxInGame =
+    gamestate.playerA_Data.id === "marx" || playerB_Data.id === "marx"; // gamestate.playerA_Data와 playerB_Data를 참조하여 마르크스 존재 여부 확인
 
   // 마르크스가 있다면, 새로 분배된 손패에서 플레이 불가능한 카드들을 제거합니다.
   if (isMarxInGame) {
@@ -2593,13 +2598,13 @@ function endThinkingTime() {
 }
 
 function render() {
-  if (playerA_Data && playerB_Data) {
+  if (gamestate.playerA_Data && playerB_Data) {
     // 데이터가 있을 때만 실행
-    const isMirrorMatch = playerA_Data.id === playerB_Data.id;
+    const isMirrorMatch = gamestate.playerA_Data.id === playerB_Data.id;
     if (isMirrorMatch) {
       // 미러전일 경우
       document.getElementById("player-a-title").innerHTML = `⚪️ ${
-        playerA_Data.name[gamestate.currentLang.langCode]
+        gamestate.playerA_Data.name[gamestate.currentLang.langCode]
       }(백)`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
         playerB_Data.name[gamestate.currentLang.langCode]
@@ -2607,7 +2612,7 @@ function render() {
     } else {
       // 일반 대전일 경우
       document.getElementById("player-a-title").innerHTML = `⚪️ ${
-        playerA_Data.name[gamestate.currentLang.langCode]
+        gamestate.playerA_Data.name[gamestate.currentLang.langCode]
       }`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
         playerB_Data.name[gamestate.currentLang.langCode]
@@ -2750,8 +2755,8 @@ function render() {
     // 개체별 속성 대립 - 세부 그룹으로 나누기
     if (groups.subjectOpposition.length > 0) {
       const templates = gamestate.currentLang.axiom_templates;
-      const subjectA = playerA_Data
-        ? playerA_Data.cardText[gamestate.currentLang.langCode]
+      const subjectA = gamestate.playerA_Data
+        ? gamestate.playerA_Data.cardText[gamestate.currentLang.langCode]
         : "";
       const subjectB = playerB_Data
         ? playerB_Data.cardText[gamestate.currentLang.langCode]
@@ -2964,7 +2969,7 @@ function render() {
       }
       const ownerName = getLastName(
         propData.owner === "A"
-          ? playerA_Data.name[gamestate.currentLang.langCode]
+          ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
           : playerB_Data.name[gamestate.currentLang.langCode]
       );
       const ownerPrefix =
@@ -3120,7 +3125,7 @@ function render() {
       // 2. 하단 상태바에 현재 턴인 플레이어를 표시합니다.
       const thinkingPlayerName = getLastName(
         thinkingTimeTurn === "A"
-          ? playerA_Data.name[gamestate.currentLang.langCode]
+          ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
           : playerB_Data.name[gamestate.currentLang.langCode]
       );
       const thinkingPlayerColor = thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
@@ -3171,8 +3176,10 @@ function render() {
         endTurnBtn.disabled = true;
       } else {
         if (currentPlayer === "A") {
-          const playerAName = playerA_Data
-            ? getLastName(playerA_Data.name[gamestate.currentLang.langCode])
+          const playerAName = gamestate.playerA_Data
+            ? getLastName(
+                gamestate.playerA_Data.name[gamestate.currentLang.langCode]
+              )
             : gamestate.currentLang.ui.playerAName;
           statusEl.innerHTML = `<span class="turn-indicator">⚪️ ${playerAName}${gamestate.currentLang.ui.statusTurn}</span>`;
           playerAreaA.classList.remove("disabled");

@@ -265,7 +265,7 @@ function startTutorial(startStep = 0) {
   audioManager.play("game-play");
 
   // 튜토리얼 시작 시, 철학자를 소크라테스와 플라톤으로 강제 초기화합니다.
-  playerA_Data = PHILOSOPHERS["socrates"];
+  gamestate.playerA_Data = PHILOSOPHERS["socrates"];
   playerB_Data = PHILOSOPHERS["plato"];
 
   // 튜토리얼에 사용될 철학자(소크라테스, 플라톤)의 능력 사용 상태를 초기화합니다.
@@ -1932,12 +1932,12 @@ function setupTutorialScenario(step) {
     gameMode = "2P";
 
     // 튜토리얼을 위한 기본 철학자 데이터 설정
-    playerA_Data = PHILOSOPHERS["socrates"];
+    gamestate.playerA_Data = PHILOSOPHERS["socrates"];
     playerB_Data = PHILOSOPHERS["plato"];
 
     const portraitA_El = document.getElementById("player-a-portrait");
     if (portraitA_El) {
-      portraitA_El.style.backgroundImage = `url('${playerA_Data.image.p1}')`;
+      portraitA_El.style.backgroundImage = `url('${gamestate.playerA_Data.image.p1}')`;
     }
     const portraitB_El = document.getElementById("player-b-portrait");
     if (portraitB_El) {
