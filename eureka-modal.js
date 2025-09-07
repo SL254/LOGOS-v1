@@ -10,7 +10,7 @@ function openEurekaModal() {
   );
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
-  if (!isThinkingTime) {
+  if (!gamestate.isThinkingTime) {
     startProofRecording();
 
     // 기존 전제들(공리, 승리 조건 등)을 논증 기록에 추가
@@ -380,7 +380,7 @@ function openEurekaModal() {
   });
   const modalTitle = document.getElementById("eureka-title");
   const confirmBtn = document.getElementById("modal-confirm-btn");
-  if (isThinkingTime) {
+  if (gamestate.isThinkingTime) {
     modalTitle.textContent = gamestate.currentLang.modals.eurekaTitleTheorem;
     confirmBtn.textContent = gamestate.currentLang.modals.confirmTheoremButton;
     confirmBtn.onclick = addTheoremsToList;
@@ -977,7 +977,7 @@ function addTheoremsToList() {
 }
 
 function proveVictory() {
-  if (isThinkingTime) return;
+  if (gamestate.isThinkingTime) return;
 
   if (inPuzzleMode) {
     const myVictoryCondition = gamestate.truePropositions.find(

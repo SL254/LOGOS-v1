@@ -1678,7 +1678,7 @@ function resetGame(selectedCharacters, testConfig = null) {
   gamestate.currentPlayer = "A";
   gamestate.gameIsOver = false;
   gamestate.currentRound = 1;
-  isThinkingTime = false;
+  gamestate.isThinkingTime = false;
 
   eurekaUsedInRound = { A: false, B: false };
 
@@ -1779,7 +1779,7 @@ function checkNextTurn() {
 
   clearAllAITimeouts(); // 기존에 예약된 AI 동작이 있다면 모두 취소
 
-  if (isThinkingTime) {
+  if (gamestate.isThinkingTime) {
     // --- 사유 시간일 때의 턴 관리 ---
     // 현재 생각해야 할 플레이어가 AI라면, AI의 사유 시간 턴을 예약
     if (gamestate.isPlayerAI[thinkingTimeTurn]) {
@@ -1801,7 +1801,7 @@ function checkNextTurn() {
 }
 function endTurn() {
   // 사유 시간 중일 때의 턴 종료 로직
-  if (isThinkingTime) {
+  if (gamestate.isThinkingTime) {
     audioManager.playSfx("end");
     // 해당 라운드를 먼저 시작했던 플레이어 (사유 시간에는 두 번째로 행동함)
     const roundStarter = gamestate.currentRound % 2 === 1 ? "A" : "B";
@@ -1945,7 +1945,7 @@ function getAbilityButtonStateFor(player) {
   const philosopherId = philosopherData.id;
 
   // 사유 시간이 아니면 버튼 숨김
-  if (!isThinkingTime) {
+  if (!gamestate.isThinkingTime) {
     return { visible: false, disabled: true, text: "" };
   }
 
@@ -1953,7 +1953,7 @@ function getAbilityButtonStateFor(player) {
   switch (philosopherId) {
     case "plato":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -1970,7 +1970,7 @@ function getAbilityButtonStateFor(player) {
 
     case "socrates":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2000,7 +2000,7 @@ function getAbilityButtonStateFor(player) {
 
     case "descartes":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2015,7 +2015,7 @@ function getAbilityButtonStateFor(player) {
 
     case "wittgenstein":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2030,7 +2030,7 @@ function getAbilityButtonStateFor(player) {
 
     case "derrida":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2044,7 +2044,7 @@ function getAbilityButtonStateFor(player) {
       break;
     case "hume":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2058,7 +2058,7 @@ function getAbilityButtonStateFor(player) {
       break;
     case "kuhn":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         // 플레이어가 카드를 놓아 생성한 명제만 카운트
         const userMadePropsCount = gamestate.truePropositions.filter(
           (p) => p.type === "user-made"
@@ -2078,7 +2078,7 @@ function getAbilityButtonStateFor(player) {
       break;
     case "kant":
       // 사유 시간일 때 항상 버튼 표시
-      if (isThinkingTime) {
+      if (gamestate.isThinkingTime) {
         return {
           visible: true,
           // 사용 완료, 자기 턴 아님, AI 턴일 때 비활성화
@@ -2093,7 +2093,7 @@ function getAbilityButtonStateFor(player) {
 
     // --- 여기에 새로운 철학자들의 case를 계속 추가 ---
     // case 'descartes':
-    //     if (isThinkingTime && thinkingTimeTurn === player) { ... }
+    //     if (gamestate.isThinkingTime && thinkingTimeTurn === player) { ... }
     //     break;
   }
 
@@ -2105,7 +2105,7 @@ function playCard(player, cardToPlay) {
   if (
     player !== gamestate.currentPlayer ||
     gamestate.gameIsOver ||
-    isThinkingTime
+    gamestate.isThinkingTime
   )
     return;
 
@@ -2145,7 +2145,7 @@ function completeProposition() {
   if (
     gamestate.currentProposition.length === 0 ||
     gamestate.gameIsOver ||
-    isThinkingTime
+    gamestate.isThinkingTime
   )
     return false;
 
@@ -2240,7 +2240,7 @@ function completeProposition() {
 }
 
 function undoProposition() {
-  if (gamestate.gameIsOver || isThinkingTime) return;
+  if (gamestate.gameIsOver || gamestate.isThinkingTime) return;
   if (gameMode === "AI" && gamestate.currentPlayer === aiPlayer) return;
 
   if (gamestate.currentProposition.length > 0) {
@@ -2341,11 +2341,11 @@ function undoProposition() {
 function declareEureka(player) {
   if (gamestate.gameIsOver) return;
 
-  if (!isThinkingTime && player !== gamestate.currentPlayer) return;
+  if (!gamestate.isThinkingTime && player !== gamestate.currentPlayer) return;
 
   if (gameMode === "AI" && player === aiPlayer) return;
 
-  if (!isThinkingTime) {
+  if (!gamestate.isThinkingTime) {
     if (eurekaUsedInRound[player]) {
       return;
     }
@@ -2500,7 +2500,7 @@ function endGame(winner, winningProposition) {
 function checkRoundEndConditions() {
   if (
     gamestate.gameIsOver ||
-    isThinkingTime ||
+    gamestate.isThinkingTime ||
     cardsPlayedThisTurn[gamestate.currentPlayer] > 0
   )
     return;
@@ -2558,7 +2558,7 @@ function startThinkingTime() {
 
   gamestate.currentProposition = [];
   lastCardPlayer = null;
-  isThinkingTime = true;
+  gamestate.isThinkingTime = true;
   cardsPlayedThisTurn = { A: 0, B: 0 };
 
   // 사유 시간 시작 시 밤 테마로 배경 변경
@@ -2583,7 +2583,7 @@ function endThinkingTime() {
   audioManager.fadeOut("thinking-time"); // 기존 코드
   audioManager.play("game-play"); // 기존 코드
 
-  isThinkingTime = false; // 기존 코드
+  gamestate.isThinkingTime = false; // 기존 코드
   thinkingTimeTurn = null; // 기존 코드
 
   // 사유 시간 종료 시 낮 테마로 배경 복원
@@ -2700,7 +2700,7 @@ function render() {
     cardEl.className = "card card-white";
     cardEl.textContent = card.text;
     // 사유 시간에는 모든 카드를 비활성화
-    if (isThinkingTime) {
+    if (gamestate.isThinkingTime) {
       cardEl.classList.add("unplayable");
     } else {
       // 사유 시간이 아닐 때의 기존 로직
@@ -2739,7 +2739,7 @@ function render() {
     cardEl.className = "card card-black";
     cardEl.textContent = card.text;
     // 사유 시간에는 모든 카드를 비활성화
-    if (isThinkingTime) {
+    if (gamestate.isThinkingTime) {
       cardEl.classList.add("unplayable");
     } else {
       // 사유 시간이 아닐 때의 기존 로직
@@ -3128,7 +3128,7 @@ function render() {
 
   if (playerATitleBox && playerBTitleBox) {
     // 사유 시간인지 일반 턴인지에 따라 현재 활성화된 플레이어를 결정
-    const activePlayer = isThinkingTime
+    const activePlayer = gamestate.isThinkingTime
       ? thinkingTimeTurn
       : gamestate.currentPlayer;
 
@@ -3167,7 +3167,7 @@ function render() {
       completeBtn.disabled = true;
       undoBtn.disabled = true;
       endTurnBtn.disabled = true;
-    } else if (isThinkingTime) {
+    } else if (gamestate.isThinkingTime) {
       // 1. 전용 UI의 제목과 설명을 업데이트합니다.
       document.getElementById("thinking-time-title").textContent =
         gamestate.currentLang.ui.thinkingTimeTitle;

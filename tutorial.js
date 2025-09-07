@@ -1533,14 +1533,16 @@ function openEurekaModalTutorial() {
 
   const modalTitle = document.getElementById("eureka-title");
   const confirmBtn = document.getElementById("modal-confirm-btn");
-  modalTitle.textContent = isThinkingTime
+  modalTitle.textContent = gamestate.isThinkingTime
     ? gamestate.currentLang.modals.eurekaTitleTheorem
     : gamestate.currentLang.modals.eurekaTitleVictory;
-  confirmBtn.textContent = isThinkingTime
+  confirmBtn.textContent = gamestate.isThinkingTime
     ? gamestate.currentLang.modals.confirmTheoremButton
     : gamestate.currentLang.modals.confirmVictoryButton;
 
-  confirmBtn.onclick = isThinkingTime ? addTheoremsToList : proveVictory;
+  confirmBtn.onclick = gamestate.isThinkingTime
+    ? addTheoremsToList
+    : proveVictory;
 
   document.getElementById("cancel-assumption-btn").style.display =
     currentAssumption ? "inline-block" : "none";
@@ -1758,7 +1760,7 @@ function clearHighlights() {
       if (cardData) {
         // 현재 게임 상태에 따라 카드가 비활성화 되어야 하는지 다시 확인합니다.
         const shouldBeUnplayable =
-          isThinkingTime ||
+          gamestate.isThinkingTime ||
           player !== gamestate.currentPlayer ||
           cardsPlayedThisTurn[player] >= 1 ||
           !isValidPlay(cardData, gamestate.currentProposition);
@@ -1934,7 +1936,7 @@ function setupTutorialScenario(step) {
     gamestate.propositionStarter = "A";
     gamestate.gameIsOver = false;
     gamestate.currentRound = 1;
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     lastPropositionMaker = null;
     currentAssumption = null;
     lastCardPlayer = null;
@@ -2053,7 +2055,7 @@ function setupTutorialScenario(step) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     gamestate.currentPlayer = "A";
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
     const premises = [
@@ -2117,7 +2119,7 @@ function setupTutorialScenario(step) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     gamestate.currentPlayer = "A";
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
     const premises =
@@ -2153,7 +2155,7 @@ function setupTutorialScenario(step) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     gamestate.currentPlayer = "A";
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
       gamestate.currentLang.langCode === "ko"
@@ -2183,7 +2185,7 @@ function setupTutorialScenario(step) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     gamestate.currentPlayer = "A";
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
       gamestate.currentLang.langCode === "ko"
@@ -2232,7 +2234,7 @@ function setupTutorialScenario(step) {
 
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     gamestate.currentPlayer = "A";
-    isThinkingTime = false;
+    gamestate.isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
     // 승리 조건 설정

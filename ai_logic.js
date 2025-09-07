@@ -961,7 +961,7 @@ function normalizeProposition(prop) {
   return prop;
 }
 function aiTurn() {
-  if (gamestate.gameIsOver || isThinkingTime) return;
+  if (gamestate.gameIsOver || gamestate.isThinkingTime) return;
 
   // --- 1. 새로운 갬빗 계획 수립 및 기존 계획 유효성 검사 ---
   activeGambitPlan = findBestGambitPlan(gamestate.currentPlayer);
@@ -2116,7 +2116,7 @@ function getTemporaryUsableTruths() {
   }
 }
 function aiDeclareEureka() {
-  if (isThinkingTime) return false;
+  if (gamestate.isThinkingTime) return false;
 
   const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
   const myVictoryCondition = gamestate.truePropositions.find(
