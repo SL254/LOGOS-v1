@@ -349,7 +349,7 @@ function startPuzzle(levelNum, levelData) {
     platoSubject,
     gamestate.currentLang
   );
-  parsedAxioms = currentAxioms
+  gamestate.parsedAxioms = currentAxioms
     .map((str) => ({
       type: "axiom",
       proposition: parsePropositionFromString(str),
@@ -421,7 +421,7 @@ function startPuzzle(levelNum, levelData) {
   });
 
   // 3. 내부 진리 집합 재구성
-  internalTruthSet = parsedAxioms.map((a) => a.proposition);
+  internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   gamestate.truePropositions.forEach((p) =>
     internalTruthSet.push(p.proposition)
   );

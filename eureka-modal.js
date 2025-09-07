@@ -14,23 +14,25 @@ function openEurekaModal() {
     startProofRecording();
 
     // 기존 전제들(공리, 승리 조건 등)을 논증 기록에 추가
-    [...parsedAxioms, ...gamestate.truePropositions].forEach((propData) => {
-      if (propData.proposition) {
-        const stepId = recordProofStep(
-          "premise",
-          [],
-          propData.proposition,
-          null
-        );
-        propData.proofStepId = stepId;
+    [...gamestate.parsedAxioms, ...gamestate.truePropositions].forEach(
+      (propData) => {
+        if (propData.proposition) {
+          const stepId = recordProofStep(
+            "premise",
+            [],
+            propData.proposition,
+            null
+          );
+          propData.proofStepId = stepId;
+        }
       }
-    });
+    );
   }
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
   const allSelectablePropositions = [
-    ...parsedAxioms,
+    ...gamestate.parsedAxioms,
     ...gamestate.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
@@ -519,7 +521,10 @@ function addPremiseToWorkbench(propObject) {
     propObject.proposition &&
     !propObject.isAssumption
   ) {
-    const existing = [...parsedAxioms, ...gamestate.truePropositions].find(
+    const existing = [
+      ...gamestate.parsedAxioms,
+      ...gamestate.truePropositions,
+    ].find(
       (existing) =>
         existing.proposition &&
         arePropositionsEqual(existing.proposition, propObject.proposition)
@@ -814,7 +819,7 @@ function applyRule() {
             // 3. 기존 전제들에서 찾기 (가정인 경우 제외)
             if (!p.isAssumption) {
               const existing = [
-                ...parsedAxioms,
+                ...gamestate.parsedAxioms,
                 ...gamestate.truePropositions,
               ].find(
                 (existing) =>
@@ -926,7 +931,7 @@ function addTheoremsToList() {
   );
 
   const trulyNewTheorems = potentialTheorems.filter((theoremData) => {
-    const isAxiom = parsedAxioms.some((a) =>
+    const isAxiom = gamestate.parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, theoremData.proposition)
     );
     const isAlreadyProven = gamestate.truePropositions.some(

@@ -1185,7 +1185,7 @@ function openEurekaModalTutorial() {
   premiseList.innerHTML = "";
 
   const allSelectablePropositions = [
-    ...parsedAxioms,
+    ...gamestate.parsedAxioms,
     ...gamestate.truePropositions.filter(
       (p) =>
         p.type === "user-made" || p.type === "theorem" || p.type === "victory"
@@ -1855,14 +1855,14 @@ function setupTutorialScenario(step) {
       gamestate.currentLang
     );
 
-    parsedAxioms = currentAxioms
+    gamestate.parsedAxioms = currentAxioms
       .map((str) => ({
         type: "axiom",
         proposition: parsePropositionFromString(str),
       }))
       .filter((a) => a.proposition);
 
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     const {
       if: ifKeyword,
       and: andKeyword,
@@ -2015,7 +2015,7 @@ function setupTutorialScenario(step) {
     );
 
     gamestate.truePropositions = [];
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
 
     const premises = [
       gamestate.currentLang.langCode === "ko"
@@ -2040,7 +2040,7 @@ function setupTutorialScenario(step) {
     startThinkingTime();
   } else if (step === 5) {
     gamestate.truePropositions = [];
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2104,7 +2104,7 @@ function setupTutorialScenario(step) {
     });
   } else if (step === 6) {
     gamestate.truePropositions = [];
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2140,7 +2140,7 @@ function setupTutorialScenario(step) {
     openEurekaModalTutorial();
   } else if (step === 7) {
     gamestate.truePropositions = [];
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2170,7 +2170,7 @@ function setupTutorialScenario(step) {
     openEurekaModalTutorial();
   } else if (step === 8) {
     gamestate.truePropositions = [];
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
@@ -2212,14 +2212,14 @@ function setupTutorialScenario(step) {
       platoSubject,
       gamestate.currentLang
     );
-    parsedAxioms = currentAxioms
+    gamestate.parsedAxioms = currentAxioms
       .map((str) => ({
         type: "axiom",
         proposition: parsePropositionFromString(str),
       }))
       .filter((a) => a.proposition);
 
-    internalTruthSet = parsedAxioms.map((a) => a.proposition);
+    internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";

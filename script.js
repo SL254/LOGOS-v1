@@ -1470,13 +1470,13 @@ function setupGame(selectedCharacters, testConfig = null) {
     gamestate.currentLang,
     isMarxInGame
   );
-  parsedAxioms = currentAxioms
+  gamestate.parsedAxioms = currentAxioms
     .map((str) => ({
       type: "axiom",
       proposition: parsePropositionFromString(str),
     }))
     .filter((a) => a.proposition);
-  internalTruthSet = parsedAxioms.map((a) => a.proposition);
+  internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
 
   const { if: ifKeyword, wins, and } = gamestate.currentLang.keywords;
 
@@ -2147,7 +2147,7 @@ function completeProposition() {
     return false;
   }
 
-  const isAxiom = parsedAxioms.some((a) =>
+  const isAxiom = gamestate.parsedAxioms.some((a) =>
     arePropositionsEqual(a.proposition, parsedProp)
   );
   const isAlreadyInTrueList = gamestate.truePropositions.some(
@@ -2274,7 +2274,7 @@ function undoProposition() {
       }
       audioManager.playSfx("undo");
       gamestate.truePropositions.splice(lastUserMadePropIndex, 1);
-      let newTruthSet = parsedAxioms.map((a) => a.proposition);
+      let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
       const propositionsToReverify = gamestate.truePropositions
         .filter(
           (p) =>

@@ -539,7 +539,7 @@ function aiCanActuallyComplete() {
       ? gamestate.playerA_Data.id
       : gamestate.playerB_Data.id;
   if (aiPhilosopherId !== "nietzsche") {
-    const isAxiom = parsedAxioms.some((a) =>
+    const isAxiom = gamestate.parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, propToComplete)
     );
     const isAlreadyProven = gamestate.truePropositions.some(
@@ -1125,7 +1125,7 @@ function aiTurn() {
           let isDuplicate = false;
 
           // 1. 공리와 비교
-          const axiomDuplicate = parsedAxioms.some((axiom) => {
+          const axiomDuplicate = gamestate.parsedAxioms.some((axiom) => {
             if (axiom.proposition) {
               const isEqual = arePropositionsEqual(
                 axiom.proposition,
@@ -2046,7 +2046,7 @@ function getTemporaryUsableTruths() {
 
   // 2. 공리와 필터링된 명제를 합쳐 AI가 사용할 최종 전제 목록을 만듭니다.
   const filteredPremises = [
-    ...parsedAxioms.map((a) => a.proposition),
+    ...gamestate.parsedAxioms.map((a) => a.proposition),
     ...filteredUserMadeProps.map((p) => p.proposition).filter(Boolean),
   ];
 
@@ -2110,7 +2110,7 @@ function aiDeclareEureka() {
 
     // 공리와 활성화된 명제들만 모아서 '순수한 문제집'을 만듦
     const foundationalTruths = [
-      ...parsedAxioms.map((a) => a.proposition),
+      ...gamestate.parsedAxioms.map((a) => a.proposition),
       ...activePropositions.map((p) => p.proposition).filter(Boolean), // proposition이 있는 경우만
     ];
 
@@ -2940,7 +2940,7 @@ function executeDescartesAbilityCheck(player) {
   }
 
   // 진리 집합 재구성 (이 부분은 문제가 없습니다)
-  let newTruthSet = parsedAxioms.map((a) => a.proposition);
+  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -3016,7 +3016,7 @@ function executeHumeAbilityCheck(player) {
     const propositionsWithoutOriginal = gamestate.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
-    let tempTruthSet = parsedAxioms.map((a) => a.proposition);
+    let tempTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     propositionsWithoutOriginal.forEach((p) => {
       if (p.proposition) tempTruthSet.push(p.proposition);
     });
@@ -3416,7 +3416,7 @@ function simulateKuhnsAbility(propIdToChange) {
     proposition: newParadigmProposition,
   };
 
-  const axioms = parsedAxioms.map((a) => a.proposition);
+  const axioms = gamestate.parsedAxioms.map((a) => a.proposition);
   const victoryConditions = gamestate.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
@@ -3668,7 +3668,7 @@ function executeDerridaAbilityCheck(player) {
     const propositionsWithoutOriginal = gamestate.truePropositions.filter(
       (p) => p.propId !== propData.propId
     );
-    let tempTruthSet = parsedAxioms.map((a) => a.proposition);
+    let tempTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
     propositionsWithoutOriginal.forEach((p) => {
       if (p.proposition) tempTruthSet.push(p.proposition);
     });

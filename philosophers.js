@@ -457,7 +457,7 @@ function confirmDescartesAbility() {
   // 3. ★★★ 핵심 단계 ★★★
   //    명제 하나가 사라졌으므로, 전체 논리 체계에 모순이 생겼을 수 있습니다.
   //    따라서 공리부터 시작하여 남아있는 명제들로 진리 집합(internalTruthSet)을 완전히 재구성합니다.
-  let newTruthSet = parsedAxioms.map((a) => a.proposition);
+  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -501,7 +501,7 @@ function activateWittgensteinAbility(player) {
 
   // 유레카 모달과 똑같이 사용 가능한 모든 전제를 가져옵니다.
   const allSelectablePropositions = [
-    ...parsedAxioms,
+    ...gamestate.parsedAxioms,
     ...gamestate.truePropositions
       .map((p) => ({ ...p, proposition: p.proposition }))
       .filter((p) => p.proposition),
@@ -916,7 +916,7 @@ function confirmWittgensteinAbility() {
   });
 
   // 5. 전체 진리 집합을 재구성하여 논리적 일관성을 유지합니다.
-  let newTruthSet = parsedAxioms.map((a) => a.proposition);
+  let newTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
   const propositionsToReverify = gamestate.truePropositions
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -1035,7 +1035,7 @@ function confirmDerridaAbility() {
   );
 
   // 2. 이 임시 목록을 기반으로 진리 집합을 '재구성'하여, 원본 명제가 없었을 때의 상태를 만듭니다.
-  let baseTruthSetForTest = parsedAxioms.map((a) => a.proposition);
+  let baseTruthSetForTest = gamestate.parsedAxioms.map((a) => a.proposition);
   const propsToReverify = propositionsWithoutOriginal
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -1191,7 +1191,7 @@ function confirmHumeAbility() {
   const propositionsWithoutOriginal = gamestate.truePropositions.filter(
     (p) => p.propId !== selectedPropId
   );
-  let baseTruthSetForTest = parsedAxioms.map((a) => a.proposition);
+  let baseTruthSetForTest = gamestate.parsedAxioms.map((a) => a.proposition);
   const propsToReverify = propositionsWithoutOriginal
     .filter((p) => p.proposition)
     .map((p) => p.proposition);
@@ -1427,7 +1427,7 @@ function confirmKuhnAbility() {
   };
 
   // --- (2) 기반 진리 목록 생성 및 사전 검증 ---
-  const axioms = parsedAxioms.map((a) => a.proposition);
+  const axioms = gamestate.parsedAxioms.map((a) => a.proposition);
   const victoryConditions = gamestate.truePropositions
     .filter((p) => p.type === "victory")
     .map((p) => p.proposition);
