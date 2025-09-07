@@ -1323,7 +1323,7 @@ function getTopicParticle(name) {
 
 function setupGame(selectedCharacters, testConfig = null) {
   gamestate.playerA_Data = PHILOSOPHERS[selectedCharacters.p1];
-  playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
+  gamestate.playerB_Data = PHILOSOPHERS[selectedCharacters.p2];
   truePropositions = []; // 게임 시작 시 참 명제 목록 초기화
 
   // 논증 기록 시스템 초기화
@@ -1339,7 +1339,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   let subjectA, subjectB;
 
   subjectA = gamestate.playerA_Data.cardText[gamestate.currentLang.langCode];
-  subjectB = playerB_Data.cardText[gamestate.currentLang.langCode];
+  subjectB = gamestate.playerB_Data.cardText[gamestate.currentLang.langCode];
 
   // 1. 미러전(동일 철학자 선택) 처리
   if (p1_id === p2_id) {
@@ -1361,14 +1361,14 @@ function setupGame(selectedCharacters, testConfig = null) {
       gamestate.playerA_Data.name[gamestate.currentLang.langCode]
     }(백)`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
-      playerB_Data.name[gamestate.currentLang.langCode]
+      gamestate.playerB_Data.name[gamestate.currentLang.langCode]
     }(흑)`;
   } else {
     document.getElementById("player-a-title").innerHTML = `⚪️ ${
       gamestate.playerA_Data.name[gamestate.currentLang.langCode]
     }`;
     document.getElementById("player-b-title").innerHTML = `⚫️ ${
-      playerB_Data.name[gamestate.currentLang.langCode]
+      gamestate.playerB_Data.name[gamestate.currentLang.langCode]
     }`;
   }
 
@@ -1615,7 +1615,7 @@ function setupGame(selectedCharacters, testConfig = null) {
   }
   const portraitB_El = document.getElementById("player-b-portrait");
   if (portraitB_El) {
-    portraitB_El.style.backgroundImage = `url('${playerB_Data.image.p2}')`;
+    portraitB_El.style.backgroundImage = `url('${gamestate.playerB_Data.image.p2}')`;
   }
 
   abilityUsedState = {};
@@ -1846,7 +1846,7 @@ function activateAbility(player) {
     return; // 튜토리얼 모드에서는 아무것도 하지 않고 즉시 함수를 종료합니다.
   }
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
 
   const state = abilityUsedState[player];
   if (state) {
@@ -1935,13 +1935,13 @@ function getAbilityButtonStateFor(player) {
   if (
     gameIsOver ||
     (player === "A" && !gamestate.playerA_Data) ||
-    (player === "B" && !playerB_Data)
+    (player === "B" && !gamestate.playerB_Data)
   ) {
     return { visible: false, disabled: true, text: "" }; // 게임 종료 시에만 숨김
   }
 
   const philosopherData =
-    player === "A" ? gamestate.playerA_Data : playerB_Data;
+    player === "A" ? gamestate.playerA_Data : gamestate.playerB_Data;
   const philosopherId = philosopherData.id;
 
   // 사유 시간이 아니면 버튼 숨김
@@ -2157,7 +2157,9 @@ function completeProposition() {
   // 공리이거나, 이미 참 목록에 있으면 '증명된 것'으로 간주합니다.
   const isAlreadyProven = isAxiom || isAlreadyInTrueList;
   const currentPlayerId =
-    currentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    currentPlayer === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
 
   // 1. "불가능한 경우"를 먼저 확인하고 함수를 즉시 종료시킵니다.
   // 현재 플레이어가 니체가 "아닌데" 중복 명제를 완성하려는 경우 -> 거부
@@ -2344,7 +2346,7 @@ function endGame(winner, winningProposition) {
   document.getElementById("eureka-modal").classList.remove("visible");
   const statusEl = document.getElementById("status");
   let winnerName;
-  const isMirrorMatch = gamestate.playerA_Data.id === playerB_Data.id;
+  const isMirrorMatch = gamestate.playerA_Data.id === gamestate.playerB_Data.id;
 
   if (winner === "A") {
     winnerName = getLastName(
@@ -2357,7 +2359,9 @@ function endGame(winner, winningProposition) {
     }
   } else {
     // winner === 'B'
-    winnerName = getLastName(playerB_Data.name[gamestate.currentLang.langCode]);
+    winnerName = getLastName(
+      gamestate.playerB_Data.name[gamestate.currentLang.langCode]
+    );
     if (isMirrorMatch) {
       // 미러전일 경우, B플레이어(후공)에게 색상 식별자를 추가합니다.
       winnerName +=
@@ -2487,7 +2491,7 @@ function checkRoundEndConditions() {
     const playerName =
       currentPlayer === "A"
         ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
-        : playerB_Data.name[gamestate.currentLang.langCode];
+        : gamestate.playerB_Data.name[gamestate.currentLang.langCode];
 
     // 'AI vs AI' 모드일 경우에만 경고창을 건너뜁니다.
     if (gameMode === "AI_VS_AI") {
@@ -2568,7 +2572,8 @@ function endThinkingTime() {
 
   // 현재 게임에 마르크스가 있는지 확인합니다.
   const isMarxInGame =
-    gamestate.playerA_Data.id === "marx" || playerB_Data.id === "marx"; // gamestate.playerA_Data와 playerB_Data를 참조하여 마르크스 존재 여부 확인
+    gamestate.playerA_Data.id === "marx" ||
+    gamestate.playerB_Data.id === "marx"; // gamestate.playerA_Data와 gamestate.playerB_Data를 참조하여 마르크스 존재 여부 확인
 
   // 마르크스가 있다면, 새로 분배된 손패에서 플레이 불가능한 카드들을 제거합니다.
   if (isMarxInGame) {
@@ -2598,16 +2603,17 @@ function endThinkingTime() {
 }
 
 function render() {
-  if (gamestate.playerA_Data && playerB_Data) {
+  if (gamestate.playerA_Data && gamestate.playerB_Data) {
     // 데이터가 있을 때만 실행
-    const isMirrorMatch = gamestate.playerA_Data.id === playerB_Data.id;
+    const isMirrorMatch =
+      gamestate.playerA_Data.id === gamestate.playerB_Data.id;
     if (isMirrorMatch) {
       // 미러전일 경우
       document.getElementById("player-a-title").innerHTML = `⚪️ ${
         gamestate.playerA_Data.name[gamestate.currentLang.langCode]
       }(백)`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
-        playerB_Data.name[gamestate.currentLang.langCode]
+        gamestate.playerB_Data.name[gamestate.currentLang.langCode]
       }(흑)`;
     } else {
       // 일반 대전일 경우
@@ -2615,7 +2621,7 @@ function render() {
         gamestate.playerA_Data.name[gamestate.currentLang.langCode]
       }`;
       document.getElementById("player-b-title").innerHTML = `⚫️ ${
-        playerB_Data.name[gamestate.currentLang.langCode]
+        gamestate.playerB_Data.name[gamestate.currentLang.langCode]
       }`;
     }
   }
@@ -2758,8 +2764,8 @@ function render() {
       const subjectA = gamestate.playerA_Data
         ? gamestate.playerA_Data.cardText[gamestate.currentLang.langCode]
         : "";
-      const subjectB = playerB_Data
-        ? playerB_Data.cardText[gamestate.currentLang.langCode]
+      const subjectB = gamestate.playerB_Data
+        ? gamestate.playerB_Data.cardText[gamestate.currentLang.langCode]
         : "";
 
       // 첫 번째 철학자 선악 공리
@@ -2970,7 +2976,7 @@ function render() {
       const ownerName = getLastName(
         propData.owner === "A"
           ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
-          : playerB_Data.name[gamestate.currentLang.langCode]
+          : gamestate.playerB_Data.name[gamestate.currentLang.langCode]
       );
       const ownerPrefix =
         propData.owner === "A" ? `⚪️ ${ownerName}` : `⚫️ ${ownerName}`;
@@ -3126,7 +3132,7 @@ function render() {
       const thinkingPlayerName = getLastName(
         thinkingTimeTurn === "A"
           ? gamestate.playerA_Data.name[gamestate.currentLang.langCode]
-          : playerB_Data.name[gamestate.currentLang.langCode]
+          : gamestate.playerB_Data.name[gamestate.currentLang.langCode]
       );
       const thinkingPlayerColor = thinkingTimeTurn === "A" ? "⚪️" : "⚫️";
       statusEl.innerHTML = `<span class="turn-indicator">${thinkingPlayerColor} ${thinkingPlayerName}${gamestate.currentLang.ui.thinkingTimeTurnMessage}</span>`;
@@ -3188,8 +3194,10 @@ function render() {
           eurekaBtnA.disabled = eurekaUsedInRound["A"];
           eurekaBtnB.disabled = true;
         } else {
-          const playerBName = playerB_Data
-            ? getLastName(playerB_Data.name[gamestate.currentLang.langCode])
+          const playerBName = gamestate.playerB_Data
+            ? getLastName(
+                gamestate.playerB_Data.name[gamestate.currentLang.langCode]
+              )
             : gamestate.currentLang.ui.playerBName;
           statusEl.innerHTML = `<span class="turn-indicator">⚫️ ${playerBName}${gamestate.currentLang.ui.statusTurn}</span>`;
           playerAreaB.classList.remove("disabled");

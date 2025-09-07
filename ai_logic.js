@@ -114,7 +114,7 @@ function generateAndScorePlans() {
 function aiThinkingTimeTurn() {
   const summaryActions = []; // 이번 턴에 AI가 수행한 모든 행동을 기록
   const aiPhilosopherData =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data : playerB_Data;
+    thinkingTimeTurn === "A" ? gamestate.playerA_Data : gamestate.playerB_Data;
   const philosopherId = aiPhilosopherData.id;
 
   // 1단계: 새로운 정리 도출 시도
@@ -535,7 +535,9 @@ function aiCanActuallyComplete() {
   if (!propToComplete) return false;
 
   const aiPhilosopherId =
-    currentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    currentPlayer === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   if (aiPhilosopherId !== "nietzsche") {
     const isAxiom = parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, propToComplete)
@@ -1257,7 +1259,9 @@ function aiTurn() {
         // 상대가 흄이고 능력을 아직 사용하지 않았고, '라면' 뒤에 고유명사를 놓는 상황
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
         const opponentPhilosopherId =
-          opponentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+          opponentPlayer === "A"
+            ? gamestate.playerA_Data.id
+            : gamestate.playerB_Data.id;
 
         if (opponentPhilosopherId === "hume") {
           const opponentAbilityState = abilityUsedState[opponentPlayer] || {
@@ -1330,9 +1334,13 @@ function aiTurn() {
       }
 
       const aiPhilosopherId =
-        currentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+        currentPlayer === "A"
+          ? gamestate.playerA_Data.id
+          : gamestate.playerB_Data.id;
       const opponentPhilosopherId =
-        opponentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+        opponentPlayer === "A"
+          ? gamestate.playerA_Data.id
+          : gamestate.playerB_Data.id;
       const capitalistText =
         gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
       const evilText =
@@ -1414,7 +1422,7 @@ function aiTurn() {
           const opponentPhilosopherId =
             opponentPlayer === "A"
               ? gamestate.playerA_Data.id
-              : playerB_Data.id;
+              : gamestate.playerB_Data.id;
 
           if (opponentPhilosopherId === "hume") {
             const opponentAbilityState = abilityUsedState[opponentPlayer] || {
@@ -1479,7 +1487,9 @@ function aiTurn() {
 
         const opponentPlayer = currentPlayer === "A" ? "B" : "A";
         const opponentPhilosopherId =
-          opponentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+          opponentPlayer === "A"
+            ? gamestate.playerA_Data.id
+            : gamestate.playerB_Data.id;
 
         if (IS_DEV_MODE) {
           console.warn(
@@ -1507,18 +1517,20 @@ function aiTurn() {
                   ? gamestate.playerA_Data.name
                   : gamestate.playerA_Data.name?.ko ||
                     gamestate.playerA_Data.name?.en
-                : typeof playerB_Data.name === "string"
-                ? playerB_Data.name
-                : playerB_Data.name?.ko || playerB_Data.name?.en;
+                : typeof gamestate.playerB_Data.name === "string"
+                ? gamestate.playerB_Data.name
+                : gamestate.playerB_Data.name?.ko ||
+                  gamestate.playerB_Data.name?.en;
             const opponentName =
               opponentPlayer === "A"
                 ? typeof gamestate.playerA_Data.name === "string"
                   ? gamestate.playerA_Data.name
                   : gamestate.playerA_Data.name?.ko ||
                     gamestate.playerA_Data.name?.en
-                : typeof playerB_Data.name === "string"
-                ? playerB_Data.name
-                : playerB_Data.name?.ko || playerB_Data.name?.en;
+                : typeof gamestate.playerB_Data.name === "string"
+                ? gamestate.playerB_Data.name
+                : gamestate.playerB_Data.name?.ko ||
+                  gamestate.playerB_Data.name?.en;
 
             // 자신의 패배 술어 찾기
             const myDefeatPredicate = myVictoryData
@@ -1766,7 +1778,9 @@ function aiTurn() {
     } else {
       let completeScore = 120;
       const aiPhilosopherId =
-        currentPlayer === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+        currentPlayer === "A"
+          ? gamestate.playerA_Data.id
+          : gamestate.playerB_Data.id;
       if (aiPhilosopherId === "nietzsche") {
         const propToComplete = parsePropositionFromCards(currentProposition);
         if (propToComplete) {
@@ -1849,7 +1863,7 @@ function aiTurn() {
           const opponentPhilosopherId =
             opponentPlayer === "A"
               ? gamestate.playerA_Data.id
-              : playerB_Data.id;
+              : gamestate.playerB_Data.id;
           const capitalistText =
             gamestate.currentLang.langCode === "ko" ? "자본가는" : "capitalist";
           const evilText =
@@ -2573,7 +2587,7 @@ function executePlatoAbilityCheck(player) {
 
   // 능력 사용 실행
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   abilityUsedState[player].usedCount++;
 
   const newTheorem = {
@@ -2608,7 +2622,7 @@ function executePlatoAbilityCheck(player) {
 function executeSocratesAbilityCheck(player) {
   // 1. 능력 사용 기본 조건 확인 (used 플래그로 변경)
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) {
     // 👈 usedCount >= maxUses 대신 .used가 있는지 확인
     return null;
@@ -2815,7 +2829,7 @@ function executeSocratesAbilityCheck(player) {
 function executeDescartesAbilityCheck(player) {
   // --- 1. 기본 조건 확인 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) {
     return null;
   }
@@ -2948,7 +2962,7 @@ function executeDescartesAbilityCheck(player) {
 function executeHumeAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
@@ -3164,7 +3178,7 @@ function scoreThreat(
 function executeWittgensteinAbilityCheck(player) {
   // --- 0. 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
@@ -3443,7 +3457,7 @@ function executeKuhnsAbility(propIdToChange, player) {
   internalTruthSet = simResult.finalTruthSet;
 
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   abilityUsedState[player].used = true;
 
   const newParadigmProp = simResult.finalPropList.find(
@@ -3460,7 +3474,7 @@ function executeKuhnsAbility(propIdToChange, player) {
 
 function executeKuhnAbilityCheck(player) {
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) return null;
 
   const userMadePropsCount = truePropositions.filter(
@@ -3592,7 +3606,7 @@ function executeKuhnAbilityCheck(player) {
 function executeDerridaAbilityCheck(player) {
   // --- 기본 조건 검사 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   if (abilityUsedState[player]?.used) {
     return null; // 이미 능력을 사용했으면 종료
   }
@@ -3778,7 +3792,7 @@ function executeDerridaAbilityCheck(player) {
 function executeKantAbilityCheck(player) {
   // --- 1단계: 기본 조건 검사 및 후보 생성 ---
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   const hand = player === "A" ? playerA_Hand : playerB_Hand;
   if (hand.length === 0) return null;
 

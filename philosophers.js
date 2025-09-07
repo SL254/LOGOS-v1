@@ -243,7 +243,9 @@ function confirmPlatoAbility() {
   if (verificationResult.success) {
     // 4. 검증 성공 시, 능력 사용 상태를 기록하고 새 명제를 추가합니다.
     const philosopherId =
-      thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+      thinkingTimeTurn === "A"
+        ? gamestate.playerA_Data.id
+        : gamestate.playerB_Data.id;
 
     // 플라톤 능력 사용 횟수 증가
     if (abilityUsedState[thinkingTimeTurn].usedCount !== undefined) {
@@ -276,7 +278,7 @@ function confirmPlatoAbility() {
 
 function activateSocratesAbility(player) {
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   const state = abilityUsedState[player];
 
   if (state && state.used) {
@@ -361,7 +363,9 @@ function confirmSocratesAbility() {
 
   // 능력 사용 처리
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
@@ -473,7 +477,9 @@ function confirmDescartesAbility() {
 
   // 4. 능력 사용 상태를 기록하고 UI를 갱신합니다.
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
@@ -927,7 +933,9 @@ function confirmWittgensteinAbility() {
 
   // 6. 능력 사용 상태를 업데이트하고 마무리합니다.
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true;
 
   document.getElementById("eureka-modal").classList.remove("visible");
@@ -1058,7 +1066,9 @@ function confirmDerridaAbility() {
 
   // 5. 모든 검증을 통과했으므로 능력 사용을 확정합니다.
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true;
 
   // 6. 검증이 모두 끝났으므로, 실제 게임 상태를 변경합니다.
@@ -1208,7 +1218,9 @@ function confirmHumeAbility() {
 
   // 5. 능력 사용을 '1회용'으로 확정합니다.
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true; // 👈 '게임당 1회' 규칙으로 변경
 
   // 6. 실제 게임 상태를 변경합니다.
@@ -1467,7 +1479,9 @@ function confirmKuhnAbility() {
   internalTruthSet = currentValidatedTruths;
 
   const philosopherId =
-    thinkingTimeTurn === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    thinkingTimeTurn === "A"
+      ? gamestate.playerA_Data.id
+      : gamestate.playerB_Data.id;
   abilityUsedState[thinkingTimeTurn].used = true;
 
   document.getElementById("ability-modal").classList.remove("visible");
@@ -1565,7 +1579,7 @@ function confirmKantAbility(player) {
 
   // 5. 모든 검사를 통과: 능력 사용 처리
   const philosopherId =
-    player === "A" ? gamestate.playerA_Data.id : playerB_Data.id;
+    player === "A" ? gamestate.playerA_Data.id : gamestate.playerB_Data.id;
   abilityUsedState[player].used = true;
 
   // 6. 새로운 명제를 참 목록에 추가
