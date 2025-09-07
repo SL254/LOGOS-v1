@@ -1189,7 +1189,7 @@ function completePropositionTutorial() {
 
 function openEurekaModalTutorial() {
   gamestate.derivedPropositionsInModal = [];
-  currentAssumption = null;
+  gamestate.currentAssumption = null;
   const modal = document.getElementById("eureka-modal");
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
@@ -1547,7 +1547,7 @@ function openEurekaModalTutorial() {
     : proveVictory;
 
   document.getElementById("cancel-assumption-btn").style.display =
-    currentAssumption ? "inline-block" : "none";
+    gamestate.currentAssumption ? "inline-block" : "none";
 
   renderModal();
   document.getElementById("inference-rule-select").onchange =
@@ -1607,7 +1607,7 @@ function applyRuleTutorial() {
   if (rule === "conditionalIntroduction") {
     const result = {
       type: "conditional",
-      left: currentAssumption,
+      left: gamestate.currentAssumption,
       right: premises[0],
     };
     if (result) {
@@ -1615,7 +1615,7 @@ function applyRuleTutorial() {
         gamestate.derivedPropositionsInModal.filter(
           (p) => !p.dependsOnAssumption
         );
-      currentAssumption = null;
+      gamestate.currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
         type: "theorem",
@@ -1630,14 +1630,14 @@ function applyRuleTutorial() {
     const result = reductioAdAbsurdum(
       premises[0],
       premises[1],
-      currentAssumption
+      gamestate.currentAssumption
     );
     if (result) {
       gamestate.derivedPropositionsInModal =
         gamestate.derivedPropositionsInModal.filter(
           (p) => !p.dependsOnAssumption
         );
-      currentAssumption = null;
+      gamestate.currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
         type: "theorem",
@@ -1944,7 +1944,7 @@ function setupTutorialScenario(step) {
     gamestate.currentRound = 1;
     gamestate.isThinkingTime = false;
     gamestate.lastPropositionMaker = null;
-    currentAssumption = null;
+    gamestate.currentAssumption = null;
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
     gameMode = "2P";

@@ -86,7 +86,7 @@ function setupEventListeners() {
 
       // ▼▼▼ [수정] 아래 줄들을 추가하여 모달의 내부 상태를 초기화합니다. ▼▼▼
       gamestate.derivedPropositionsInModal = [];
-      currentAssumption = null;
+      gamestate.currentAssumption = null;
 
       // 논증 로그 초기화 (논증 다시보기를 위한 데이터 정리)
       if (isRecordingProof) {

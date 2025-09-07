@@ -1,6 +1,6 @@
 function openEurekaModal() {
   gamestate.derivedPropositionsInModal = [];
-  currentAssumption = null;
+  gamestate.currentAssumption = null;
 
   devLog(
     "Opening Eureka Modal, gamestate.currentPuzzleLevel:",
@@ -416,7 +416,7 @@ function openEurekaModal() {
 }
 
 function addAssumption() {
-  if (currentAssumption) {
+  if (gamestate.currentAssumption) {
     showAlert(gamestate.currentLang.alerts.oneAssumptionOnly, () => {
       // 경고창을 닫은 후 다시 가정 입력창 열기
       addAssumption();
@@ -441,7 +441,7 @@ function addAssumption() {
             return;
           }
 
-          currentAssumption = parsedProp;
+          gamestate.currentAssumption = parsedProp;
 
           // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - addPremiseToWorkbench 전에 실행
           if (isRecordingProof) {
@@ -506,7 +506,7 @@ function addAssumption() {
 
 function cancelAssumption() {
   if (inTutorialMode) return;
-  currentAssumption = null;
+  gamestate.currentAssumption = null;
   gamestate.derivedPropositionsInModal =
     gamestate.derivedPropositionsInModal.filter((p) => !p.dependsOnAssumption);
   renderModal();
@@ -569,7 +569,7 @@ function applyRule() {
       showAlert(gamestate.currentLang.alerts.premiseNeededForIntro);
       return;
     }
-    if (!currentAssumption) {
+    if (!gamestate.currentAssumption) {
       showAlert(gamestate.currentLang.alerts.assumptionNeededForIntro);
       return;
     }
@@ -580,7 +580,7 @@ function applyRule() {
     }
     const newConditional = {
       type: "conditional",
-      left: currentAssumption,
+      left: gamestate.currentAssumption,
       right: conclusionData.proposition,
     };
 
@@ -590,14 +590,14 @@ function applyRule() {
     );
     const sourcePremisesForCI = [assumptionData, conclusionData];
 
-    // 논증 과정 기록을 위해 currentAssumption을 미리 저장
-    const assumptionForRecord = currentAssumption;
+    // 논증 과정 기록을 위해 gamestate.currentAssumption을 미리 저장
+    const assumptionForRecord = gamestate.currentAssumption;
 
     gamestate.derivedPropositionsInModal =
       gamestate.derivedPropositionsInModal.filter(
         (p) => !p.dependsOnAssumption
       );
-    currentAssumption = null;
+    gamestate.currentAssumption = null;
     addPremiseToWorkbench({
       proposition: newConditional,
       type: "theorem",
@@ -660,7 +660,7 @@ function applyRule() {
       showAlert(gamestate.currentLang.alerts.contradictionNeededForRAA);
       return;
     }
-    if (!currentAssumption) {
+    if (!gamestate.currentAssumption) {
       showAlert(gamestate.currentLang.alerts.assumptionNeededForRAA);
       return;
     }
@@ -674,7 +674,7 @@ function applyRule() {
     const result = reductioAdAbsurdum(
       premises[0],
       premises[1],
-      currentAssumption
+      gamestate.currentAssumption
     );
     if (result) {
       // 논증 과정 기록 (승리를 위한 유레카 모달인 경우) - 삭제하기 전에 먼저 기록
@@ -685,12 +685,15 @@ function applyRule() {
             if (p.proofStepId) return p.proofStepId;
 
             // 가정의 경우 별도로 찾기
-            if (p.isAssumption && currentAssumption) {
+            if (p.isAssumption && gamestate.currentAssumption) {
               const assumptionStep = proofSteps.find(
                 (step) =>
                   step.type === "assumption" &&
                   step.conclusion &&
-                  arePropositionsEqual(step.conclusion, currentAssumption)
+                  arePropositionsEqual(
+                    step.conclusion,
+                    gamestate.currentAssumption
+                  )
               );
               return assumptionStep ? assumptionStep.id : null;
             }
@@ -733,7 +736,7 @@ function applyRule() {
           premiseIds,
           result,
           "reductioAdAbsurdum",
-          currentAssumption
+          gamestate.currentAssumption
         );
         result.proofStepId = stepId;
       }
@@ -742,7 +745,7 @@ function applyRule() {
         gamestate.derivedPropositionsInModal.filter(
           (p) => !p.dependsOnAssumption
         );
-      currentAssumption = null;
+      gamestate.currentAssumption = null;
       addPremiseToWorkbench({
         proposition: result,
         type: "theorem",
@@ -853,7 +856,7 @@ function applyRule() {
           premiseIds,
           conc,
           rule,
-          currentAssumption
+          gamestate.currentAssumption
         );
         conc.proofStepId = stepId;
 
@@ -1204,7 +1207,7 @@ function renderModal() {
   const premiseList = document.getElementById("premise-list");
   premiseList.innerHTML = "";
 
-  const hasAssumption = !!currentAssumption;
+  const hasAssumption = !!gamestate.currentAssumption;
   document.getElementById("add-assumption-btn").disabled = hasAssumption;
   document.getElementById("cancel-assumption-btn").style.display = hasAssumption
     ? "inline-block"
@@ -1504,10 +1507,10 @@ function updateConclusionPreview() {
   if (premises.length === requiredPremises && requiredPremises > 0) {
     try {
       if (rule === "conditionalIntroduction") {
-        if (currentAssumption) {
+        if (gamestate.currentAssumption) {
           conclusion = {
             type: "conditional",
-            left: currentAssumption,
+            left: gamestate.currentAssumption,
             right: premises[0],
           };
         }
@@ -1515,7 +1518,7 @@ function updateConclusionPreview() {
         conclusion = reductioAdAbsurdum(
           premises[0],
           premises[1],
-          currentAssumption
+          gamestate.currentAssumption
         );
       } else if (threePremiseRules.includes(rule)) {
         conclusion = window[rule](premises[0], premises[1], premises[2]);
