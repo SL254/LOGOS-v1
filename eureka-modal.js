@@ -1066,9 +1066,9 @@ function proveVictory() {
   // --- 튜토리얼 마지막 단계 성공 처리 로직 (새로 추가된 부분) ---
   if (inTutorialMode && tutorialStep === 8) {
     const myVictoryCondition = gamestate.truePropositions.find(
-      (p) => p.type === "victory" && p.owner === currentPlayer
+      (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
     );
-    const opponentPlayer = currentPlayer === "A" ? "B" : "A";
+    const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
     const opponentVictoryCondition = gamestate.truePropositions.find(
       (p) => p.type === "victory" && p.owner === opponentPlayer
     );
@@ -1112,12 +1112,12 @@ function proveVictory() {
 
   // --- 이하 기존의 일반 게임 승리 증명 로직 ---
   const myVictoryCondition = gamestate.truePropositions.find(
-    (p) => p.type === "victory" && p.owner === currentPlayer
+    (p) => p.type === "victory" && p.owner === gamestate.currentPlayer
   );
   if (!myVictoryCondition) return;
   const myUltimateTarget = myVictoryCondition.ultimate_target;
 
-  const opponentPlayer = currentPlayer === "A" ? "B" : "A";
+  const opponentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
   const opponentVictoryCondition = gamestate.truePropositions.find(
     (p) => p.type === "victory" && p.owner === opponentPlayer
   );
@@ -1188,7 +1188,7 @@ function proveVictory() {
       stopProofRecording();
     }
 
-    endGame(currentPlayer);
+    endGame(gamestate.currentPlayer);
     return;
   }
 

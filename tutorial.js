@@ -1131,7 +1131,9 @@ function handleTutorialRuleApplication(ruleValue) {
 
 function playCardTutorial(cardToPlay) {
   const hand =
-    currentPlayer === "A" ? gamestate.playerA_Hand : gamestate.playerB_Hand;
+    gamestate.currentPlayer === "A"
+      ? gamestate.playerA_Hand
+      : gamestate.playerB_Hand;
   const cardIndex = hand.findIndex(
     (c) => c.text === cardToPlay.text && c.type === cardToPlay.type
   );
@@ -1142,17 +1144,17 @@ function playCardTutorial(cardToPlay) {
     const [playedCard] = hand.splice(cardIndex, 1);
     gamestate.currentProposition.push({
       card: playedCard,
-      player: currentPlayer,
+      player: gamestate.currentPlayer,
     });
-    cardsPlayedThisTurn[currentPlayer]++;
-    lastCardPlayer = currentPlayer;
+    cardsPlayedThisTurn[gamestate.currentPlayer]++;
+    lastCardPlayer = gamestate.currentPlayer;
     render();
   }
 }
 
 function endTurnTutorial() {
   audioManager.playSfx("end");
-  currentPlayer = currentPlayer === "A" ? "B" : "A";
+  gamestate.currentPlayer = gamestate.currentPlayer === "A" ? "B" : "A";
   cardsPlayedThisTurn.A = 0;
   cardsPlayedThisTurn.B = 0;
   render();
@@ -1175,7 +1177,7 @@ function completePropositionTutorial() {
     lastPropositionMaker =
       gamestate.currentProposition[gamestate.currentProposition.length - 1]
         .player;
-    currentPlayer = lastPropositionMaker === "A" ? "B" : "A";
+    gamestate.currentPlayer = lastPropositionMaker === "A" ? "B" : "A";
     gamestate.currentProposition = [];
     lastCardPlayer = null;
     cardsPlayedThisTurn = { A: 0, B: 0 };
@@ -1757,7 +1759,7 @@ function clearHighlights() {
         // 현재 게임 상태에 따라 카드가 비활성화 되어야 하는지 다시 확인합니다.
         const shouldBeUnplayable =
           isThinkingTime ||
-          player !== currentPlayer ||
+          player !== gamestate.currentPlayer ||
           cardsPlayedThisTurn[player] >= 1 ||
           !isValidPlay(cardData, gamestate.currentProposition);
 
@@ -1928,7 +1930,7 @@ function setupTutorialScenario(step) {
       internalTruthSet.push(parsedPlatoVC);
     }
     gamestate.currentProposition = [];
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     propositionStarter = "A";
     gameIsOver = false;
     currentRound = 1;
@@ -2005,7 +2007,7 @@ function setupTutorialScenario(step) {
         { card: wiseCard, player: "B" },
       ];
       lastCardPlayer = "B";
-      currentPlayer = "A";
+      gamestate.currentPlayer = "A";
     }
   } else if (step === 4) {
     gamestate.currentProposition = [];
@@ -2050,7 +2052,7 @@ function setupTutorialScenario(step) {
   } else if (step === 5) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
@@ -2114,7 +2116,7 @@ function setupTutorialScenario(step) {
   } else if (step === 6) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
@@ -2150,7 +2152,7 @@ function setupTutorialScenario(step) {
   } else if (step === 7) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
@@ -2180,7 +2182,7 @@ function setupTutorialScenario(step) {
   } else if (step === 8) {
     gamestate.truePropositions = [];
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
     const premises =
@@ -2229,7 +2231,7 @@ function setupTutorialScenario(step) {
       .filter((a) => a.proposition);
 
     internalTruthSet = gamestate.parsedAxioms.map((a) => a.proposition);
-    currentPlayer = "A";
+    gamestate.currentPlayer = "A";
     isThinkingTime = false;
     document.getElementById("thinking-time-controls").style.display = "none";
 
