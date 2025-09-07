@@ -1206,8 +1206,8 @@ function openEurekaModalTutorial() {
   const nonAxioms = allSelectablePropositions.filter((p) => p.type !== "axiom");
 
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
-  if (currentAxioms.groups && axioms.length > 0) {
-    const groups = currentAxioms.groups;
+  if (gamestate.currentAxioms.groups && axioms.length > 0) {
+    const groups = gamestate.currentAxioms.groups;
     const templates = gamestate.currentLang.axiom_templates;
     let axiomIndex = 0;
 
@@ -1863,13 +1863,13 @@ function setupTutorialScenario(step) {
 
     const socratesSubject = gamestate.currentLang.keywords.socrates;
     const platoSubject = gamestate.currentLang.keywords.plato;
-    currentAxioms = generateAxioms(
+    gamestate.currentAxioms = generateAxioms(
       socratesSubject,
       platoSubject,
       gamestate.currentLang
     );
 
-    gamestate.parsedAxioms = currentAxioms
+    gamestate.parsedAxioms = gamestate.currentAxioms
       .map((str) => ({
         type: "axiom",
         proposition: parsePropositionFromString(str),
@@ -2236,12 +2236,12 @@ function setupTutorialScenario(step) {
 
     const socratesSubject = gamestate.currentLang.keywords.socrates;
     const platoSubject = gamestate.currentLang.keywords.plato;
-    currentAxioms = generateAxioms(
+    gamestate.currentAxioms = generateAxioms(
       socratesSubject,
       platoSubject,
       gamestate.currentLang
     );
-    gamestate.parsedAxioms = currentAxioms
+    gamestate.parsedAxioms = gamestate.currentAxioms
       .map((str) => ({
         type: "axiom",
         proposition: parsePropositionFromString(str),

@@ -50,8 +50,8 @@ function openEurekaModal() {
   const nonAxioms = allSelectablePropositions.filter((p) => p.type !== "axiom");
 
   // 공리를 그룹화하여 추가 - 작은 서브그룹별로 구분선 추가
-  if (currentAxioms.groups && axioms.length > 0) {
-    const groups = currentAxioms.groups;
+  if (gamestate.currentAxioms.groups && axioms.length > 0) {
+    const groups = gamestate.currentAxioms.groups;
     const templates = gamestate.currentLang.axiom_templates;
     let axiomIndex = 0;
 

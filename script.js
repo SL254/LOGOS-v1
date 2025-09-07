@@ -1464,13 +1464,13 @@ function setupGame(selectedCharacters, testConfig = null) {
   }
 
   // 4. 공리 및 승리 조건 설정
-  currentAxioms = generateAxioms(
+  gamestate.currentAxioms = generateAxioms(
     subjectA,
     subjectB,
     gamestate.currentLang,
     isMarxInGame
   );
-  gamestate.parsedAxioms = currentAxioms
+  gamestate.parsedAxioms = gamestate.currentAxioms
     .map((str) => ({
       type: "axiom",
       proposition: parsePropositionFromString(str),
@@ -2796,8 +2796,8 @@ function render() {
   axiomContainer.className = "axiom-list";
 
   // 공리들을 그룹별로 표시
-  if (currentAxioms.groups) {
-    const groups = currentAxioms.groups;
+  if (gamestate.currentAxioms.groups) {
+    const groups = gamestate.currentAxioms.groups;
 
     // 정체성 공리
     if (groups.identity.length > 0) {
@@ -2962,7 +2962,7 @@ function render() {
         templates.capitalist_good_evil_forward &&
         templates.capitalist_good_evil_forward.length > 0
       ) {
-        const hasCapitalistAxioms = currentAxioms.some(
+        const hasCapitalistAxioms = gamestate.currentAxioms.some(
           (axiom) => axiom.includes("자본가") || axiom.includes("capitalist")
         );
 
@@ -2997,7 +2997,7 @@ function render() {
     }
   } else {
     // 기존 방식 (하위 호환성)
-    currentAxioms.forEach((axiomText) => {
+    gamestate.currentAxioms.forEach((axiomText) => {
       const p = document.createElement("p");
       p.textContent = `• ${axiomText}`;
       axiomContainer.appendChild(p);

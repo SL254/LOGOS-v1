@@ -344,12 +344,12 @@ function startPuzzle(levelNum, levelData) {
   // 1. 퍼즐에 필요한 공리를 먼저 생성합니다. (튜토리얼 로직 재활용)
   const socratesSubject = gamestate.currentLang.keywords.socrates;
   const platoSubject = gamestate.currentLang.keywords.plato;
-  currentAxioms = generateAxioms(
+  gamestate.currentAxioms = generateAxioms(
     socratesSubject,
     platoSubject,
     gamestate.currentLang
   );
-  gamestate.parsedAxioms = currentAxioms
+  gamestate.parsedAxioms = gamestate.currentAxioms
     .map((str) => ({
       type: "axiom",
       proposition: parsePropositionFromString(str),
