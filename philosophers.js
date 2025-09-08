@@ -65,8 +65,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/hu_icon.png",
     skill: {
-      ko: "인과성 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '라면'으로 이어진 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해합니다.",
-      en: "Critique of Causality: Once per game, during Thinking Time, you may choose one non-axiom, non-victory-condition proposition connected by 'then', and decompose it into two atomic propositions, as long as no contradiction arises.",
+      ko: "인과성 비판: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 공리와 승리조건이 아니며, '승리한다' 술어를 포함하지 않고, '라면'으로 이어진 복합 명제 하나를 모순이 일어나지 않는 선에서 최소단위 명제 두 개로 분해합니다.",
+      en: "Critique of Causality: Once per game, during Thinking Time, you may choose one non-axiom, non-victory-condition compound proposition connected by 'then' that doesn't contain 'wins' predicate, and decompose it into two atomic propositions, as long as no contradiction arises.",
     },
   },
   kant: {
@@ -1103,12 +1103,35 @@ function confirmDerridaAbility() {
 }
 function activateHumeAbility(player) {
   // 함수 이름을 activateHumeAbility로 변경
+  // 명제에서 '승리한다' 술어를 포함하는지 확인하는 헬퍼 함수
+  const containsWinsPredicate = (prop) => {
+    if (!prop) return false;
+    
+    // 기본 명제의 경우
+    if (prop.type === "atomic") {
+      const winPredicates = gameState.currentLang.langCode === "ko" 
+        ? ["승리한다"] 
+        : ["wins"];
+      return winPredicates.some(predicate => 
+        prop.predicate && prop.predicate.includes(predicate)
+      );
+    }
+    
+    // 복합 명제의 경우 재귀적으로 검사
+    if (prop.left && containsWinsPredicate(prop.left)) return true;
+    if (prop.right && containsWinsPredicate(prop.right)) return true;
+    if (prop.proposition && containsWinsPredicate(prop.proposition)) return true;
+    
+    return false;
+  };
+
   // 1. 분해 가능한 명제('라면'으로 이어진 명제만) 필터링합니다.
   const availablePropositions = truePropositions.filter(
     (p) =>
       p.type !== "victory" &&
       p.proposition &&
-      p.proposition.type === "conditional" // 👈 '라면' 명제만 대상으로 변경
+      p.proposition.type === "conditional" && // 👈 '라면' 명제만 대상으로 변경
+      !containsWinsPredicate(p.proposition) // 👈 '승리한다' 술어 포함 명제 제외
   );
 
   if (availablePropositions.length === 0) {
