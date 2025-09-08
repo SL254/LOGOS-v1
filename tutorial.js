@@ -250,13 +250,6 @@ const TUTORIAL_TEXTS = {
   ],
 };
 
-// --- TUTORIAL STATE ---
-let inTutorialMode = false;
-let inPuzzleMode = false;
-let tutorialStep = 0;
-let tutorialSubStep = 0;
-let temporaryListener = null;
-
 function startTutorial(startStep = 0) {
   const exitBtn = document.getElementById("emergency-exit-tutorial-btn");
   exitBtn.classList.remove("hidden");
@@ -275,7 +268,7 @@ function startTutorial(startStep = 0) {
 
   gameState.fullDeck = gameState.currentLang.cards;
 
-  inTutorialMode = true;
+  gameState.inTutorialMode = true;
   tutorialStep = startStep;
   tutorialSubStep = 0;
 
@@ -1807,7 +1800,7 @@ function endTutorial() {
   // --- 💡[수정된 부분 시작] ---
 
   // 1. 튜토리얼 진행 단계를 완전히 초기화합니다.
-  inTutorialMode = false;
+  gameState.inTutorialMode = false;
   tutorialStep = 0;
   tutorialSubStep = 0;
 
@@ -2347,7 +2340,7 @@ function setupTutorialScenario(step) {
 // 튜토리얼 '다음' 버튼 Enter 키 지원
 window.addEventListener("keydown", (event) => {
   // 튜토리얼 모드가 아니거나, 게임오버 상태이면 아무것도 하지 않음
-  if (!inTutorialMode || gameState.gameIsOver) return;
+  if (!gameState.inTutorialMode || gameState.gameIsOver) return;
 
   const nextBtn = document.getElementById("tutorial-next-btn");
 

@@ -56,6 +56,12 @@ let gameState = {
   victorySoundPlayed: false,
   hasUserInteracted: false,
   isTestMode: false, // gameState.isTestMode도 게임 상태의 일부로 간주하여 포함
+  // --- TUTORIAL STATE ---
+  inTutorialMode: false,
+  inPuzzleMode: false,
+  tutorialStep: 0,
+  tutorialSubStep: 0,
+  temporaryListener: null,
 };
 
 // --- TUTORIAL STATUS FUNCTIONS ---
@@ -1251,7 +1257,7 @@ function handleFirstUserInteraction(event) {
 }
 
 document.getElementById("vs-ai-battle-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   gameMode = "AI_VS_AI";
   audioManager.fadeOut("main-menu");
   audioManager.play("character-select");
@@ -1259,7 +1265,7 @@ document.getElementById("vs-ai-battle-btn").addEventListener("click", () => {
 });
 
 document.getElementById("exit-game-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   showConfirm(gameState.currentLang.alerts.confirmExit, () => {
     // '예'를 눌렀을 때의 동작
     window.close();
@@ -1726,7 +1732,7 @@ function addGlobalSoundEvents() {
 }
 
 function isValidPlay(cardToPlay, proposition) {
-  if (inTutorialMode) {
+  if (gameState.inTutorialMode) {
     const highlightedCard = document.querySelector(".tutorial-highlight");
     return highlightedCard && highlightedCard.textContent === cardToPlay.text;
   }
@@ -1789,7 +1795,7 @@ function isValidPlay(cardToPlay, proposition) {
 }
 
 function checkNextTurn() {
-  if (gameState.gameIsOver || inTutorialMode) return; // 게임오버, 튜토리얼 중에는 실행 안 함
+  if (gameState.gameIsOver || gameState.inTutorialMode) return; // 게임오버, 튜토리얼 중에는 실행 안 함
 
   clearAllAITimeouts(); // 기존에 예약된 AI 동작이 있다면 모두 취소
 
@@ -1856,7 +1862,7 @@ function endTurn() {
 }
 
 function activateAbility(player) {
-  if (inTutorialMode) {
+  if (gameState.inTutorialMode) {
     return; // 튜토리얼 모드에서는 아무것도 하지 않고 즉시 함수를 종료합니다.
   }
   const philosopherId =
@@ -2518,7 +2524,7 @@ function endGame(winner, winningProposition) {
   // 논증 다시보기 버튼 표시 (퍼즐 모드나 튜토리얼이 아닌 경우만)
   if (
     !inPuzzleMode &&
-    !inTutorialMode &&
+    !gameState.inTutorialMode &&
     gameState.proofSteps &&
     gameState.proofSteps.length > 0
   ) {
@@ -2740,7 +2746,7 @@ function render() {
           } else {
             if (isValidPlay(card, gameState.currentProposition)) {
               cardEl.addEventListener("click", () => {
-                if (!inTutorialMode) playCard("A", card);
+                if (!gameState.inTutorialMode) playCard("A", card);
               });
             } else {
               cardEl.classList.add("unplayable");
@@ -2779,7 +2785,7 @@ function render() {
           } else {
             if (isValidPlay(card, gameState.currentProposition)) {
               cardEl.addEventListener("click", () => {
-                if (!inTutorialMode) playCard("B", card);
+                if (!gameState.inTutorialMode) playCard("B", card);
               });
             } else {
               cardEl.classList.add("unplayable");
@@ -3237,7 +3243,7 @@ function render() {
       undoBtn.disabled = true;
       endTurnBtn.disabled =
         (gameMode === "AI" && gameState.thinkingTimeTurn === aiPlayer) ||
-        (inTutorialMode && gameState.thinkingTimeTurn !== "A");
+        (gameState.inTutorialMode && gameState.thinkingTimeTurn !== "A");
     } else {
       statusEl.style.color = "#333";
       eurekaBtnA.textContent = gameState.currentLang.ui.eurekaButton;
@@ -3297,18 +3303,18 @@ function render() {
 }
 
 document.getElementById("vs-ai-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   startCharacterSelection("AI");
 });
 
 document.getElementById("vs-player-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   startCharacterSelection("2P");
 });
 
 document.getElementById("main-menu-btn").addEventListener("click", () => {
   // 1. 튜토리얼 중이었다면 튜토리얼을 종료하고 메인 메뉴로 갑니다.
-  if (inTutorialMode) {
+  if (gameState.inTutorialMode) {
     endTutorial(); // endTutorial 함수가 음악 전환을 포함한 모든 것을 처리합니다.
     return;
   }
@@ -3325,7 +3331,7 @@ document.getElementById("main-menu-btn").addEventListener("click", () => {
   showMainMenu();
 });
 document.getElementById("vs-player-btn").addEventListener("click", () => {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   // ✅ 1인 대전과 마찬가지로 새로운 캐릭터 선택 함수를 호출합니다.
   startCharacterSelection("2P");
 });

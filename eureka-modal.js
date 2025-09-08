@@ -507,7 +507,7 @@ function addAssumption() {
 }
 
 function cancelAssumption() {
-  if (inTutorialMode) return;
+  if (gameState.inTutorialMode) return;
   gameState.currentAssumption = null;
   gameState.derivedPropositionsInModal =
     gameState.derivedPropositionsInModal.filter((p) => !p.dependsOnAssumption);
@@ -939,7 +939,7 @@ function addTheoremsToList() {
   // 선택된 정리들 중에서 중복 제거 (같은 명제를 여러 번 선택한 경우)
   const uniqueTheorems = [];
   const seenPropositions = new Set();
-  
+
   for (const theoremData of potentialTheorems) {
     const propString = JSON.stringify(theoremData.proposition);
     if (!seenPropositions.has(propString)) {
@@ -994,7 +994,7 @@ function addTheoremsToList() {
     const truePropositionsEl = document.getElementById("true-propositions");
     truePropositionsEl.scrollTo({
       top: truePropositionsEl.scrollHeight,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
 }
@@ -1087,7 +1087,7 @@ function proveVictory() {
   }
 
   // --- 튜토리얼 마지막 단계 성공 처리 로직 (새로 추가된 부분) ---
-  if (inTutorialMode && tutorialStep === 8) {
+  if (gameState.inTutorialMode && tutorialStep === 8) {
     const myVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === gameState.currentPlayer
     );

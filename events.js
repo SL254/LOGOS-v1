@@ -16,7 +16,7 @@ function setupEventListeners() {
   //   initializeGame("ko");
   // });
   document.getElementById("new-game-btn").addEventListener("click", () => {
-    if (inTutorialMode) return;
+    if (gameState.inTutorialMode) return;
 
     audioManager.fadeOut("game-play");
     audioManager.fadeOut("thinking-time");
@@ -33,14 +33,14 @@ function setupEventListeners() {
   });
 
   document.getElementById("vs-player-btn").addEventListener("click", () => {
-    if (inTutorialMode) return;
+    if (gameState.inTutorialMode) return;
     // 수정된 부분
     audioManager.fadeOut("main-menu");
     audioManager.play("character-select");
     startCharacterSelection("2P");
   });
   document.getElementById("vs-ai-btn").addEventListener("click", () => {
-    if (inTutorialMode) return;
+    if (gameState.inTutorialMode) return;
     // 수정된 부분
     audioManager.fadeOut("main-menu");
     audioManager.play("character-select");
@@ -59,14 +59,14 @@ function setupEventListeners() {
     .addEventListener("click", goToMainMenu);
 
   document.getElementById("complete-btn").addEventListener("click", () => {
-    if (!inTutorialMode) completeProposition();
+    if (!gameState.inTutorialMode) completeProposition();
   });
   document.getElementById("undo-btn").addEventListener("click", () => {
-    if (!inTutorialMode) undoProposition();
+    if (!gameState.inTutorialMode) undoProposition();
   });
   document.getElementById("end-turn-btn").addEventListener("click", (event) => {
     // event 객체를 인자로 받도록 수정
-    if (inTutorialMode) return;
+    if (gameState.inTutorialMode) return;
 
     // 이벤트가 document.body로 전파(버블링)되는 것을 막아 범용 클릭음 중복 방지
     event.stopPropagation();
@@ -74,15 +74,15 @@ function setupEventListeners() {
     endTurn(); // 기존 턴 종료 함수 호출
   });
   document.getElementById("eureka-a").addEventListener("click", () => {
-    if (!inTutorialMode) declareEureka("A");
+    if (!gameState.inTutorialMode) declareEureka("A");
   });
   document.getElementById("eureka-b").addEventListener("click", () => {
-    if (!inTutorialMode) declareEureka("B");
+    if (!gameState.inTutorialMode) declareEureka("B");
   });
   document
     .getElementById("close-eureka-modal-btn")
     .addEventListener("click", () => {
-      if (inTutorialMode) return;
+      if (gameState.inTutorialMode) return;
 
       // ▼▼▼ [수정] 아래 줄들을 추가하여 모달의 내부 상태를 초기화합니다. ▼▼▼
       gameState.derivedPropositionsInModal = [];
@@ -124,7 +124,7 @@ function setupEventListeners() {
     .getElementById("tutorial-puzzle-btn")
     .addEventListener("click", () => startTutorial(8)); // New puzzle button
   document.getElementById("apply-rule-btn").addEventListener("click", () => {
-    if (!inTutorialMode || tutorialStep === 8) applyRule();
+    if (!gameState.inTutorialMode || tutorialStep === 8) applyRule();
   });
   document
     .getElementById("add-assumption-btn")
@@ -146,7 +146,7 @@ function setupEventListeners() {
     .addEventListener("click", endTutorial);
 
   document.getElementById("puzzle-mode-btn").addEventListener("click", () => {
-    if (inTutorialMode) return; // 튜토리얼 중에는 동작 안 함
+    if (gameState.inTutorialMode) return; // 튜토리얼 중에는 동작 안 함
 
     audioManager.fadeOut("main-menu"); // 메인 메뉴 음악 페이드아웃
     audioManager.play("puzzle-theme"); // 일반 게임 음악 재생
@@ -176,7 +176,7 @@ function setupEventListeners() {
       hideProofReviewModal();
     });
   document.getElementById("vs-ai-test-btn").addEventListener("click", () => {
-    if (inTutorialMode) return;
+    if (gameState.inTutorialMode) return;
     gameState.isTestMode = true;
     audioManager.fadeOut("main-menu");
     audioManager.play("character-select");

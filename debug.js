@@ -1,6 +1,6 @@
 devLog(
-  "inTutorialMode:",
-  inTutorialMode,
+  "gameState.inTutorialMode:",
+  gameState.inTutorialMode,
   "tutorialStep:",
   tutorialStep,
   "tutorialSubStep:",
