@@ -97,10 +97,10 @@ function setupEventListeners() {
       gameState.victoryProposition = null;
       // ▲▲▲ [수정] 코드 추가 끝 ▲▲▲
 
-      if (inPuzzleMode) {
+      if (gameState.inPuzzleMode) {
         document.getElementById("eureka-modal").classList.remove("visible");
         document.getElementById("puzzle-goal-box").classList.add("hidden");
-        inPuzzleMode = false;
+        gameState.inPuzzleMode = false;
         populatePuzzleLevels();
         const puzzleModal = document.getElementById(
           "puzzle-level-select-modal"

@@ -2523,7 +2523,7 @@ function endGame(winner, winningProposition) {
 
   // 논증 다시보기 버튼 표시 (퍼즐 모드나 튜토리얼이 아닌 경우만)
   if (
-    !inPuzzleMode &&
+    !gameState.inPuzzleMode &&
     !gameState.inTutorialMode &&
     gameState.proofSteps &&
     gameState.proofSteps.length > 0

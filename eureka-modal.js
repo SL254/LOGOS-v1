@@ -470,7 +470,7 @@ function addAssumption() {
           audioManager.playSfx("pop");
 
           // 퍼즐 모드에서 가정하기도 추론 단계로 카운트
-          if (inPuzzleMode) {
+          if (gameState.inPuzzleMode) {
             gameState.inferenceStepCount++;
           }
 
@@ -876,7 +876,7 @@ function applyRule() {
     audioManager.playSfx("pop");
 
     // 퍼즐 모드에서 추론 규칙 사용 횟수 증가
-    if (inPuzzleMode) {
+    if (gameState.inPuzzleMode) {
       gameState.inferenceStepCount++;
     }
   } else if (
@@ -1002,7 +1002,7 @@ function addTheoremsToList() {
 function proveVictory() {
   if (gameState.isThinkingTime) return;
 
-  if (inPuzzleMode) {
+  if (gameState.inPuzzleMode) {
     const myVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === "A"
     );
@@ -1065,7 +1065,7 @@ function proveVictory() {
       showAlert(alertMessage, () => {
         document.getElementById("eureka-modal").classList.remove("visible");
         document.getElementById("puzzle-goal-box").classList.add("hidden");
-        inPuzzleMode = false;
+        gameState.inPuzzleMode = false;
         populatePuzzleLevels();
         const puzzleModal = document.getElementById(
           "puzzle-level-select-modal"
