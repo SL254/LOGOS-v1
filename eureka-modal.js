@@ -936,7 +936,19 @@ function addTheoremsToList() {
     (p) => p.type === "theorem" && !p.dependsOnAssumption
   );
 
-  const trulyNewTheorems = potentialTheorems.filter((theoremData) => {
+  // 선택된 정리들 중에서 중복 제거 (같은 명제를 여러 번 선택한 경우)
+  const uniqueTheorems = [];
+  const seenPropositions = new Set();
+  
+  for (const theoremData of potentialTheorems) {
+    const propString = JSON.stringify(theoremData.proposition);
+    if (!seenPropositions.has(propString)) {
+      seenPropositions.add(propString);
+      uniqueTheorems.push(theoremData);
+    }
+  }
+
+  const trulyNewTheorems = uniqueTheorems.filter((theoremData) => {
     const isAxiom = gameState.parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, theoremData.proposition)
     );
