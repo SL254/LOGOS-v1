@@ -124,7 +124,7 @@ function setupEventListeners() {
     .getElementById("tutorial-puzzle-btn")
     .addEventListener("click", () => startTutorial(8)); // New puzzle button
   document.getElementById("apply-rule-btn").addEventListener("click", () => {
-    if (!gameState.inTutorialMode || tutorialStep === 8) applyRule();
+    if (!gameState.inTutorialMode || gameState.tutorialStep === 8) applyRule();
   });
   document
     .getElementById("add-assumption-btn")

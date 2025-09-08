@@ -1087,7 +1087,7 @@ function proveVictory() {
   }
 
   // --- 튜토리얼 마지막 단계 성공 처리 로직 (새로 추가된 부분) ---
-  if (gameState.inTutorialMode && tutorialStep === 8) {
+  if (gameState.inTutorialMode && gameState.tutorialStep === 8) {
     const myVictoryCondition = gameState.truePropositions.find(
       (p) => p.type === "victory" && p.owner === gameState.currentPlayer
     );

@@ -269,7 +269,7 @@ function startTutorial(startStep = 0) {
   gameState.fullDeck = gameState.currentLang.cards;
 
   gameState.inTutorialMode = true;
-  tutorialStep = startStep;
+  gameState.tutorialStep = startStep;
   tutorialSubStep = 0;
 
   const tutorialBtn = document.getElementById("tutorial-btn");
@@ -316,18 +316,18 @@ function advanceTutorial() {
     temporaryListener = null;
   }
 
-  const script = gameState.currentLang.tutorial[tutorialStep];
+  const script = gameState.currentLang.tutorial[gameState.tutorialStep];
   if (!script || tutorialSubStep >= script.length) {
-    tutorialStep++;
+    gameState.tutorialStep++;
     tutorialSubStep = 0;
-    if (tutorialStep >= gameState.currentLang.tutorial.length) {
+    if (gameState.tutorialStep >= gameState.currentLang.tutorial.length) {
       endTutorial();
       return;
     }
-    setupTutorialScenario(tutorialStep + 1); // Setup for the *next* stage
+    setupTutorialScenario(gameState.tutorialStep + 1); // Setup for the *next* stage
   }
 
-  const newScript = gameState.currentLang.tutorial[tutorialStep];
+  const newScript = gameState.currentLang.tutorial[gameState.tutorialStep];
   if (!newScript || tutorialSubStep >= newScript.length) {
     endTutorial();
     return;
@@ -349,7 +349,7 @@ function advanceTutorial() {
 }
 
 function handleTutorialStepLogic() {
-  if (tutorialStep === 0) {
+  if (gameState.tutorialStep === 0) {
     // Stage 1
     switch (tutorialSubStep) {
       case 5:
@@ -417,7 +417,7 @@ function handleTutorialStepLogic() {
         });
         break;
     }
-  } else if (tutorialStep === 1) {
+  } else if (gameState.tutorialStep === 1) {
     // Stage 2
     switch (tutorialSubStep) {
       case 2:
@@ -451,7 +451,7 @@ function handleTutorialStepLogic() {
         if (negationCard) highlightElement(negationCard);
         break;
     }
-  } else if (tutorialStep === 2) {
+  } else if (gameState.tutorialStep === 2) {
     // Stage 3
     switch (tutorialSubStep) {
       case 0:
@@ -474,8 +474,8 @@ function handleTutorialStepLogic() {
         document.getElementById("tutorial-guide").classList.add("top");
         break;
     }
-    // handleTutorialStepLogic 함수 내의 'else if (tutorialStep === 3)' 블록을 찾아 통째로 교체합니다.
-  } else if (tutorialStep === 3) {
+    // handlegameState.tutorialStepLogic 함수 내의 'else if (gameState.tutorialStep === 3)' 블록을 찾아 통째로 교체합니다.
+  } else if (gameState.tutorialStep === 3) {
     // Stage 4 - Thinking Time
     document.getElementById("tutorial-guide").classList.add("top");
     switch (tutorialSubStep) {
@@ -565,7 +565,7 @@ function handleTutorialStepLogic() {
 
         break;
     }
-  } else if (tutorialStep === 4) {
+  } else if (gameState.tutorialStep === 4) {
     // Stage 5 - Basic Rules
     document.getElementById("tutorial-guide").classList.add("top");
     switch (tutorialSubStep) {
@@ -689,7 +689,7 @@ function handleTutorialStepLogic() {
         handleTutorialRuleApplication("existentialInstantiation");
         break;
     }
-  } else if (tutorialStep === 5) {
+  } else if (gameState.tutorialStep === 5) {
     // Stage 6 - Advanced Rules (Proof by Cases)
     document.getElementById("tutorial-guide").classList.add("top");
     switch (tutorialSubStep) {
@@ -712,7 +712,7 @@ function handleTutorialStepLogic() {
         handleTutorialRuleApplication("proofByCases");
         break;
     }
-  } else if (tutorialStep === 6) {
+  } else if (gameState.tutorialStep === 6) {
     // Stage 7 - Assumption (Conditional Intro) ★★★ MODIFIED SECTION ★★★
     document.getElementById("tutorial-guide").classList.add("top");
     switch (tutorialSubStep) {
@@ -808,7 +808,7 @@ function handleTutorialStepLogic() {
         handleTutorialRuleApplication("conditionalIntroduction");
         break;
     }
-  } else if (tutorialStep === 7) {
+  } else if (gameState.tutorialStep === 7) {
     // Stage 8 - Assumption (RAA)
     document.getElementById("tutorial-guide").classList.add("top");
     switch (tutorialSubStep) {
@@ -1035,7 +1035,7 @@ function handleTutorialStepLogic() {
         // No specific interaction needed, just display text and allow "Next" to end tutorial
         break;
     }
-  } else if (tutorialStep === 8) {
+  } else if (gameState.tutorialStep === 8) {
     // Stage 9 - Final Puzzle Logic
     document.getElementById("tutorial-guide").classList.add("top");
     document.getElementById("tutorial-next-btn").classList.add("hidden"); // 다음 버튼 숨김
@@ -1801,7 +1801,7 @@ function endTutorial() {
 
   // 1. 튜토리얼 진행 단계를 완전히 초기화합니다.
   gameState.inTutorialMode = false;
-  tutorialStep = 0;
+  gameState.tutorialStep = 0;
   tutorialSubStep = 0;
 
   // 2. 튜토리얼 진행을 위해 임시로 추가되었을 수 있는 이벤트 리스너를 안전하게 제거합니다.
