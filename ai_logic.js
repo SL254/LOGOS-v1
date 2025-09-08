@@ -3062,9 +3062,34 @@ function executeHumeAbilityCheck(player) {
     return null; // 이미 능력을 사용했으면 종료
   }
 
+  // 명제에서 '승리한다' 술어를 포함하는지 확인하는 헬퍼 함수
+  const containsWinsPredicate = (prop) => {
+    if (!prop) return false;
+    
+    // 기본 명제의 경우
+    if (prop.type === "atomic") {
+      const winPredicates = gameState.currentLang.langCode === "ko" 
+        ? ["승리한다"] 
+        : ["wins"];
+      return winPredicates.some(predicate => 
+        prop.predicate && prop.predicate.includes(predicate)
+      );
+    }
+    
+    // 복합 명제의 경우 재귀적으로 검사
+    if (prop.left && containsWinsPredicate(prop.left)) return true;
+    if (prop.right && containsWinsPredicate(prop.right)) return true;
+    if (prop.proposition && containsWinsPredicate(prop.proposition)) return true;
+    
+    return false;
+  };
+
   // --- 1. '라면'으로 연결된 명제만 찾기 (핵심 수정) ---
   const availablePropositions = gameState.truePropositions.filter(
-    (p) => p.propId && p.proposition && p.proposition.type === "conditional" // 👈 '라면' 명제만 필터링
+    (p) => p.propId && 
+           p.proposition && 
+           p.proposition.type === "conditional" && // 👈 '라면' 명제만 필터링
+           !containsWinsPredicate(p.proposition) // 👈 '승리한다' 술어 포함 명제 제외
   );
 
   if (availablePropositions.length === 0) {
