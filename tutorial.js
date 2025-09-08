@@ -308,12 +308,12 @@ function startTutorial(startStep = 0) {
 
 function advanceTutorial() {
   // Clear previous temporary listeners to prevent stacking
-  if (temporaryListener) {
-    temporaryListener.element.removeEventListener(
-      temporaryListener.type,
-      temporaryListener.handler
+  if (gameState.temporaryListener) {
+    gameState.temporaryListener.element.removeEventListener(
+      gameState.temporaryListener.type,
+      gameState.temporaryListener.handler
     );
-    temporaryListener = null;
+    gameState.temporaryListener = null;
   }
 
   const script = gameState.currentLang.tutorial[gameState.tutorialStep];
@@ -1771,10 +1771,10 @@ function clearHighlights() {
 }
 
 function waitForInteraction(element, eventType, callback) {
-  if (temporaryListener) {
-    temporaryListener.element.removeEventListener(
-      temporaryListener.type,
-      temporaryListener.handler
+  if (gameState.temporaryListener) {
+    gameState.temporaryListener.element.removeEventListener(
+      gameState.temporaryListener.type,
+      gameState.temporaryListener.handler
     );
   }
   const handler = (event) => {
@@ -1787,7 +1787,7 @@ function waitForInteraction(element, eventType, callback) {
     once: eventType !== "click",
   });
 
-  temporaryListener = { element, type: eventType, handler };
+  gameState.temporaryListener = { element, type: eventType, handler };
 }
 
 function endTutorial() {
@@ -1805,12 +1805,12 @@ function endTutorial() {
   gameState.tutorialSubStep = 0;
 
   // 2. 튜토리얼 진행을 위해 임시로 추가되었을 수 있는 이벤트 리스너를 안전하게 제거합니다.
-  if (temporaryListener) {
-    temporaryListener.element.removeEventListener(
-      temporaryListener.type,
-      temporaryListener.handler
+  if (gameState.temporaryListener) {
+    gameState.temporaryListener.element.removeEventListener(
+      gameState.temporaryListener.type,
+      gameState.temporaryListener.handler
     );
-    temporaryListener = null;
+    gameState.temporaryListener = null;
   }
 
   // --- [수정된 부분 끝] ---
