@@ -979,6 +979,11 @@ function addTheoremsToList() {
   if (theoremsAdded > 0) {
     document.getElementById("eureka-modal").classList.remove("visible");
     render();
+    const truePropositionsEl = document.getElementById("true-propositions");
+    truePropositionsEl.scrollTo({
+      top: truePropositionsEl.scrollHeight,
+      behavior: "smooth"
+    });
   }
 }
 
