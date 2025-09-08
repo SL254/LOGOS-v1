@@ -22,10 +22,10 @@ function setupEventListeners() {
     audioManager.fadeOut("thinking-time");
 
     // 현재 게임 모드가 설정되어 있는지 확인
-    if (gameMode) {
+    if (gameState.gameMode) {
       clearAllAITimeouts(); // 진행 중인 AI 동작이 있다면 중지
       // 현재 게임 모드로 캐릭터 선택을 다시 시작
-      startCharacterSelection(gameMode);
+      startCharacterSelection(gameState.gameMode);
     } else {
       // 혹시 모드가 설정되지 않은 예외적인 경우, 메인 메뉴로 이동
       showMainMenu();

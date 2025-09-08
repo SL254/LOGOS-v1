@@ -8,7 +8,7 @@ function startCharacterSelection(mode) {
   audioManager.fadeOut("main-menu");
   audioManager.play("character-select");
 
-  gameMode = mode;
+  gameState.gameMode = mode;
   selectionMode = mode;
   tempSelections = { p1: null, p2: null };
   gameState.isPlayerAI = { A: false, B: false }; // 상태 초기화

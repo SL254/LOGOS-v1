@@ -1940,7 +1940,7 @@ function setupTutorialScenario(step) {
     gameState.currentAssumption = null;
     gameState.lastCardPlayer = null;
     gameState.cardsPlayedThisTurn = { A: 0, B: 0 };
-    gameMode = "2P";
+    gameState.gameMode = "2P";
 
     // 튜토리얼을 위한 기본 철학자 데이터 설정
     gameState.playerA_Data = PHILOSOPHERS["socrates"];

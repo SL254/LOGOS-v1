@@ -1,5 +1,5 @@
 // --- AI Mode State ---
-let gameMode = null;
+
 let playerCharacter = null;
 let aiPlayer = null;
 let activeGambitPlan = null;
@@ -235,7 +235,7 @@ function aithinkingTimeTurn() {
   render();
 
   if (summaryActions.length > 0) {
-    if (gameMode === "AI_VS_AI") {
+    if (gameState.gameMode === "AI_VS_AI") {
       endTurn();
     } else {
       showAITurnSummary(summaryActions);

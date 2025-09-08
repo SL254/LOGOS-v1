@@ -62,6 +62,7 @@ let gameState = {
   tutorialStep: 0,
   tutorialSubStep: 0,
   temporaryListener: null,
+  gameMode: null,
 };
 
 // --- TUTORIAL STATUS FUNCTIONS ---
@@ -1258,10 +1259,10 @@ function handleFirstUserInteraction(event) {
 
 document.getElementById("vs-ai-battle-btn").addEventListener("click", () => {
   if (gameState.inTutorialMode) return;
-  gameMode = "AI_VS_AI";
+  gameState.gameMode = "AI_VS_AI";
   audioManager.fadeOut("main-menu");
   audioManager.play("character-select");
-  startCharacterSelection(gameMode);
+  startCharacterSelection(gameState.gameMode);
 });
 
 document.getElementById("exit-game-btn").addEventListener("click", () => {
@@ -1810,7 +1811,7 @@ function checkNextTurn() {
     // --- 일반 턴일 때의 턴 관리 ---
     // 현재 턴의 플레이어가 AI라면, AI의 일반 턴을 예약
     if (gameState.isPlayerAI[gameState.currentPlayer]) {
-      const delay = gameMode === "AI_VS_AI" ? 250 : 1500;
+      const delay = gameState.gameMode === "AI_VS_AI" ? 250 : 1500;
       gameState.aiTimeoutId = setTimeout(aiTurn, delay);
     }
     // 사람이 턴이라면, 행동 가능 여부만 체크 (행동 없으면 사유 시간 전환)
@@ -1833,7 +1834,10 @@ function endTurn() {
       // '첫 번째' 순서의 플레이어라면, 턴을 상대에게 넘깁니다.
       gameState.thinkingTimeTurn = roundStarter;
 
-      if (gameMode === "AI" && gameState.thinkingTimeTurn === aiPlayer) {
+      if (
+        gameState.gameMode === "AI" &&
+        gameState.thinkingTimeTurn === aiPlayer
+      ) {
         clearAllAITimeouts();
         gameState.aiTimeoutId = setTimeout(aithinkingTimeTurn, 2000);
       }
@@ -2268,12 +2272,13 @@ function completeProposition() {
 
 function undoProposition() {
   if (gameState.gameIsOver || gameState.isThinkingTime) return;
-  if (gameMode === "AI" && gameState.currentPlayer === aiPlayer) return;
+  if (gameState.gameMode === "AI" && gameState.currentPlayer === aiPlayer)
+    return;
 
   if (gameState.currentProposition.length > 0) {
     audioManager.playSfx("undo");
     const lastPlayedInfo = gameState.currentProposition.pop();
-    if (gameMode === "AI" && lastPlayedInfo.player === aiPlayer) {
+    if (gameState.gameMode === "AI" && lastPlayedInfo.player === aiPlayer) {
       gameState.currentProposition.push(lastPlayedInfo);
       return;
     }
@@ -2314,7 +2319,7 @@ function undoProposition() {
       const propToUndo = gameState.truePropositions[lastUserMadePropIndex];
       const lastMaker =
         propToUndo.original_cards[propToUndo.original_cards.length - 1].player;
-      if (gameMode === "AI" && lastMaker === aiPlayer) {
+      if (gameState.gameMode === "AI" && lastMaker === aiPlayer) {
         showAlert(gameState.currentLang.alerts.nothingToUndo);
         return;
       }
@@ -2372,7 +2377,7 @@ function declareEureka(player) {
 
   if (!gameState.isThinkingTime && player !== gameState.currentPlayer) return;
 
-  if (gameMode === "AI" && player === aiPlayer) return;
+  if (gameState.gameMode === "AI" && player === aiPlayer) return;
 
   if (!gameState.isThinkingTime) {
     if (gameState.eurekaUsedInRound[player]) {
@@ -2568,7 +2573,7 @@ function checkRoundEndConditions() {
         : gameState.playerB_Data.name[gameState.currentLang.langCode];
 
     // 'AI vs AI' 모드일 경우에만 경고창을 건너뜁니다.
-    if (gameMode === "AI_VS_AI") {
+    if (gameState.gameMode === "AI_VS_AI") {
       devLog(
         `AI (${gameState.currentPlayer}) has no moves. Starting Thinking Time automatically in AI_VS_AI mode.`
       );
@@ -2737,7 +2742,7 @@ function render() {
       cardEl.classList.add("unplayable");
     } else {
       // 사유 시간이 아닐 때의 기존 로직
-      if (gameMode === "AI" && aiPlayer === "A") {
+      if (gameState.gameMode === "AI" && aiPlayer === "A") {
         cardEl.classList.add("ai-hand");
       } else {
         if (gameState.currentPlayer === "A" && !gameState.gameIsOver) {
@@ -2776,7 +2781,7 @@ function render() {
       cardEl.classList.add("unplayable");
     } else {
       // 사유 시간이 아닐 때의 기존 로직
-      if (gameMode === "AI" && aiPlayer === "B") {
+      if (gameState.gameMode === "AI" && aiPlayer === "B") {
         cardEl.classList.add("ai-hand");
       } else {
         if (gameState.currentPlayer === "B" && !gameState.gameIsOver) {
@@ -3223,14 +3228,14 @@ function render() {
       if (gameState.thinkingTimeTurn === "A") {
         playerAreaA.classList.remove("disabled");
         playerAreaB.classList.add("disabled");
-        eurekaBtnA.disabled = gameMode === "AI" && aiPlayer === "A";
+        eurekaBtnA.disabled = gameState.gameMode === "AI" && aiPlayer === "A";
         eurekaBtnB.disabled = true;
       } else {
         // gameState.thinkingTimeTurn === 'B'
         playerAreaA.classList.add("disabled");
         playerAreaB.classList.remove("disabled");
         eurekaBtnA.disabled = true;
-        eurekaBtnB.disabled = gameMode === "AI" && aiPlayer === "B";
+        eurekaBtnB.disabled = gameState.gameMode === "AI" && aiPlayer === "B";
       }
 
       // '유레카!' 버튼 텍스트를 '정리 추가'로 변경합니다.
@@ -3242,14 +3247,15 @@ function render() {
       completeBtn.disabled = true;
       undoBtn.disabled = true;
       endTurnBtn.disabled =
-        (gameMode === "AI" && gameState.thinkingTimeTurn === aiPlayer) ||
+        (gameState.gameMode === "AI" &&
+          gameState.thinkingTimeTurn === aiPlayer) ||
         (gameState.inTutorialMode && gameState.thinkingTimeTurn !== "A");
     } else {
       statusEl.style.color = "#333";
       eurekaBtnA.textContent = gameState.currentLang.ui.eurekaButton;
       eurekaBtnB.textContent = gameState.currentLang.ui.eurekaButton;
       const isAITurn =
-        gameMode === "AI" && gameState.currentPlayer === aiPlayer;
+        gameState.gameMode === "AI" && gameState.currentPlayer === aiPlayer;
       const isCompletable =
         gameState.currentProposition.length > 0 &&
         parsePropositionFromCards(gameState.currentProposition) !== null;
@@ -3323,7 +3329,7 @@ document.getElementById("main-menu-btn").addEventListener("click", () => {
   // 2. 게임 상태를 초기화합니다.
   clearAllAITimeouts();
   aiPlayer = null;
-  gameMode = null;
+  gameState.gameMode = null;
   gameState.gameIsOver = true; // 게임이 끝났음을 명시
 
   // 3. 메인 메뉴 UI를 표시하고 관련 음악을 재생합니다.
@@ -3361,7 +3367,7 @@ function goToMainMenu() {
   tempSelections = { p1: null, p2: null };
   characterSelectionTurn = null;
   selectionMode = null;
-  gameMode = null;
+  gameState.gameMode = null;
   aiPlayer = null;
   humanPlayerId = null;
 
