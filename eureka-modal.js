@@ -1,8 +1,13 @@
 function openEurekaModal() {
   derivedPropositionsInModal = [];
   currentAssumption = null;
-  
-  devLog("Opening Eureka Modal, currentPuzzleLevel:", currentPuzzleLevel, "type:", typeof currentPuzzleLevel);
+
+  devLog(
+    "Opening Eureka Modal, currentPuzzleLevel:",
+    currentPuzzleLevel,
+    "type:",
+    typeof currentPuzzleLevel
+  );
 
   // 논증 기록 시작 (승리를 위한 유레카 모달인 경우)
   if (!isThinkingTime) {
@@ -390,7 +395,6 @@ function openEurekaModal() {
   document.getElementById("inference-rule-select").value = "modusPonens";
 
   updateConclusionPreview(); // Initialize preview
-
 
   modal.classList.add("visible");
 
@@ -906,7 +910,19 @@ function addTheoremsToList() {
     (p) => p.type === "theorem" && !p.dependsOnAssumption
   );
 
-  const trulyNewTheorems = potentialTheorems.filter((theoremData) => {
+  // 선택된 정리들 중에서 중복 제거 (같은 명제를 여러 번 선택한 경우)
+  const uniqueTheorems = [];
+  const seenPropositions = new Set();
+
+  for (const theoremData of potentialTheorems) {
+    const propString = JSON.stringify(theoremData.proposition);
+    if (!seenPropositions.has(propString)) {
+      seenPropositions.add(propString);
+      uniqueTheorems.push(theoremData);
+    }
+  }
+
+  const trulyNewTheorems = uniqueTheorems.filter((theoremData) => {
     const isAxiom = parsedAxioms.some((a) =>
       arePropositionsEqual(a.proposition, theoremData.proposition)
     );
@@ -952,7 +968,7 @@ function addTheoremsToList() {
     const truePropositionsEl = document.getElementById("true-propositions");
     truePropositionsEl.scrollTo({
       top: truePropositionsEl.scrollHeight,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
 }
@@ -1018,7 +1034,9 @@ function proveVictory() {
         document.getElementById("puzzle-goal-box").classList.add("hidden");
         inPuzzleMode = false;
         populatePuzzleLevels();
-        const puzzleModal = document.getElementById("puzzle-level-select-modal");
+        const puzzleModal = document.getElementById(
+          "puzzle-level-select-modal"
+        );
         puzzleModal.classList.remove("animate");
         puzzleModal.classList.add("visible");
       });
@@ -1242,19 +1260,19 @@ function renderModal() {
 
   // 초기 sticky 위치 설정
   updateStickyPositions();
-  
+
   // 스크롤 이벤트 리스너 추가
-  premiseList.removeEventListener('scroll', handleScroll);
-  premiseList.removeEventListener('wheel', handleScroll);
-  
-  premiseList.addEventListener('scroll', handleScroll);
-  premiseList.addEventListener('wheel', handleScroll);
-  
+  premiseList.removeEventListener("scroll", handleScroll);
+  premiseList.removeEventListener("wheel", handleScroll);
+
+  premiseList.addEventListener("scroll", handleScroll);
+  premiseList.addEventListener("wheel", handleScroll);
+
   // 부모 모달에도 이벤트 추가
-  const modal = document.getElementById('eureka-modal');
+  const modal = document.getElementById("eureka-modal");
   if (modal) {
-    modal.addEventListener('scroll', handleScroll);
-    modal.addEventListener('wheel', handleScroll);
+    modal.addEventListener("scroll", handleScroll);
+    modal.addEventListener("wheel", handleScroll);
   }
 }
 
@@ -1271,57 +1289,64 @@ function handleScroll() {
 
   // premise-list의 실제 보이는 영역의 중간점 계산
   const containerRect = premiseList.getBoundingClientRect();
-  
+
   // 모달 또는 부모 컨테이너의 보이는 영역을 기준으로 계산
-  const modal = document.querySelector('.modal-content');
-  const modalRect = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-  
+  const modal = document.querySelector(".modal-content");
+  const modalRect = modal
+    ? modal.getBoundingClientRect()
+    : { top: 0, bottom: window.innerHeight };
+
   // 실제 보이는 영역 계산
   const visibleTop = Math.max(containerRect.top, modalRect.top);
   const visibleBottom = Math.min(containerRect.bottom, modalRect.bottom);
-  const containerMiddle = visibleTop + ((visibleBottom - visibleTop) / 2);
-  
-  
+  const containerMiddle = visibleTop + (visibleBottom - visibleTop) / 2;
+
   let needsUpdate = false;
   let checkedCount = 0;
-  
-  const allItems = premiseList.querySelectorAll('li');
+
+  const allItems = premiseList.querySelectorAll("li");
   allItems.forEach((li, index) => {
     const checkbox = li.querySelector('input[type="checkbox"]');
     if (checkbox && checkbox.checked) {
       checkedCount++;
       const itemRect = li.getBoundingClientRect();
-      const itemCenter = itemRect.top + (itemRect.height / 2);
+      const itemCenter = itemRect.top + itemRect.height / 2;
       const isTop = itemCenter < containerMiddle;
-      
+
       const previousState = previousPositionStates.get(index);
-      
+
       // 상태가 바뀐 경우만 (초기 상태는 제외)
       if (previousState !== undefined && previousState !== isTop) {
         needsUpdate = true;
         previousPositionStates.set(index, isTop);
-        const prevStateText = previousState ? 'top' : 'bottom';
-        devLog(`Item ${index} crossed center line: ${prevStateText} -> ${isTop ? 'top' : 'bottom'}`);
+        const prevStateText = previousState ? "top" : "bottom";
+        devLog(
+          `Item ${index} crossed center line: ${prevStateText} -> ${
+            isTop ? "top" : "bottom"
+          }`
+        );
       } else if (previousState === undefined) {
         // 초기 상태 설정 (업데이트는 하지 않음)
         previousPositionStates.set(index, isTop);
       }
     }
   });
-  
-  
+
   if (needsUpdate) {
     updateStickyPositions(containerRect, containerMiddle);
   }
 }
 
 // 선택된 전제들의 sticky 위치를 업데이트하는 함수
-function updateStickyPositions(passedContainerRect = null, passedContainerMiddle = null) {
+function updateStickyPositions(
+  passedContainerRect = null,
+  passedContainerMiddle = null
+) {
   const premiseList = document.getElementById("premise-list");
   if (!premiseList) return;
 
-  const allItems = premiseList.querySelectorAll('li');
-  
+  const allItems = premiseList.querySelectorAll("li");
+
   // 매개변수가 없으면 올바른 방식으로 계산
   let containerRect, containerMiddle;
   if (passedContainerRect && passedContainerMiddle) {
@@ -1330,38 +1355,40 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
   } else {
     containerRect = premiseList.getBoundingClientRect();
     // 모달 또는 부모 컨테이너의 보이는 영역을 기준으로 계산
-    const modal = document.querySelector('.modal-content');
-    const modalRect = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-    
+    const modal = document.querySelector(".modal-content");
+    const modalRect = modal
+      ? modal.getBoundingClientRect()
+      : { top: 0, bottom: window.innerHeight };
+
     // 실제 보이는 영역 계산
     const visibleTop = Math.max(containerRect.top, modalRect.top);
     const visibleBottom = Math.min(containerRect.bottom, modalRect.bottom);
-    containerMiddle = visibleTop + ((visibleBottom - visibleTop) / 2);
+    containerMiddle = visibleTop + (visibleBottom - visibleTop) / 2;
   }
-  
+
   // 선택된 항목들을 위치별로 분류
   const topItems = [];
   const bottomItems = [];
-  
+
   allItems.forEach((li, index) => {
     const checkbox = li.querySelector('input[type="checkbox"]');
     if (checkbox && checkbox.checked) {
       // 완전히 리셋
-      li.classList.remove('selected', 'stick-top', 'stick-bottom');
-      li.style.position = '';
-      li.style.top = '';
-      li.style.bottom = '';
-      
+      li.classList.remove("selected", "stick-top", "stick-bottom");
+      li.style.position = "";
+      li.style.top = "";
+      li.style.bottom = "";
+
       // DOM 강제 재계산 (reflow)
       li.offsetHeight;
-      
+
       // 각 항목의 현재 화면상 위치를 실시간 계산
       const itemRect = li.getBoundingClientRect();
-      const itemCenter = itemRect.top + (itemRect.height / 2);
-      
+      const itemCenter = itemRect.top + itemRect.height / 2;
+
       const isTop = itemCenter < containerMiddle;
       previousPositionStates.set(index, isTop); // 현재 상태 저장
-      
+
       if (isTop) {
         // 현재 화면 중심보다 위에 있음 → 위쪽 스티키
         topItems.push({ element: li, index });
@@ -1369,12 +1396,11 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
         // 현재 화면 중심보다 아래 있음 → 아래쪽 스티키
         bottomItems.push({ element: li, index });
       }
-      
     } else {
-      li.classList.remove('selected', 'stick-top', 'stick-bottom');
-      li.style.position = '';
-      li.style.top = '';
-      li.style.bottom = '';
+      li.classList.remove("selected", "stick-top", "stick-bottom");
+      li.style.position = "";
+      li.style.top = "";
+      li.style.bottom = "";
     }
   });
 
@@ -1383,38 +1409,40 @@ function updateStickyPositions(passedContainerRect = null, passedContainerMiddle
   topItems.forEach((item, index) => {
     const { element, index: originalIndex } = item;
     // 강제로 bottom 관련 모든 것 제거
-    element.classList.remove('stick-bottom');
-    element.style.bottom = '';
-    element.style.position = '';
+    element.classList.remove("stick-bottom");
+    element.style.bottom = "";
+    element.style.position = "";
     element.offsetHeight; // reflow
-    
+
     // 이제 top sticky 적용
-    element.classList.add('selected', 'stick-top');
+    element.classList.add("selected", "stick-top");
     element.style.top = `${topAccumulatedHeight}px`;
-    
+
     // 다음 요소를 위해 현재 요소의 실제 높이를 누적
     topAccumulatedHeight += element.offsetHeight;
   });
-  
+
   // 아래쪽 항목들 처리 (아래부터 역순으로)
   let bottomAccumulatedHeight = 0;
   bottomItems.reverse().forEach((item, index) => {
     const { element, index: originalIndex } = item;
     // 강제로 top 관련 모든 것 제거
-    element.classList.remove('stick-top');
-    element.style.top = '';
-    element.style.position = '';
+    element.classList.remove("stick-top");
+    element.style.top = "";
+    element.style.position = "";
     element.offsetHeight; // reflow
-    
+
     // 이제 bottom sticky 적용
-    element.classList.add('selected', 'stick-bottom');
+    element.classList.add("selected", "stick-bottom");
     element.style.bottom = `${bottomAccumulatedHeight}px`;
-    
+
     // 다음 요소를 위해 현재 요소의 실제 높이를 누적
     bottomAccumulatedHeight += element.offsetHeight;
   });
-  
-  devLog(`Updated sticky positions: ${topItems.length} top, ${bottomItems.length} bottom`);
+
+  devLog(
+    `Updated sticky positions: ${topItems.length} top, ${bottomItems.length} bottom`
+  );
 }
 
 function updateConclusionPreview() {
