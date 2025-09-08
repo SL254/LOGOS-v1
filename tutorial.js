@@ -270,7 +270,7 @@ function startTutorial(startStep = 0) {
 
   gameState.inTutorialMode = true;
   gameState.tutorialStep = startStep;
-  tutorialSubStep = 0;
+  gameState.tutorialSubStep = 0;
 
   const tutorialBtn = document.getElementById("tutorial-btn");
   tutorialBtn.textContent = gameState.currentLang.ui.endTutorialButton;
@@ -317,9 +317,9 @@ function advanceTutorial() {
   }
 
   const script = gameState.currentLang.tutorial[gameState.tutorialStep];
-  if (!script || tutorialSubStep >= script.length) {
+  if (!script || gameState.tutorialSubStep >= script.length) {
     gameState.tutorialStep++;
-    tutorialSubStep = 0;
+    gameState.tutorialSubStep = 0;
     if (gameState.tutorialStep >= gameState.currentLang.tutorial.length) {
       endTutorial();
       return;
@@ -328,7 +328,7 @@ function advanceTutorial() {
   }
 
   const newScript = gameState.currentLang.tutorial[gameState.tutorialStep];
-  if (!newScript || tutorialSubStep >= newScript.length) {
+  if (!newScript || gameState.tutorialSubStep >= newScript.length) {
     endTutorial();
     return;
   }
@@ -336,7 +336,7 @@ function advanceTutorial() {
   const guideTextEl = document.getElementById("tutorial-text");
   const tutorialGuideEl = document.getElementById("tutorial-guide");
   const nextBtn = document.getElementById("tutorial-next-btn");
-  guideTextEl.innerHTML = newScript[tutorialSubStep];
+  guideTextEl.innerHTML = newScript[gameState.tutorialSubStep];
   nextBtn.classList.remove("hidden");
 
   // Reset position and highlights
@@ -345,13 +345,13 @@ function advanceTutorial() {
 
   handleTutorialStepLogic();
 
-  tutorialSubStep++;
+  gameState.tutorialSubStep++;
 }
 
 function handleTutorialStepLogic() {
   if (gameState.tutorialStep === 0) {
     // Stage 1
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 5:
         highlightElement("#player-a-hand");
         break;
@@ -419,7 +419,7 @@ function handleTutorialStepLogic() {
     }
   } else if (gameState.tutorialStep === 1) {
     // Stage 2
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 2:
         const completeBtn = document.getElementById("complete-btn");
         highlightElement(completeBtn);
@@ -453,7 +453,7 @@ function handleTutorialStepLogic() {
     }
   } else if (gameState.tutorialStep === 2) {
     // Stage 3
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 0:
         highlightElement("#true-propositions");
         break;
@@ -478,7 +478,7 @@ function handleTutorialStepLogic() {
   } else if (gameState.tutorialStep === 3) {
     // Stage 4 - Thinking Time
     document.getElementById("tutorial-guide").classList.add("top");
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 2: // "후공 플레이어부터 시작합니다..." 텍스트 표시
         // 특별한 동작 없이 다음으로 넘어갑니다.
         break;
@@ -568,7 +568,7 @@ function handleTutorialStepLogic() {
   } else if (gameState.tutorialStep === 4) {
     // Stage 5 - Basic Rules
     document.getElementById("tutorial-guide").classList.add("top");
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       // Intro
       case 0:
         const eurekaBtn = document.getElementById("eureka-a");
@@ -692,7 +692,7 @@ function handleTutorialStepLogic() {
   } else if (gameState.tutorialStep === 5) {
     // Stage 6 - Advanced Rules (Proof by Cases)
     document.getElementById("tutorial-guide").classList.add("top");
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 1:
         const premises =
           gameState.currentLang.langCode === "ko"
@@ -715,7 +715,7 @@ function handleTutorialStepLogic() {
   } else if (gameState.tutorialStep === 6) {
     // Stage 7 - Assumption (Conditional Intro) ★★★ MODIFIED SECTION ★★★
     document.getElementById("tutorial-guide").classList.add("top");
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 1: // Assume
         highlightElement("#add-assumption-btn");
         document.getElementById("tutorial-next-btn").classList.add("hidden");
@@ -811,7 +811,7 @@ function handleTutorialStepLogic() {
   } else if (gameState.tutorialStep === 7) {
     // Stage 8 - Assumption (RAA)
     document.getElementById("tutorial-guide").classList.add("top");
-    switch (tutorialSubStep) {
+    switch (gameState.tutorialSubStep) {
       case 1:
         highlightElement("#add-assumption-btn");
         document.getElementById("tutorial-next-btn").classList.add("hidden");
@@ -1802,7 +1802,7 @@ function endTutorial() {
   // 1. 튜토리얼 진행 단계를 완전히 초기화합니다.
   gameState.inTutorialMode = false;
   gameState.tutorialStep = 0;
-  tutorialSubStep = 0;
+  gameState.tutorialSubStep = 0;
 
   // 2. 튜토리얼 진행을 위해 임시로 추가되었을 수 있는 이벤트 리스너를 안전하게 제거합니다.
   if (temporaryListener) {

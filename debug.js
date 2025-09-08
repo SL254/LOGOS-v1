@@ -3,6 +3,6 @@ devLog(
   gameState.inTutorialMode,
   "gameState.tutorialStep:",
   gameState.tutorialStep,
-  "tutorialSubStep:",
-  tutorialSubStep
+  "gameState.tutorialSubStep:",
+  gameState.tutorialSubStep
 );
