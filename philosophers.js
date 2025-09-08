@@ -268,6 +268,11 @@ function confirmPlatoAbility() {
         : "A new universal proposition has been added to the true list!"
     );
     render();
+    const truePropositionsEl = document.getElementById("true-propositions");
+    truePropositionsEl.scrollTo({
+      top: truePropositionsEl.scrollHeight,
+      behavior: "smooth"
+    });
   } else {
     // 6. 모순 발생 시, 사용자에게 알립니다.
     showAlert(currentLang.alerts.contradictionFound);
@@ -932,6 +937,11 @@ function confirmWittgensteinAbility() {
   document.getElementById("eureka-modal").classList.remove("visible");
   showAlert(currentLang.alerts.wittgensteinSuccess);
   render();
+  const truePropositionsEl = document.getElementById("true-propositions");
+  truePropositionsEl.scrollTo({
+    top: truePropositionsEl.scrollHeight,
+    behavior: "smooth"
+  });
 }
 function activateDerridaAbility(player) {
   // 1. 분해 가능한 명제(연결사로 이어진 명제)만 필터링합니다.
@@ -1236,6 +1246,11 @@ function confirmHumeAbility() {
       : "The proposition has been successfully decomposed."
   );
   render();
+  const truePropositionsEl = document.getElementById("true-propositions");
+  truePropositionsEl.scrollTo({
+    top: truePropositionsEl.scrollHeight,
+    behavior: "smooth"
+  });
 }
 
 function activateKuhnAbility(player) {
@@ -1578,6 +1593,11 @@ function confirmKantAbility(player) {
 
   showAlert(currentLang.alerts.kantSuccess);
   render(); // 게임 화면 전체 갱신
+  const truePropositionsEl = document.getElementById("true-propositions");
+  truePropositionsEl.scrollTo({
+    top: truePropositionsEl.scrollHeight,
+    behavior: "smooth"
+  });
 }
 
 /**
