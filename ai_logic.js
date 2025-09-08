@@ -2850,7 +2850,8 @@ function executeDescartesAbilityCheck(player) {
     }
     if (
       myOppositePredicate &&
-      candidateProp.predicate === myOppositePredicate
+      candidateProp.predicate === myOppositePredicate &&
+      (candidateProp.type === "universal" || candidateProp.type === "existential")
     ) {
       score += 2500;
     }
