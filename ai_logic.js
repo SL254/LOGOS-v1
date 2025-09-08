@@ -2936,7 +2936,7 @@ function executeHumeAbilityCheck(player) {
     // 기본 명제의 경우
     if (prop.type === "atomic") {
       const winPredicates =
-        gameState.currentLang.langCode === "ko" ? ["승리한다"] : ["wins"];
+        currentLang.langCode === "ko" ? ["승리한다"] : ["wins"];
       return winPredicates.some(
         (predicate) => prop.predicate && prop.predicate.includes(predicate)
       );

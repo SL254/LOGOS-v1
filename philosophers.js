@@ -271,7 +271,7 @@ function confirmPlatoAbility() {
     const truePropositionsEl = document.getElementById("true-propositions");
     truePropositionsEl.scrollTo({
       top: truePropositionsEl.scrollHeight,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   } else {
     // 6. 모순 발생 시, 사용자에게 알립니다.
@@ -940,7 +940,7 @@ function confirmWittgensteinAbility() {
   const truePropositionsEl = document.getElementById("true-propositions");
   truePropositionsEl.scrollTo({
     top: truePropositionsEl.scrollHeight,
-    behavior: "smooth"
+    behavior: "smooth",
   });
 }
 function activateDerridaAbility(player) {
@@ -1106,22 +1106,22 @@ function activateHumeAbility(player) {
   // 명제에서 '승리한다' 술어를 포함하는지 확인하는 헬퍼 함수
   const containsWinsPredicate = (prop) => {
     if (!prop) return false;
-    
+
     // 기본 명제의 경우
     if (prop.type === "atomic") {
-      const winPredicates = gameState.currentLang.langCode === "ko" 
-        ? ["승리한다"] 
-        : ["wins"];
-      return winPredicates.some(predicate => 
-        prop.predicate && prop.predicate.includes(predicate)
+      const winPredicates =
+        currentLang.langCode === "ko" ? ["승리한다"] : ["wins"];
+      return winPredicates.some(
+        (predicate) => prop.predicate && prop.predicate.includes(predicate)
       );
     }
-    
+
     // 복합 명제의 경우 재귀적으로 검사
     if (prop.left && containsWinsPredicate(prop.left)) return true;
     if (prop.right && containsWinsPredicate(prop.right)) return true;
-    if (prop.proposition && containsWinsPredicate(prop.proposition)) return true;
-    
+    if (prop.proposition && containsWinsPredicate(prop.proposition))
+      return true;
+
     return false;
   };
 
@@ -1272,7 +1272,7 @@ function confirmHumeAbility() {
   const truePropositionsEl = document.getElementById("true-propositions");
   truePropositionsEl.scrollTo({
     top: truePropositionsEl.scrollHeight,
-    behavior: "smooth"
+    behavior: "smooth",
   });
 }
 
@@ -1619,7 +1619,7 @@ function confirmKantAbility(player) {
   const truePropositionsEl = document.getElementById("true-propositions");
   truePropositionsEl.scrollTo({
     top: truePropositionsEl.scrollHeight,
-    behavior: "smooth"
+    behavior: "smooth",
   });
 }
 
