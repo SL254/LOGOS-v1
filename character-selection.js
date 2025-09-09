@@ -24,7 +24,12 @@ function startCharacterSelection(mode) {
   // 확인 버튼 초기화 - 항상 비활성화 상태로 시작
   document.getElementById("confirm-selection-btn").disabled = true;
 
-  if (mode === "AI") {
+  if (mode === "MULTIPLAYER") {
+    // 멀티플레이어 모드: 기존 시스템 사용하지 않고 바로 리턴
+    console.log("멀티플레이어 모드: 기존 캐릭터 선택 시스템 건너뛰기");
+    return; // 멀티플레이어는 별도 시스템 사용
+    
+  } else if (mode === "AI") {
     // 기존 1P vs AI 모드 로직 (수정 없음)
     const turnModal = document.getElementById("turn-order-modal");
     document.getElementById("turn-order-title").textContent =
@@ -190,6 +195,12 @@ function updatePlayerDisplay(player, philosopherId) {
 }
 
 function handleConfirmClick() {
+  // 멀티플레이어 모드에서는 이 함수를 실행하지 않음
+  if (gameState.gameMode === "MULTIPLAYER") {
+    console.log("멀티플레이어 모드: handleConfirmClick 건너뜀");
+    return;
+  }
+  
   audioManager.playSfx("hover");
   document.getElementById("confirm-selection-btn").disabled = true;
 

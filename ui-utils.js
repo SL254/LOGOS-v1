@@ -96,6 +96,8 @@ function setupUI() {
     gameState.currentLang.ui.vsAIButton;
   document.getElementById("vs-player-btn").textContent =
     gameState.currentLang.ui.vsPlayerButton;
+  document.getElementById("vs-multiplayer-btn").textContent =
+    gameState.currentLang.ui.vsMultiplayerButton || "온라인 멀티플레이어";
   document.getElementById("tutorial-btn").textContent =
     gameState.currentLang.ui.tutorialButton;
   document.getElementById("exit-game-btn").textContent =
@@ -213,6 +215,7 @@ function setupModeDescriptionHovers() {
 
   const buttonsToDescribe = [
     { id: "vs-player-btn", key: "vsPlayerDesc" },
+    { id: "vs-multiplayer-btn", key: "vsMultiplayerDesc" },
     { id: "vs-ai-btn", key: "vsAIDesc" },
     { id: "tutorial-btn", key: "tutorialDesc" },
     { id: "puzzle-mode-btn", key: "puzzleDesc" },

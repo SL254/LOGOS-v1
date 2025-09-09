@@ -128,6 +128,7 @@
           <div class="main-center-buttons invisible">
             <div class="mode-selector">
               <button id="vs-player-btn"></button>
+              <button id="vs-multiplayer-btn"></button>
               <button id="vs-ai-btn"></button>
               <button id="vs-ai-test-btn">AI Test Mode</button>
               <button id="vs-ai-battle-btn"></button>
@@ -508,6 +509,29 @@
       </div>
     </div>
 
+    <!-- Multiplayer Waiting Room Modal -->
+    <div id="multiplayer-waiting-modal" class="modal hidden">
+      <div class="modal-content-small">
+        <h2 id="waiting-modal-title">멀티플레이어 대기실</h2>
+        <div id="waiting-room-info">
+          <p id="waiting-room-id">룸 ID: -</p>
+          <div id="waiting-status">
+            <h3>플레이어 현황</h3>
+            <ul id="waiting-players-list">
+              <li>대기 중...</li>
+            </ul>
+          </div>
+          <div id="waiting-instructions">
+            <p>상대방을 기다리고 있습니다...</p>
+            <p><small>룸 ID를 공유하여 친구를 초대할 수 있습니다.</small></p>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button id="leave-waiting-room-btn" class="modal-confirm-btn">대기실 나가기</button>
+        </div>
+      </div>
+    </div>
+
     <script src="languages.js"></script>
     <script src="philosophers.js"></script>
     <script src="audio.js"></script>
@@ -525,5 +549,8 @@
 
     <script src="events.js"></script>
     <script src="script.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client-logic.js"></script>
   </body>
 </html>

@@ -11,6 +11,7 @@ const TEXTS = {
       newGameButton: "새 게임",
       vsAIButton: "1인 대전",
       vsPlayerButton: "2인 대전",
+      vsMultiplayerButton: "온라인 멀티플레이어",
       puzzleButton: "퍼즐",
       fullscreenButton: "전체화면",
       exitFullscreenButton: "전체화면 종료",
@@ -105,6 +106,7 @@ const TEXTS = {
       kantAbilityDescription:
         "[선험적 종합판단] 능력으로 '{proposition}' 명제를 도출했습니다.",
       vsPlayerDesc: "두 플레이어가 한 컴퓨터 앞에 앉아<br>대결합니다.",
+      vsMultiplayerDesc: "인터넷을 통해 다른 플레이어와<br>실시간으로 대전합니다.",
       vsAIDesc: "AI를 상대하며 게임을 연습할 수 있습니다.",
       tutorialDesc:
         "게임의 기본 규칙과 논리적 추론 규칙을<br>배울 수 있습니다.",
@@ -342,6 +344,7 @@ const TEXTS = {
       languageChangeNotice: "*Language cannot be changed during game.",
       vsAIButton: "1P vs AI",
       vsPlayerButton: "1P vs 2P",
+      vsMultiplayerButton: "Online Multiplayer",
       playerAName: "Socrates",
       playerAColor: "⚪️ White",
       playerBName: "Plato",
@@ -427,6 +430,7 @@ const TEXTS = {
       kantAbilityDescription:
         "[Synthetic A Priori Judgment] ability was used to derive '{proposition}'.",
       vsPlayerDesc: "Two players face off on a single computer.",
+      vsMultiplayerDesc: "Battle other players online<br>in real-time matches.",
       vsAIDesc: "Practice the game by playing against the AI.",
       tutorialDesc:
         "Learn the basic rules of the game and the rules of inference.",

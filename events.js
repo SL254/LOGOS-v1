@@ -39,6 +39,25 @@ function setupEventListeners() {
     audioManager.play("character-select");
     startCharacterSelection("2P");
   });
+  document.getElementById("vs-multiplayer-btn").addEventListener("click", () => {
+    if (gameState.inTutorialMode) return;
+    
+    // 온라인 멀티플레이어 게임 참가
+    audioManager.fadeOut("main-menu");
+    audioManager.play("character-select");
+    
+    console.log("멀티플레이어 버튼 클릭됨"); // 디버그 로그
+    console.log("Socket connected:", window.socket && window.socket.connected);
+    
+    if (window.socket && window.socket.connected) {
+      console.log("룸 참가 시도");
+      window.multiplayerClient.joinGame();
+    } else {
+      console.log("서버 연결 안됨");
+      showAlert("서버에 연결되지 않았습니다. 잠시 후 다시 시도해주세요.");
+    }
+  });
+
   document.getElementById("vs-ai-btn").addEventListener("click", () => {
     if (gameState.inTutorialMode) return;
     // 수정된 부분
