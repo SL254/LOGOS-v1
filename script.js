@@ -1633,6 +1633,7 @@ function resetGame(selectedCharacters, testConfig = null) {
 
   // 게임 시작 시점에 메인 센터 숨기기
   document.querySelector(".main-center-bg").classList.add("hidden");
+  updateLanguageSelectState(); // 언어 선택 드롭다운 비활성화
 
   // 만약 선택된 캐릭터 정보가 없다면, 기본값으로 소크라테스와 플라톤을 설정
   if (!selectedCharacters) {

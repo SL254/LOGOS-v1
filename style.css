@@ -2288,8 +2288,8 @@ body::after {
 }
 
 .char-icon.selected {
-  border-color: #00b7c3;
-  box-shadow: 0 0 15px #00b7c3;
+  border-color: #dddddd;
+  box-shadow: 0 0 15px #e6e6e6;
 }
 
 #confirm-selection-btn {
