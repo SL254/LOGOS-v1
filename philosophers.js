@@ -1520,7 +1520,28 @@ function renderKantModal(player) {
   propDisplay.innerHTML = "";
 
   // 현재 플레이어의 이름 카드 텍스트 가져오기 (미러전 고려)
-  const currentPlayerSubject = player === "A" ? subjectA : subjectB;
+  const playerData = player === "A" ? playerA_Data : playerB_Data;
+  const opponentData = player === "A" ? playerB_Data : playerA_Data;
+
+  let currentPlayerSubject;
+  if (playerA_Data.id === playerB_Data.id) {
+    // 미러전인 경우
+    if (currentLang.langCode === "ko") {
+      const fullName = playerData.name.ko;
+      const nameParts = fullName.split(" ");
+      const lastName = nameParts[nameParts.length - 1];
+      const particle = getTopicParticle(lastName);
+      currentPlayerSubject = player === "A" ? `백색 ${lastName}${particle}` : `흑색 ${lastName}${particle}`;
+    } else {
+      const fullName = playerData.name.en;
+      const nameParts = fullName.split(" ");
+      const lastName = nameParts[nameParts.length - 1];
+      currentPlayerSubject = player === "A" ? `White ${lastName}` : `Black ${lastName}`;
+    }
+  } else {
+    // 일반전인 경우
+    currentPlayerSubject = playerData.cardText[currentLang.langCode];
+  }
 
   // 1. 손패 영역 렌더링 (자신의 이름 카드 제외)
   hand.filter(card => card.text !== currentPlayerSubject).forEach((card) => {

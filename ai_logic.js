@@ -3779,7 +3779,28 @@ function executeKantAbilityCheck(player) {
   const originalHand = player === "A" ? playerA_Hand : playerB_Hand;
 
   // 자신의 이름 카드를 제외한 손패
-  const currentPlayerSubject = player === "A" ? subjectA : subjectB;
+  const playerData = player === "A" ? playerA_Data : playerB_Data;
+  let currentPlayerSubject;
+
+  if (playerA_Data.id === playerB_Data.id) {
+    // 미러전인 경우
+    if (currentLang.langCode === "ko") {
+      const fullName = playerData.name.ko;
+      const nameParts = fullName.split(" ");
+      const lastName = nameParts[nameParts.length - 1];
+      const particle = getTopicParticle(lastName);
+      currentPlayerSubject = player === "A" ? `백색 ${lastName}${particle}` : `흑색 ${lastName}${particle}`;
+    } else {
+      const fullName = playerData.name.en;
+      const nameParts = fullName.split(" ");
+      const lastName = nameParts[nameParts.length - 1];
+      currentPlayerSubject = player === "A" ? `White ${lastName}` : `Black ${lastName}`;
+    }
+  } else {
+    // 일반전인 경우
+    currentPlayerSubject = playerData.cardText[currentLang.langCode];
+  }
+
   const hand = originalHand.filter(card => card.text !== currentPlayerSubject);
 
   if (hand.length === 0) return null;
