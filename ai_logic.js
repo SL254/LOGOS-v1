@@ -3776,7 +3776,12 @@ function executeDerridaAbilityCheck(player) {
 function executeKantAbilityCheck(player) {
   // --- 1단계: 기본 조건 검사 및 후보 생성 ---
   const philosopherId = player === "A" ? playerA_Data.id : playerB_Data.id;
-  const hand = player === "A" ? playerA_Hand : playerB_Hand;
+  const originalHand = player === "A" ? playerA_Hand : playerB_Hand;
+
+  // 자신의 이름 카드를 제외한 손패
+  const currentPlayerSubject = player === "A" ? subjectA : subjectB;
+  const hand = originalHand.filter(card => card.text !== currentPlayerSubject);
+
   if (hand.length === 0) return null;
 
   const candidatePropositions = [];

@@ -79,8 +79,8 @@ const PHILOSOPHERS = {
     },
     icon: "assets/images/ka_icon.png",
     skill: {
-      ko: "선험적 종합판단: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 모순이 발생하지 않는 선에서, 손에 남아있는 카드로 명제 하나를 만들어 참 명제 목록에 추가합니다.",
-      en: "Synthetic A Priori Judgment: Once per game, during Thinking Time, you may create one proposition using cards remaining in your hand and add it to the list of true propositions, as long as no contradiction arises.",
+      ko: "선험적 종합판단: 게임당 한 번, 사유 시간에 사용할 수 있습니다. 모순이 발생하지 않는 선에서, 손에 남아있는 카드로 자신의 이름을 포함하지 않는 명제 하나를 만들어 참 명제 목록에 추가합니다.",
+      en: "Synthetic A Priori Judgment: Once per game, during Thinking Time, you may create one proposition using cards remaining in your hand, excluding your own name card, and add it to the list of true propositions, as long as no contradiction arises.",
     },
   },
   nietzsche: {
@@ -1519,8 +1519,11 @@ function renderKantModal(player) {
   handDisplay.innerHTML = "";
   propDisplay.innerHTML = "";
 
-  // 1. 손패 영역 렌더링
-  hand.forEach((card) => {
+  // 현재 플레이어의 이름 카드 텍스트 가져오기 (미러전 고려)
+  const currentPlayerSubject = player === "A" ? subjectA : subjectB;
+
+  // 1. 손패 영역 렌더링 (자신의 이름 카드 제외)
+  hand.filter(card => card.text !== currentPlayerSubject).forEach((card) => {
     const cardEl = document.createElement("div");
 
     cardEl.className = `card ${colorClass}`;
